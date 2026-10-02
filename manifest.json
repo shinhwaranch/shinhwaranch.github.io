@@ -1,0 +1,19 @@
+{
+  "name": "신화목장 타이쿤",
+  "short_name": "신화목장",
+  "description": "닭·돼지·소를 키우고 가공해서 손님에게 배송하는 목장 경영 타이쿤 게임",
+  "lang": "ko",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "minimal-ui",
+  "display_override": ["standalone"],
+  "background_color": "#8FD06A",
+  "theme_color": "#8FD06A",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
