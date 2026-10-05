@@ -725,6 +725,49 @@ button.card.gift-an[disabled] { cursor: default; }
 .deco-pv.big { width: 96px; height: 96px; }
 
 
+/* ---------- v2.3 실시간 방문 · 알림 ---------- */
+/* [인사] 단추: 같은 목장에 다른 사람이 있을 때만. 내 목장에서는 [이웃] 단추 아래, 이웃 목장에서는 안내 줄 아래 */
+#btnLive { position: absolute; right: calc(8px + env(safe-area-inset-right, 0px)); top: calc(var(--safe-t) + 160px); z-index: 19; background: #EFFBE4; border-color: var(--leaf-d); box-shadow: 0 3px 0 var(--leaf-d), 0 4px 10px var(--shadow); }
+#btnLive em { color: #2F6B1E; }
+#btnLive .cnt { position: absolute; right: -5px; top: -6px; min-width: 20px; height: 20px; box-sizing: border-box; padding: 0 5px; border-radius: 999px; background: var(--leaf-d); border: 2px solid #fff; color: #fff; font-family: var(--font-display); font-style: normal; font-size: 12px; line-height: 16px; text-align: center; }
+#btnLive.pop { animation: popIn .32s cubic-bezier(.2,1.5,.4,1); }
+#app.visiting #btnLive { top: calc(var(--safe-t) + 128px); }
+#app.decorating #btnLive, #app.decorating #livePal { display: none !important; }
+/* 화면이 낮으면 오른쪽 가운데의 확대 단추 줄과 겹치지 않게: 조금 낮은 화면(작은 휴대폰)은 확대 단추 아래로, 아주 낮은 화면(가로로 든 휴대폰)은 그 왼쪽으로 */
+@media (max-height: 620px) {
+  #app:not(.visiting) #btnLive { top: calc(50% + 90px); }
+}
+@media (max-height: 560px) {
+  #btnLive, #app.visiting #btnLive, #app:not(.visiting) #btnLive { top: calc(50% - 28px); right: calc(60px + env(safe-area-inset-right, 0px)); }
+}
+/* 인사 고르기: 아래 메뉴 바로 위에 뜨는 작은 창 */
+#livePal { position: absolute; left: 8px; right: 8px; bottom: calc(var(--safe-b) + 100px); z-index: 21; margin: 0 auto; max-width: 440px; max-height: calc(100% - var(--safe-t) - 200px); box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; padding: 10px; border: 3px solid var(--wood-d); border-radius: 20px; background: rgba(255,247,232,.98); box-shadow: 0 4px 0 var(--wood-d), 0 8px 22px rgba(60,35,15,.3); animation: popIn .22s cubic-bezier(.2,1.3,.4,1); overflow-y: auto; -webkit-overflow-scrolling: touch; }
+#livePal[hidden] { display: none; }
+.lp-head { flex: none; display: flex; align-items: center; gap: 6px; }
+.lp-head b { flex: 1; min-width: 0; font-family: var(--font-display); font-weight: normal; font-size: 16px; color: var(--wood-d); }
+.lp-head .ic24 { flex: none; }
+.lp-head .x-btn { width: 30px; height: 30px; font-size: 14px; }
+.lp-who { flex: none; display: flex; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 2px; }
+.lp-chip { flex: none; display: inline-flex; align-items: center; gap: 5px; min-height: 34px; padding: 2px 10px 2px 3px; border: 2px solid var(--paper-edge); border-radius: 999px; background: #fff; font-family: var(--font-display); font-size: 13px; color: var(--ink); white-space: nowrap; }
+.lp-chip .portrait { border-radius: 50%; }
+.lp-emos { flex: none; display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; }
+.lp-emo { min-width: 0; height: 42px; padding: 0; border: 2px solid var(--paper-edge); border-radius: 12px; background: #fff; display: flex; align-items: center; justify-content: center; }
+.lp-says { flex: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+.lp-say { min-width: 0; min-height: 38px; padding: 2px 4px; border: 2px solid var(--paper-edge); border-radius: 12px; background: #fff; display: flex; align-items: center; justify-content: center; gap: 3px; font-family: var(--font-display); font-size: 13px; letter-spacing: -0.3px; color: var(--ink); white-space: nowrap; }
+.lp-say > span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+/* 좁은 화면에서는 인사말 단추의 작은 그림을 빼고 글자를 다 보여 준다(말풍선에는 그림이 같이 뜬다) */
+@media (max-width: 519px) { .lp-say > span:first-child { display: none; } }
+.lp-emo:active, .lp-say:active, .lp-chip:active { transform: translateY(1px); background: #FFF3D6; }
+@media (max-width: 350px) { .lp-say { font-size: 12px; letter-spacing: -0.6px; } }
+@media (max-height: 560px) { #livePal { max-width: 520px; gap: 6px; padding: 8px; } .lp-says { grid-template-columns: repeat(4, 1fr); } .lp-say { min-height: 34px; } .lp-emo { height: 36px; } }
+/* 이웃 목록의 「접속 중」 */
+.chip.live-dot { padding-left: 8px; }
+.chip.live-dot::before { content: ''; flex: none; width: 8px; height: 8px; margin-right: 2px; border-radius: 50%; background: #3DBE5B; box-shadow: 0 0 0 2px rgba(61,190,91,.25); animation: pulse 1.6s infinite; }
+/* [설정] 알림 카드 · 이웃 정보 창 */
+.push-card .row { align-items: center; }
+.push-card .row > .btn { margin-left: auto; }
+.push-card .muted, .peer-modal { overflow-wrap: anywhere; }
+
 </style>
 </head>
 <body>
@@ -760,6 +803,13 @@ button.card.gift-an[disabled] { cursor: default; }
   <button class="side-btn" id="btnNeighbor" type="button" hidden aria-label="이웃 목장"><span class="ic32" data-icon="neighbor"></span><em>이웃</em><i class="dot" hidden></i></button>
   <button id="protChip" type="button" hidden><span class="ic24" data-icon="shield"></span><b id="protWho"></b><span id="protLeft" class="num"></span></button>
   <button id="bearChip" type="button" hidden><span class="ic24" data-icon="bear"></span><b id="bearWho"></b><span id="bearLeft" class="num"></span></button>
+  <button class="side-btn" id="btnLive" type="button" hidden aria-label="함께 있는 이웃에게 인사하기"><span class="ic32" data-icon="emo_smile"></span><em>인사</em><i class="cnt" id="liveCnt">1</i></button>
+  <div id="livePal" hidden role="dialog" aria-label="인사 보내기">
+    <div class="lp-head"><span class="ic24" data-icon="neighbor"></span><b id="lpTitle">함께 있는 이웃</b><button id="lpClose" class="x-btn" type="button" aria-label="닫기">✕</button></div>
+    <div class="lp-who" id="lpWho"></div>
+    <div class="lp-emos" id="lpEmos"></div>
+    <div class="lp-says" id="lpSays"></div>
+  </div>
 
   <div id="visitBar" hidden>
     <img id="visitFace" class="portrait av-face" alt="">
@@ -12604,6 +12654,52 @@ button.card.gift-an[disabled] { cursor: default; }
   def('post', iPost);
   def('bandage', iBandage);
 
+  /* v2.3 인사 이모티콘 — 노란 얼굴 다섯 가지(웃음 · 깔깔 · 반했어요 · 우와 · 훌쩍). 실시간 방문에서 캐릭터 머리 위 말풍선과 [인사] 창에 쓴다 */
+  function emoFace() {
+    part(() => circle(50, 52, 37), lg(30, 18, 72, 90, [[0, '#FFE680'], [1, '#FFC53D']]), [13, 15, 74, 74], {
+      so: { shadowColor: 'rgba(190,110,0,0.2)', glossColor: 'rgba(255,255,255,0.4)' }
+    });
+  }
+  function emoCheeks() { c.fillStyle = 'rgba(255,120,110,0.36)'; ell(27, 62, 7.5, 5); c.fill(); ell(73, 62, 7.5, 5); c.fill(); }
+  const EMO_INK = '#7A4A2A';
+  function iEmoSmile() {
+    emoFace(); emoCheeks();
+    A.eye(c, 37, 46, 5.4, 'open'); A.eye(c, 63, 46, 5.4, 'open');
+    c.beginPath(); c.moveTo(33, 62); c.quadraticCurveTo(50, 79, 67, 62); strokeW(LWd * 1.25, EMO_INK);
+  }
+  function iEmoLaugh() {
+    emoFace(); emoCheeks();
+    A.eye(c, 36, 45, 6.6, 'happy'); A.eye(c, 64, 45, 6.6, 'happy');
+    part(() => { c.beginPath(); c.moveTo(30, 57); c.quadraticCurveTo(50, 62, 70, 57); c.quadraticCurveTo(67, 83, 50, 83); c.quadraticCurveTo(33, 83, 30, 57); c.closePath(); }, '#8A3B2E', null, {
+      lw: LWd,
+      deco: () => { c.fillStyle = '#FF8F8F'; ell(50, 81, 12, 7); c.fill(); c.fillStyle = '#FFFFFF'; rr(35, 56, 30, 7, 2); c.fill(); }
+    });
+  }
+  function iEmoLove() {
+    emoFace(); emoCheeks();
+    part(() => heartPath(35, 45, 0.21), '#EE4A61', null, { lw: LWd * 0.8 });
+    part(() => heartPath(65, 45, 0.21), '#EE4A61', null, { lw: LWd * 0.8 });
+    c.beginPath(); c.moveTo(34, 64); c.quadraticCurveTo(50, 80, 66, 64); strokeW(LWd * 1.25, EMO_INK);
+  }
+  function iEmoWow() {
+    emoFace();
+    A.eye(c, 37, 45, 5.8, 'open'); A.eye(c, 63, 45, 5.8, 'open');
+    c.beginPath(); c.moveTo(29, 33); c.quadraticCurveTo(37, 27, 44, 32); c.moveTo(56, 32); c.quadraticCurveTo(63, 27, 71, 33); strokeW(LWd, EMO_INK);
+    part(() => ell(50, 68, 7.5, 9.5), '#8A3B2E', null, { lw: LWd });
+  }
+  function iEmoCry() {
+    emoFace();
+    A.eye(c, 37, 48, 5.4, 'sad'); A.eye(c, 63, 48, 5.4, 'sad');
+    c.beginPath(); c.moveTo(29, 39); c.lineTo(42, 35); c.moveTo(58, 35); c.lineTo(71, 39); strokeW(LWd, EMO_INK);
+    c.beginPath(); c.moveTo(38, 73); c.quadraticCurveTo(50, 63, 62, 73); strokeW(LWd * 1.25, EMO_INK);
+    part(() => { c.beginPath(); c.moveTo(27, 54); c.quadraticCurveTo(19, 66, 27, 71); c.quadraticCurveTo(35, 66, 27, 54); c.closePath(); }, '#8FD3F4', null, { lw: LWd * 0.7 });
+  }
+  def('emo_smile', iEmoSmile);
+  def('emo_laugh', iEmoLaugh);
+  def('emo_love', iEmoLove);
+  def('emo_wow', iEmoWow);
+  def('emo_cry', iEmoCry);
+
   /** 등록. t = [cx, cy, k] 이면 아이콘 전체를 (50,50)→(cx,cy)로 옮기고 k배(외곽선 두께는 유지) */
   function def(id, fn, t) {
     if (!REG[id]) IDS.push(id);
@@ -14059,10 +14155,13 @@ const SR = {};
  * v2.0(펫·쿠마·가축을 잃는 시간·건설 시간)의 조절값도 서버 v1.7 [설정] 시트에서 바꿔요 — PET_PRICE · BEAR_OPEN · BEAR_INTERVAL_MIN ·
  *               BEAR_DAILY_LIMIT · BEAR_DAMAGE_PCT · DEATH_HUNGER_MIN · DEATH_SICK_MIN · BUILD_TIME_PCT. 서버가 v1.6 이하이면 게임에 든 기본값을 써요.
  * 목장 꾸미기(v2.2 — 장식·스킨)는 서버를 바꾸지 않아요. 값과 레벨은 게임 파일(02b_deco.js)에 들어 있고, 이웃에게는 서버 v1.6 이상의 「목장 모습」에 실려 보여요.
+ * 알림·실시간 방문(v2.3)도 여기서 고칠 것이 없어요 — 서버 v1.8 시트 메뉴 「알림·실시간 설정 (Firebase)…」에 구글 Firebase 값을 넣으면 켜지고,
+ *               [설정] 시트의 PUSH_OPEN · LIVE_OPEN · PUSH_QUIET_FROM/TO 로 끄고 조절해요. 넣기 전에는(또는 서버가 v1.7 이하이면) 게임은 v2.2 와 똑같이 동작해요.
+ *               이 기능이 켜진 뒤에는 index.html 과 함께 sw.js(알림을 띄우는 파일)도 같은 폴더에 올라가 있어야 해요.
  */
 /* SR은 이 함수 안에서만 */
 SR.CONFIG = {
-  VERSION: '2.2.0',
+  VERSION: '2.3.0',
   TITLE: '신화목장 타이쿤',
   SERVER_URL: 'https://script.google.com/macros/s/AKfycbwGEjjmnhrW0WnHJz0WkAXiHLlkAtlq6onudAWx5x_5lG0jfFu998FubrgyxWeytkvRuQ/exec',
   STORE_URL: 'https://smartstore.naver.com/shmeat_',
@@ -14080,15 +14179,18 @@ SR.CONFIG = {
     '5. 구매 적립은 게임 코인으로만 드립니다. 운영자가 실제 스토어 주문을 확인한 뒤 승인하며, 입력한 정보가 주문과 다르면 반려될 수 있습니다. 구매 적립은 네이버로 로그인한 목장만 신청하도록 운영될 수 있으며, 적립률과 조건은 운영 사정에 따라 바뀔 수 있습니다.\n' +
     '6. 이벤트 선물이나 오류 보정을 위해 운영자가 게임 코인을 지급하거나 조정(회수)할 수 있습니다.\n' +
     '7. 게임을 비정상적으로 조작하거나 여러 계정·남의 주문으로 적립을 받는 행위는 금지되며, 확인되면 적립이 취소되거나 이용이 제한될 수 있습니다.\n' +
-    '8. 이웃 목장(선택): [이웃] 기능을 켜면 다른 이용자가 내 목장을 방문해 도울 수 있고, 나도 다른 목장을 방문할 수 있습니다. 도와주기 보상금과 선물은 게임 코인·게임 속 물건으로만 주고받으며, 돈이나 실제 상품으로 바꿀 수 없습니다. 보상금·횟수·보호 시간은 운영 사정에 따라 바뀔 수 있습니다. 다른 이용자에게 불쾌감을 주는 이름은 운영자가 이웃 목록에서 숨길 수 있습니다. 여러 계정으로 보상금이나 선물을 주고받는 행위는 7항의 비정상 이용에 해당합니다.\n' +
-    '9. 문의: 신화미트 스마트스토어 톡톡',
+    '8. 이웃 목장(선택): [이웃] 기능을 켜면 다른 이용자가 내 목장을 방문해 도울 수 있고, 나도 다른 목장을 방문할 수 있습니다. 도와주기 보상금과 선물은 게임 코인·게임 속 물건으로만 주고받으며, 돈이나 실제 상품으로 바꿀 수 없습니다. 보상금·횟수·보호 시간은 운영 사정에 따라 바뀔 수 있습니다. 다른 이용자에게 불쾌감을 주는 이름은 운영자가 이웃 목록에서 숨길 수 있습니다. 여러 계정으로 보상금이나 선물을 주고받는 행위는 7항의 비정상 이용에 해당합니다. 같은 목장에 함께 있는 이용자에게는 내 캐릭터의 움직임과 정해진 인사말·이모티콘이 실시간으로 보일 수 있습니다(자유롭게 글을 쓰는 채팅은 없습니다).\n' +
+    '9. 알림(선택): [설정]에서 「알림 받기」를 켠 기기에만 내 목장의 소식(이웃 방문·도움·선물, 코인 도착)을 알립니다. 광고성 알림은 보내지 않으며, [설정]에서 언제든 끌 수 있습니다. 알림은 기기·브라우저 사정에 따라 늦거나 오지 않을 수 있습니다.\n' +
+    '10. 문의: 신화미트 스마트스토어 톡톡',
   PRIVACY_TEXT: '개인정보 처리 안내\n\n' +
     '· 수집 항목: 목장 이름(닉네임), 목장주 이름과 캐릭터 모습, 무작위 기기 식별값, 게임 진행 기록(레벨·플레이 시간·접속일 등). 구매 적립을 신청할 때만 네이버 아이디·주문번호·구매일·결제금액을 추가로 받습니다. 이름·전화번호·주소는 받지 않습니다.\n' +
     '· 네이버 로그인(선택): 로그인하면 네이버가 이 게임에만 발급하는 회원 식별값을 받아, 알아볼 수 없게 바꾼 값만 계정에 저장하고 진행 기록 사본을 보관합니다. 이름·이메일·전화번호는 받지 않습니다. 별명 제공에 동의하면 별명은 처음 목장 이름을 제안할 때만 쓰고 서버에 저장하지 않습니다. [설정]에서 연결을 해제하면 보관된 진행 기록 사본을 바로 지웁니다.\n' +
     '· 이웃 목장(선택): [이웃] 기능을 켠 경우에만 목장 이름·목장주 이름·캐릭터·레벨·목장의 모습(가축·시설 상태·꾸미기)을 서버에 올려 다른 이용자에게 보여 줍니다. 계정 번호·기기 식별값·네이버 연결 정보·구매 적립 정보는 다른 이용자에게 보이지 않습니다. 누가 누구를 도왔는지(치료·쫓기·보호·선물)는 부정 이용 확인을 위해 서버에 기록됩니다. [설정]에서 끄면 이웃 목록에서 바로 빠집니다.\n' +
+    '· 실시간 방문(이웃 기능을 켠 경우): 같은 목장에 함께 있는 동안 목장 이름·목장주 이름·캐릭터, 캐릭터가 걸어가는 위치, 고른 인사말·이모티콘 번호, 방금 도와준 일이 Google Firebase(Realtime Database)를 거쳐 함께 있는 이용자에게 전달됩니다. 자리를 떠나면 바로 지워지며 따로 보관하지 않습니다. 이웃 목록에는 지금 접속 중인지가 표시됩니다.\n' +
+    '· 알림(선택): [설정]에서 알림을 켠 경우에만, 이 기기로 알림을 보내는 데 필요한 알림 주소(Google Firebase 클라우드 메시징이 발급한 값)와 기기 종류(안드로이드·아이폰·PC)를 서버에 저장합니다. 알림을 끄면 바로 지우고, 9개월 동안 확인되지 않은 기기는 자동으로 지웁니다.\n' +
     '· 목적: 게임 서비스 제공, 진행 기록 보관(네이버 로그인), 이웃 목장 기능 제공, 부정 이용 방지. 구매 적립 정보는 신화미트 스토어의 실제 주문과 대조해 구매를 확인하는 데에만 씁니다. 구매 적립에 적은 네이버 아이디는 다음 신청 때 다시 쓰도록 이 기기에도 저장됩니다.\n' +
     '· 보관: 구매 적립 기록은 처리 후 1년, 게임 계정 정보와 보관된 진행 기록은 마지막 접속 후 1년 보관한 뒤 파기합니다.\n' +
-    '· 보관 위치: Google 스프레드시트(국외 서버)에 저장됩니다.\n' +
+    '· 보관 위치: Google 스프레드시트(국외 서버)에 저장됩니다. 알림과 실시간 방문에는 Google Firebase(국외 서버)를 이용합니다.\n' +
     '· 목장 이름·목장주 이름에 실명·연락처를 적지 마세요. 만 14세 미만은 보호자와 함께 이용해 주세요. 구매 적립은 만 14세 이상만, 개인정보 수집·이용에 동의한 경우에만 신청할 수 있습니다(동의하지 않을 수 있으며, 이때는 구매 적립만 이용할 수 없습니다).\n' +
     '· 문의·삭제 요청: 신화미트 스마트스토어 톡톡'
 };
@@ -15025,7 +15127,9 @@ SR.CONFIG = {
       //       bear = 쿠마 기록(위 newBear) · 부지의 dmg = 피해 %(0~100) · repEnd/repDur = 수리가 끝나는 시각·걸리는 시간(ms)
       wardrobe: {}, pets: { dog: null, cat: null }, post: '', bear: S.newBear(),
       // v2.2 목장 꾸미기: 놓은 장식 · 보관함 · 가진 스킨 · 쓰는 스킨 (모양은 04b_deco.js 의 S.newDeco)
-      deco: S.newDeco()
+      deco: S.newDeco(),
+      // v2.3 알림·실시간 방문: tip = 「알림을 켜 보세요」 안내를 보여 준 시각(한 번만). 이 기기의 알림 상태(켬·끔)는 진행 기록에 넣지 않는다(07f_live.js)
+      live: { tip: 0 }
     };
     S.g = g;
     D.PARCELS.forEach(p => { g.parcels[p.id] = { st: p.start ? 'done' : 'locked', end: 0, dmg: 0, repEnd: 0, repDur: 0 }; });
@@ -15207,6 +15311,7 @@ SR.CONFIG = {
     const pre19 = !('social' in g);     // v1.8 이전 기록(내 캐릭터·이웃 목장이 없던 때)
     const pre20 = !('pets' in g);       // v1.9 이전 기록(펫·쿠마·자동 관리·꾸미기 값이 없던 때)
     const pre22 = !('deco' in g);       // v2.1 이전 기록(목장 꾸미기 — 장식·스킨이 없던 때)
+    const pre23 = !('live' in g);       // v2.2 이전 기록(알림·실시간 방문이 없던 때)
     const base = S.newGame();   // 빠진 필드 채우기용(S.g를 덮으므로 아래에서 다시 지정)
     for (const k in base) if (!(k in g)) g[k] = base[k];
     for (const k in base.stats) if (!(k in g.stats)) g.stats[k] = base.stats[k];
@@ -15333,6 +15438,9 @@ SR.CONFIG = {
     // v2.2 목장 꾸미기: 모르는 장식·스킨은 버리고, 이제 놓을 수 없는 자리(길·건물·개척하지 않은 부지)의 장식은 보관함으로 돌려보낸다(부지 상태를 다듬은 뒤에)
     g.deco = S.cleanDeco(g.deco, g);
     if (pre22 && g.named) g.flags.news22 = 1;                  // v2.1 이전부터 하던 목장 → 처음 열 때 '목장 꾸미기' 소식 한 번
+    // v2.3 알림·실시간 방문: 소식은 서버에서 그 기능을 쓸 수 있게 된 뒤에 한 번 보여 준다(07g_live_ui.js)
+    g.live = { tip: Math.max(0, num(obj(g.live) ? g.live.tip : 0, 0)) };
+    if (pre23 && g.named) g.flags.news23 = 1;
     // 흑돼지 원산지가 빠진 기록 보정
     for (const id in g.pens) g.pens[id].animals.forEach(a => { if (D.SPECIES[a.sp].origins && !D.SPECIES[a.sp].origins[a.origin]) a.origin = 'jirisan'; });
     g.v = SAVE_VER;
@@ -18867,7 +18975,7 @@ SR.CONFIG = {
   for (let i = 0; i <= G.COLS; i++) PXS.push(G.MX + i * (G.PW + G.G) + G.G / 2);
   const ROAD_Y1 = GRID_B + 230;                   // 큰길에서 캐릭터가 내려갈 수 있는 끝
   const ME_HOME = { x: HUB.x + 196, y: HUB.y + 280 };
-  const me = { x: ME_HOME.x, y: ME_HOME.y, path: [], view: 'front', face: 1, ft: 0, moving: false, look: null, key: '', name: '' };
+  const me = { x: ME_HOME.x, y: ME_HOME.y, path: [], view: 'front', face: 1, ft: 0, moving: false, look: null, key: '', name: '', say: null };
   R.walkOn = false;                               // 게임을 시작하면 켠다(제목 화면에서는 걷지 않음)
   R.meBubble = false;                             // 캐릭터를 아직 만들지 않았으면 머리 위에 [캐릭터 만들기] 말풍선(v2.2: 왼쪽 [꾸미기] = 목장 꾸미기와 헷갈리지 않게 이름을 바꿈)
 
@@ -18964,11 +19072,11 @@ SR.CONFIG = {
     }
     return z;
   }
-  /** (tx, ty) 쪽으로 걸어갈 길을 정한다 → 실제로 설 자리 */
-  function routeTo(tx, ty) {
+  /** 캐릭터 m 이 (tx, ty) 쪽으로 걸어갈 길을 정한다 → 실제로 설 자리 (v2.3: 내 캐릭터뿐 아니라 같이 있는 이웃의 캐릭터도 같은 길을 쓴다) */
+  function routeFor(m, tx, ty) {
     const to = clearOfDeco(standPoint(tx, ty));
-    const hp = doneAt(me.x, me.y);
-    const from = hp ? { p: hp, x: me.x, y: me.y } : pathPoint(me.x, me.y);
+    const hp = doneAt(m.x, m.y);
+    const from = hp ? { p: hp, x: m.x, y: m.y } : pathPoint(m.x, m.y);
     let pts = [];
     if (from.p && to.p && from.p.id === to.p.id) pts = [{ x: to.x, y: to.y }];
     else {
@@ -18980,28 +19088,34 @@ SR.CONFIG = {
     }
     // 거의 같은 점은 하나로
     const out = [];
-    let px = me.x, py = me.y;
+    let px = m.x, py = m.y;
     pts.forEach(q => { if (Math.hypot(q.x - px, q.y - py) > 1.5) { out.push({ x: q.x, y: q.y }); px = q.x; py = q.y; } });
-    me.path = out;
+    m.path = out;
     return to;
   }
-  function stepMe(dt) {
-    me.ft += dt;
-    me.moving = false;
-    if (!me.path.length) return;
-    let rest = 0, px = me.x, py = me.y;
-    for (const q of me.path) { rest += Math.hypot(q.x - px, q.y - py); px = q.x; py = q.y; }
+  /** 내 캐릭터의 길. v2.3: 가려는 자리를 실시간 방문(07f_live.js)에 알려 준다 — 같이 있는 이웃 화면에서도 내 캐릭터가 그리로 걸어간다 */
+  function routeTo(tx, ty) {
+    const to = routeFor(me, tx, ty);
+    if (R.onMeRoute) { try { R.onMeRoute(to); } catch (e) { /* 걷기는 그대로 */ } }
+    return to;
+  }
+  function stepPerson(m, dt) {
+    m.ft += dt;
+    m.moving = false;
+    if (!m.path.length) return;
+    let rest = 0, px = m.x, py = m.y;
+    for (const q of m.path) { rest += Math.hypot(q.x - px, q.y - py); px = q.x; py = q.y; }
     let left = D.SOCIAL.walkSpeed * (rest > 700 ? 1.7 : 1) * dt;       // 먼 길은 조금 서둘러서
-    while (left > 0 && me.path.length) {
-      const q = me.path[0], dx = q.x - me.x, dy = q.y - me.y, d = Math.hypot(dx, dy);
-      if (d < 0.5) { me.x = q.x; me.y = q.y; me.path.shift(); continue; }
+    while (left > 0 && m.path.length) {
+      const q = m.path[0], dx = q.x - m.x, dy = q.y - m.y, d = Math.hypot(dx, dy);
+      if (d < 0.5) { m.x = q.x; m.y = q.y; m.path.shift(); continue; }
       const s = Math.min(d, left);
-      me.x += dx / d * s; me.y += dy / d * s; left -= s;
-      me.moving = true;
-      me.view = dy < 0 && Math.abs(dy) > Math.abs(dx) * 0.6 ? 'back' : 'front';
-      if (Math.abs(dx) > 1) me.face = dx > 0 ? 1 : -1;
+      m.x += dx / d * s; m.y += dy / d * s; left -= s;
+      m.moving = true;
+      m.view = dy < 0 && Math.abs(dy) > Math.abs(dx) * 0.6 ? 'back' : 'front';
+      if (Math.abs(dx) > 1) m.face = dx > 0 ? 1 : -1;
     }
-    if (!me.path.length) me.view = 'front';
+    if (!m.path.length) m.view = 'front';
   }
   function avatarSpr(m, frame, view) {
     const vw = view || m.view;
@@ -19045,29 +19159,87 @@ SR.CONFIG = {
     if (tag) push(9997, () => nameTag(x, y - headTop(m) - 11, tag, mine));
   }
   let actLabel = '', actT = 0;                    // 배치 중 말풍선에 잠깐 보여 줄 「하는 일」과 남은 표시 시간(초)
+  /* v2.3 실시간 방문 — 같은 목장에 와 있는 이웃(과 목장주)의 캐릭터. 어디로 걸어가는지는 07f_live.js 가 알려 준다(R.peerUpdate).
+   *  say = 머리 위에 잠깐 뜨는 인사 말풍선 {icon, label, until(time 기준)} — 내 캐릭터(me)에도 같은 모양으로 뜬다 */
+  const peers = new Map();
+  const PEER_MAX = 8;
+  function sayBubble(m) {
+    if (!m.say) return false;
+    if (m.say.until <= time) { m.say = null; return false; }
+    const bx = m.x, by = m.y - headTop(m) - 23, sy = m.say;
+    push(9999, () => bubble(bx, by, sy.icon, sy.label, sy.style || 'info', 0, null, !sy.label, 2));
+    return true;
+  }
+  function collectPeers(dt) {
+    if (!peers.size) return;
+    peers.forEach(m => {
+      stepPerson(m, dt);
+      collectPerson(m, m.tag, false);
+      sayBubble(m);
+      // 누르면 누구인지 보여 준다(그쪽으로 걸어가지 않는다). 가축·먹이통보다 뒤 순서 — 겹쳐 서 있어도 가축을 먼저 누를 수 있게
+      if (m.look && !R.decoOn) { const id = m.id; hit(m.x - 18, m.y - headTop(m), m.x + 18, m.y + 6, 49, () => { call('peerTap', id); return false; }, 1); }
+    });
+  }
   function collectMe(dt) {
     if (!R.walkOn || !me.look) return;
-    stepMe(dt);
+    stepPerson(me, dt);
     collectPerson(me, me.name, true);
     if (actT > 0) actT -= dt;
+    // 인사 말풍선이 떠 있는 동안에는 그것만(배치 중·캐릭터 만들기 말풍선과 겹치지 않게)
+    if (sayBubble(me)) { /* 인사 중 */ }
     // 배치 중 말풍선: 일하는 순간에는 하는 일(먹이 주기·계란 모으기 …)을 잠깐 보여 준다
-    if (posted()) { const bx = me.x, by = me.y - headTop(me) - 23, work = actT > 0; push(9999, () => bubble(bx, by, 'post', work ? actLabel : '배치 중', work ? 'work' : 'info', 107, () => { call('postTap'); return false; })); }
+    else if (posted()) { const bx = me.x, by = me.y - headTop(me) - 23, work = actT > 0; push(9999, () => bubble(bx, by, 'post', work ? actLabel : '배치 중', work ? 'work' : 'info', 107, () => { call('postTap'); return false; })); }
     else if (R.meBubble && !R.visit) { const bx = me.x, by = me.y - headTop(me) - 23; push(9999, () => bubble(bx, by, 'person', '캐릭터 만들기', 'ready', 107, () => { call('meTap'); return false; })); }
+    collectPeers(dt);
     const v = R.visit;
     if (v && v.owner) {
-      v.owner.ft = (v.owner.ft || 0) + dt; collectPerson(v.owner, v.owner.tag, false);
-      // 그 목장의 펫은 목장주 곁에 앉아 있다
+      // 목장주가 지금 접속해 실시간으로 같이 있으면(peers 에 그 목장의 코드) 서 있는 그림 대신 움직이는 목장주가 보인다
+      if (!peers.has(v.code)) { v.owner.ft = (v.owner.ft || 0) + dt; collectPerson(v.owner, v.owner.tag, false); }
+      // 그 목장의 펫은 농가 앞 목장주 자리 곁에 앉아 있다
       const vp = v.g.pets || {};
       if (vp.dog) petDraw('dog', v.owner.x - 34, v.owner.y + 10, 'sit', Math.sin(time * 0.7) > 0.96 ? 1 : 0, 1);
       if (vp.cat) petDraw('cat', v.owner.x + 34, v.owner.y + 12, 'sit', Math.sin(time * 0.6 + 2) > 0.96 ? 1 : 0, 1);
     }
   }
+  /** 같이 있는 이웃의 캐릭터를 넣거나 갈 곳을 바꾼다. p = {tag: 이름표, avatar: 캐릭터 코드, x, y: 가려는 자리, walkIn: 방금 들어온 손님(농가 옆길에서 걸어 들어온다)} */
+  R.peerUpdate = function (id, p) {
+    let m = peers.get(id);
+    const tx = +p.x || 0, ty = +p.y || 0;
+    if (!m) {
+      if (peers.size >= PEER_MAX) return false;
+      m = { id: id, x: 0, y: 0, path: [], view: 'front', face: 1, ft: 0, moving: false, look: null, key: '', tag: '', say: null, tx: tx, ty: ty };
+      if (p.walkIn) {
+        const hubP = D.PARCEL.hub;
+        m.x = PXS[hubP.c + 1]; m.y = PYS[hubP.r + 1]; m.face = -1;
+        routeFor(m, tx, ty);
+      } else { const z = standPoint(tx, ty); m.x = z.x; m.y = z.y; }
+      peers.set(id, m);
+    } else if (Math.hypot(tx - m.tx, ty - m.ty) > 2) { m.tx = tx; m.ty = ty; routeFor(m, tx, ty); }
+    const key = D.avatarCode(p.avatar);
+    if (m.key !== key) { m.key = key; m.look = D.avatarLook(key); }
+    m.tag = typeof p.tag === 'string' ? p.tag : '';
+    return true;
+  };
+  R.peerRemove = function (id) { peers.delete(id); };
+  R.peerClear = function () { peers.clear(); };
+  /** 머리 위 인사 말풍선. id 'me' = 내 캐릭터. label 이 없으면 그림만 크게 */
+  R.peerSay = function (id, icon, label, sec, style) {
+    const m = id === 'me' ? me : peers.get(id);
+    if (!m) return false;
+    m.say = { icon: icon, label: label || '', until: time + (sec || 4), style: style || '' };
+    return true;
+  };
+  R.peerPos = function (id) { const m = id === 'me' ? me : peers.get(id); return m ? { x: m.x, y: m.y, top: m.look ? headTop(m) : 88 } : null; };
+  /** (테스트·화면 표시용) 같이 있는 이웃 캐릭터 목록 */
+  R.peerList = () => Array.from(peers.values()).map(m => ({ id: m.id, x: m.x, y: m.y, tx: m.tx, ty: m.ty, moving: m.moving, steps: m.path.length, tag: m.tag, key: m.key, say: m.say && m.say.until > time ? (m.say.label || m.say.icon) : '' }));
+  /** 내 캐릭터가 가고 있는 자리(걷는 중이면 도착할 곳) */
+  R.meDest = function () { const q = me.path.length ? me.path[me.path.length - 1] : me; return { x: q.x, y: q.y }; };
   /** 캐릭터 모습·이름표 (code = D.avatarCode 모양) */
   R.setAvatar = function (code, name) { me.key = D.avatarCode(code); me.look = D.avatarLook(me.key); me.name = name || ''; };
   /** (wx, wy) 쪽으로 걸어가기 → 실제로 설 자리 {x, y} */
   R.walkTo = function (wx, wy) { return routeTo(wx, wy); };
   R.walkToParcel = function (pid) { const p = D.PARCEL[pid]; if (!p) return null; const o = D.parcelOrigin(p); return routeTo(o.x + G.PW / 2, o.y + G.PH - 50); };
-  R.mePos = () => ({ x: me.x, y: me.y, moving: me.moving, steps: me.path.length, view: me.view, top: me.look ? headTop(me) : 88 });
+  R.mePos = () => ({ x: me.x, y: me.y, moving: me.moving, steps: me.path.length, view: me.view, top: me.look ? headTop(me) : 88, say: me.say && me.say.until > time ? (me.say.label || me.say.icon) : '' });
   R.meHome = function () { me.x = ME_HOME.x; me.y = ME_HOME.y; me.path = []; me.view = 'front'; me.moving = false; trail.length = 0; };
   /** 걷기를 바로 끝낸다(테스트·순간 이동) */
   R.meFinish = function () { if (me.path.length) { const q = me.path[me.path.length - 1]; me.x = q.x; me.y = q.y; me.path = []; me.moving = false; me.view = 'front'; } };
@@ -19081,6 +19253,7 @@ SR.CONFIG = {
   R.enterVisit = function (v) {
     R.visit = v;
     decoRev++;
+    peers.clear(); me.say = null;                              // v2.3 다른 목장으로 왔으니 같이 있던 이웃은 지운다(이 목장의 이웃은 07f_live 가 다시 넣는다)
     npcs.length = 0; trucks.length = 0;
     rebuildWorld();
     // 내 캐릭터는 농가 옆길에서 들어와 앞마당으로 걸어간다(2초쯤). 목장주는 농가 앞에 서 있다
@@ -19094,6 +19267,7 @@ SR.CONFIG = {
   R.leaveVisit = function () {
     R.visit = null;
     decoRev++;
+    peers.clear(); me.say = null;
     for (const k of Array.from(vis.keys())) if (String(k).indexOf('v:') === 0) vis.delete(k);
     rebuildWorld();
     R.meHome();
@@ -21964,6 +22138,9 @@ SR.CONFIG = {
       if (UI.characterCard) body.appendChild(UI.characterCard());
       const nbs = UI.neighborSwitch ? UI.neighborSwitch() : null;
       if (nbs) body.appendChild(nbs);
+      // v2.3 알림 받기(서버에서 알림이 켜져 있을 때만 보인다)
+      const pc = UI.pushCard ? UI.pushCard() : null;
+      if (pc) body.appendChild(pc);
       const N = SR.Net;
       body.appendChild(el('div', { class: 'card' }, [ico('link', 32), el('div', { class: 'grow' }, [
         el('h3', { text: '계정·서버' }),
@@ -22007,7 +22184,7 @@ SR.CONFIG = {
       return card;
     }
     const how = {
-      ios: 'Safari 아래쪽(아이패드는 위쪽)의 공유 버튼(네모에 위 화살표)을 누르고 「홈 화면에 추가」를 눌러 주세요. 홈 화면 아이콘으로 열면 사파리에서 하던 목장이 그대로 열려요.',
+      ios: 'Safari 아래쪽(아이패드는 위쪽)의 공유 버튼(네모에 위 화살표)을 누르고 「홈 화면에 추가」를 눌러 주세요. 홈 화면 아이콘이 앱처럼 따로 열리는 기기에서는 진행 기록이 사파리와 따로 저장돼요 — 먼저 [네이버 로그인]으로 목장을 보관해 두면 그대로 이어서 할 수 있어요.',
       android: '크롬 오른쪽 위 ⋮ 메뉴에서 「홈 화면에 추가」 또는 「앱 설치」를 눌러 주세요.',
       desktop: '크롬·엣지 주소창 오른쪽 끝의 설치 아이콘을 누르거나, ⋮ 메뉴에서 「앱 설치」가 들어간 항목을 눌러 주세요. 이미 설치했다면 바탕화면이나 시작 메뉴의 신화목장 아이콘으로 열면 돼요.'
     }[pf] || '';
@@ -22092,6 +22269,10 @@ SR.CONFIG = {
     // v2.2 목장 꾸미기
     if (D.DECO_LIST) items.push(['deco', '목장 꾸미기', '왼쪽 [꾸미기]에서 나무·꽃·소품·분수·정자 같은 장식 ' + D.DECO_LIST.length + '가지를 사서 목장의 빈 땅과 둘레(숲 가장자리·남쪽 빈터)에 놓을 수 있어요. 놓을 곳을 누르거나 장식을 끌어 옮긴 뒤 [놓기]를 누르면 되고, 놓아 둔 장식은 [보관함 → 장식 옮기기]에서 다시 눌러 옮기거나 뒤집거나 보관함에 넣을 수 있어요(목장에는 ' + D.DECO_MAX + '개까지). [스킨]에서는 농가 지붕·울타리·길의 모습을 바꿔요. 꾸미는 데 쓴 코인은 목장 자산에 그대로 남아 등급이 내려가지 않고(되팔 수는 없어요), 꾸민 목장은 놀러 온 이웃에게도 그대로 보여요.']);
     if (SR.Soc && SR.Soc.supported()) items.push(['neighbor', '이웃 목장', '오른쪽 위 [이웃]에서 다른 목장에 놀러 가요. 아픈 가축을 치료하거나 들쥐·여우를 쫓아 주면 보상금을 받아요(하루 횟수 제한). 아래의 [' + SR.Soc.cfg().protectMin + '분 보호하기]를 누르면 그 목장은 목장주가 게임에 들어와 있을 때부터 ' + SR.Soc.cfg().protectMin + '분 동안 들쥐·여우·질병 피해가 없고, 그 목장에는 내 목장 이름과 목장주 이름이 보여요. 나를 지켜 준 이웃에게는 [이웃 → 받은 도움]에서 창고의 물건이나 가축을 선물할 수 있어요.']);
+    // v2.3 실시간 방문 · 알림 — 운영자가 켜 둔 것만 보여 준다(꺼져 있으면 게임에 그 단추·카드가 없다)
+    const liveInfo = (SR.Net.info && SR.Net.info.live) || {};
+    if (SR.Soc && SR.Soc.supported() && liveInfo.rt === true) items.push(['emo_smile', '함께 있는 이웃', '이웃 목장에 놀러 가면 그곳에 와 있는 다른 손님과 접속 중인 목장주의 캐릭터가 걸어 다니는 모습이 보여요. 함께 있는 사람이 있으면 오른쪽에 [인사] 단추가 생기고, 인사말이나 이모티콘을 고르면 내 캐릭터 머리 위에 말풍선으로 떠요(글을 직접 쓰는 채팅은 없어요). 이웃이 가축을 치료하거나 들쥐·여우를 쫓는 모습도 바로 보여요. 다른 사람의 캐릭터를 누르면 인사하거나 그 목장으로 놀러 갈 수 있어요. 이웃 기능을 켠 목장끼리만 서로 보여요.']);
+    if (SR.Push && SR.Push.serverOn()) items.push(['bell', '알림', '[설정 → 기본]의 「알림 받기」를 켜면 이웃이 놀러 오거나 도와줬을 때, 선물·코인이 도착했을 때 이 기기로 알려 드려요. 광고 알림은 보내지 않고 밤에는 쉬어요. 언제든 끌 수 있고, 기기마다 따로 켜요. 아이폰·아이패드는 홈 화면에 추가한 아이콘으로 열어야 켤 수 있고, 네이버·카카오톡 앱 안에서는 켤 수 없어요.']);
     items.push(['plus', '바탕화면에 설치', '[설정 → 기본]의 「바탕화면에 설치하기」로 PC·휴대폰 바탕화면(홈 화면)에 신화목장 아이콘을 만들 수 있어요. 아이콘을 누르면 앱처럼 바로 열리고, 진행 기록은 그대로예요.']);
     if (SR.Net.naverAvailable() || S.g.net.linked) items.push(['lock', '네이버 로그인', '첫 화면이나 [설정 → 기본]에서 네이버로 로그인하면 진행 기록이 서버에 보관돼요. 휴대폰을 바꿔도 같은 네이버 계정으로 로그인하면 이어서 할 수 있어요. 한 번에 한 기기에서만 이어서 할 수 있어요.']);
     items.forEach(([ic, t, d]) => body.appendChild(el('div', { class: 'card' }, [ico(ic, 40), el('div', { class: 'grow' }, [el('h3', { text: t }), el('p', { class: 'muted', text: d })])])));
@@ -22764,7 +22945,9 @@ SR.CONFIG = {
  * · v1.9 동기화에 social:1(이웃 소식 표시 요청) — 이웃 목장의 나머지 요청은 07c_social.js
  * · v1.6 운영자 코인 지급(gifts/giftAck)·서버가 지정한 테스터(account.tester)
  * · v1.7 서버의 네이버 로그인 안내를 이 기기에 기억(다음 접속 때 첫 화면에 로그인 버튼이 바로 보이게)
- * · v2.0 서버 v1.7 hello.game(펫 값·쿠마·가축을 잃는 시간·건설 시간 배율) → D.applyTune · N.idleMs(조작 없이 지난 시간) */
+ * · v2.0 서버 v1.7 hello.game(펫 값·쿠마·가축을 잃는 시간·건설 시간 배율) → D.applyTune · N.idleMs(조작 없이 지난 시간)
+ * · v2.3 서버 v1.8: 동기화에 live(내 목장에 이웃이 와 있나)·visiting(방문 중인 목장) — 값은 07f_live.js 가 정한다 · 화면을 떠날 때는 bye:1(「접속 중」에서 바로 빠짐)
+ *        hello.live = {push, rt, cfg, vapid, quiet} 는 N.info.live 로 그대로 두고 07f_live.js 가 읽는다 */
 (function () {
   'use strict';
   const U = SR.U, S = SR.S, C = SR.CONFIG, bus = SR.bus;
@@ -22909,7 +23092,13 @@ SR.CONFIG = {
     if (ack.length) body.ack = ack;
     const gack = SR.Sim.giftAckList();
     if (gack.length) body.giftAck = gack;
-    if (mode !== 'beacon') { body.gifts = 1; body.social = 1; }       // v1.9: 이웃이 보낸 소식이 있는지도 알려 달라고 함
+    if (mode !== 'beacon') {
+      body.gifts = 1; body.social = 1;                                // v1.9: 이웃이 보낸 소식이 있는지도 알려 달라고 함
+      // v2.3: 내 목장에 이웃이 와 있는지(live) / 내가 지금 어느 목장에 가 있는지(visiting) — 실시간 방문을 쓸 수 있을 때만
+      let ex = null;
+      try { ex = SR.Live ? SR.Live.syncExtra() : null; } catch (e) { ex = null; }
+      if (ex) Object.assign(body, ex);
+    } else body.bye = 1;                                              // v2.3: 화면을 떠남 → 이웃 목록의 「접속 중」에서 바로 빠진다
     if (mode === 'beacon') {
       try { if (navigator.sendBeacon) navigator.sendBeacon(C.SERVER_URL, JSON.stringify(body)); } catch (e) { /* 무시 */ }
       return Promise.resolve(null);
@@ -23219,6 +23408,8 @@ SR.CONFIG = {
  *  · 내 목장이 받은 도움·보호·선물은 서버가 '소식'으로 모아 두었다가 publish 응답(inbox)으로 준다. 번호마다 한 번만 반영하고(social.got),
  *    반영한 뒤의 목장 모습과 함께 '받았다'(ack)고 알린다. 동기화 응답의 social.news = 1 이면 바로 가져온다.
  *  · 서버에서 온 값(스냅샷·이름·소식)은 모두 믿지 않고 다시 다듬어서 쓴다. 화면에는 글자로만 넣는다.
+ *  · v2.3(서버 v1.8): 이웃 목록·방문 요청에 live:1 을 붙여 「접속 중」 여부를 받는다(list[].on · visit.live = {rt, on}).
+ *    도와주기가 끝나면 helpDone 을 알린다 → 실시간 방문(07f_live.js)이 같이 있는 이웃 화면에도 바로 보여 준다. 예전 서버는 이 값들을 모른 채 그대로 동작.
  */
 (function () {
   'use strict';
@@ -23283,6 +23474,7 @@ SR.CONFIG = {
         });
     });
   }
+  Soc._call = call;                                              // v2.3 알림·실시간 방문(07f_live.js)도 같은 길로 요청한다
 
   /* =========================================================
    * 내 캐릭터
@@ -23458,14 +23650,14 @@ SR.CONFIG = {
   Soc.loadList = function (q, force) {
     q = typeof q === 'string' ? q.trim().slice(0, 20) : '';
     if (!force && Soc.list && Soc.listQ === q && Date.now() - Soc.listAt < 20000) return Promise.resolve({ ok: true, list: Soc.list });
-    const body = { action: 'neighbors' };
+    const body = { action: 'neighbors', live: 1 };                // live:1 = 지금 접속 중인지도 알려 달라(서버 v1.8 — 예전 서버는 모르는 값이라 그냥 넘어간다)
     if (q) body.q = q;
     return call(body).then(r => {
       if (r && r.ok) {
         Soc.list = (Array.isArray(r.list) ? r.list : []).filter(x => obj(x) && typeof x.code === 'string' && CODE_RE.test(x.code)).slice(0, 30).map(x => ({
           code: x.code, ranch: S.cleanText(x.ranch, 12) || '이웃 목장', owner: S.cleanText(x.owner, 12) || '목장지기', avatar: D.avatarCode(x.avatar),
           level: Math.floor(num(x.level, 1, 1, 999)), seenMin: Math.floor(num(x.seenMin, 0, 0, 1e7)), sick: Math.floor(num(x.sick, 0, 0, 999)),
-          prot: Math.floor(num(x.prot, 0, 0, 2)), protUntil: num(x.protUntil, 0, 0, 1e15), full: x.full === true
+          prot: Math.floor(num(x.prot, 0, 0, 2)), protUntil: num(x.protUntil, 0, 0, 1e15), full: x.full === true, on: x.on === true
         }));
         Soc.listAt = Date.now(); Soc.listQ = q;
         return { ok: true, list: Soc.list };
@@ -23481,10 +23673,10 @@ SR.CONFIG = {
     if (Soc.busy || Soc.visit) return Promise.resolve(null);
     if (typeof code !== 'string' || !CODE_RE.test(code)) return Promise.resolve({ ok: false, error: 'BAD_REQUEST', message: '그 목장을 찾을 수 없어요' });
     Soc.busy = true;
-    return call({ action: 'visit', code: code }).then(r => {
+    return call({ action: 'visit', code: code, live: 1 }).then(r => {
       Soc.busy = false;
       if (!r || !r.ok) return r;
-      const now = Date.now(), rc = obj(r.ranch) ? r.ranch : {};
+      const now = Date.now(), rc = obj(r.ranch) ? r.ranch : {}, lv = obj(r.live) ? r.live : {};
       const g = Soc.buildState(typeof r.snap === 'string' ? r.snap : '', r.healed, now);
       const ownerName = S.cleanText(rc.owner, 12) || '목장지기', avatar = D.avatarCode(rc.avatar);
       const v = {
@@ -23492,7 +23684,9 @@ SR.CONFIG = {
         g: g, threats: (Array.isArray(r.pests) ? r.pests : []).map(x => pestObj(x, g)).filter(Boolean).slice(0, 4),
         owner: { look: D.avatarLook(avatar), key: avatar, tag: '목장주 ' + ownerName },
         prot: protView(r.prot), today: todayView(r.today), rewards: rewardView(r.rewards),
-        protectMin: Math.floor(num(r.protectMin, 20, 1, 240)), full: r.full === true, at: now
+        protectMin: Math.floor(num(r.protectMin, 20, 1, 240)), full: r.full === true, at: now,
+        // v2.3: rt = 이 목장에서 실시간 방문을 쓸 수 있음 · liveOn = 목장주가 지금 게임에 접속 중
+        rt: lv.rt === true, liveOn: lv.on === true
       };
       // 받은 소식이 가득 찬 목장(목장주가 오래 자리를 비움): 구경만 할 수 있다 — 도움을 전할 수 없으니 들쥐·여우도 보이지 않게
       if (v.full) v.threats = [];
@@ -23571,6 +23765,7 @@ SR.CONFIG = {
           R.burst(wx, wy - 20, 'spark', 14, { up: true, g: -20, color: '#C8F7B0' });
           R.burst(wx, wy - 20, 'heart', 4, { up: true, g: -30 });
           sfx('heal');
+          bus.emit('helpDone', { k: 'heal', id: a.oid, x: wx, y: wy });
         }
         takeReward(r, wx, wy, here);
       } else if (!here) return r;
@@ -23595,6 +23790,7 @@ SR.CONFIG = {
           R.floatText(wx, wy - 26, t.kind === 'fox' ? '저리 가!' : '쉿!', '#FFFFFF');
           R.shake = 4; R.vibrate(20);
           sfx('fox_run');
+          bus.emit('helpDone', { k: t.kind === 'fox' ? 'fox' : 'rat', id: t.pid, x: wx, y: wy });
         }
         takeReward(r, wx, wy, here);
       } else if (!here) return r;
@@ -23617,6 +23813,7 @@ SR.CONFIG = {
         v.threats.forEach(t => { if (t.st === 'act') { t.st = 'flee'; t.t = 0; } });
         S.g.social.helped++; S.save();
         sfx('sparkle');
+        if (here) bus.emit('helpDone', { k: 'prot', id: '' });
         if (here) bus.emit('protected', v);
         else toast(v.ranch + '에 보호를 걸어 줬어요', 'good', 'shield');
       } else if (here && r && r.error === 'ALREADY' && r.prot) { v.prot = protView(r.prot); bus.emit('visitChange', v); }
@@ -24143,13 +24340,15 @@ SR.CONFIG = {
     const v = Soc.visit;
     if (!v) return;
     const todo = Soc.visitTodo();
-    const key = [v.code, v.today.helps, v.today.protects, todo, v.prot ? (v.prot.mine ? 'm' : 'o') + (v.prot.pending ? 'p' : 'a') : '-', Soc.busy ? 'b' : '', S.g.coins].join('|');
+    // v2.3 목장주가 지금 실시간으로 함께 있으면 2, 방문했을 때 접속 중이었으면 1(들어온 지 3분까지만 — 그 뒤에는 나갔을 수 있다)
+    const ownerOn = SR.Live && SR.Live.state === 'on' && SR.Live.peers[v.code] ? 2 : v.liveOn && Date.now() - v.at < 180000 ? 1 : 0;
+    const key = [v.code, v.today.helps, v.today.protects, todo, v.prot ? (v.prot.mine ? 'm' : 'o') + (v.prot.pending ? 'p' : 'a') : '-', Soc.busy ? 'b' : '', S.g.coins, ownerOn].join('|');
     const pb = $('#btnProtect');
     if (key !== shownVisit) {
       shownVisit = key;
       $('#visitFace').src = R.portraitURL({ kind: 'person', look: D.avatarLook(v.avatar) }, 'happy', 44);
       $('#visitName').textContent = v.ranch;
-      $('#visitSub').textContent = '목장주 ' + v.ownerName + ' · Lv.' + v.level;
+      $('#visitSub').textContent = '목장주 ' + v.ownerName + ' · Lv.' + v.level + (ownerOn === 2 ? ' · 함께 있어요' : ownerOn ? ' · 접속 중' : '');
       $('#visitToday').textContent = '오늘 보상 ' + Math.min(v.today.helps, v.today.helpLimit) + '/' + v.today.helpLimit;
       $('#visitCoinNum').textContent = U.fmtShort(S.g.coins);
       const left = Math.max(0, v.today.protectLimit - v.today.protects);
@@ -24361,12 +24560,13 @@ SR.CONFIG = {
     else if (nbShown && !nbShown.length) box.appendChild(el('div', { class: 'empty', text: nbQuery ? '찾는 목장이 없어요. 이름이나 이웃 코드를 다시 확인해 주세요.' : '아직 이웃 목장이 없어요. 친구에게 내 이웃 코드를 알려 주세요!' }));
     (nbShown || []).forEach(x => {
       const tags = el('div', { class: 'row' }, [
+        x.on ? el('span', { class: 'chip ok live-dot', text: '접속 중' }) : null,          // v2.3 지금 게임에 들어와 있는 이웃(서버 v1.8)
         x.sick ? chip('아픈 가축 ' + x.sick, 'no', 'medicine') : null,
         x.prot === 2 ? chip('보호 중', 'blue', 'shield') : x.prot === 1 ? chip('보호 대기', 'blue', 'shield') : null
       ]);
       box.appendChild(el('div', { class: 'card nb-item', dataset: { code: x.code } }, [face(x.avatar, 48), el('div', { class: 'grow' }, [
         el('h3', { text: x.ranch }),
-        el('p', { class: 'muted', text: '목장주 ' + x.owner + ' · Lv.' + x.level + ' · ' + seenText(x.seenMin) }),
+        el('p', { class: 'muted', text: '목장주 ' + x.owner + ' · Lv.' + x.level + (x.on ? '' : ' · ' + seenText(x.seenMin)) }),
         tags.children.length ? tags : null
       ]), btn('방문', 'btn-orange btn-sm', () => visit(x.code, x.ranch))]));
     });
@@ -24976,6 +25176,946 @@ SR.CONFIG = {
 })();
 
 
+/* ==== game/07f_live.js ==== */
+/* v2.3 알림 · 실시간 방문 — 서버 v1.8 + 구글 Firebase(클라우드 메시징 · Realtime Database)
+ *
+ *  서버가 hello.live 로 "쓸 수 있다"고 알려 줄 때만 동작한다. 그 전에는(서버가 예전 버전이거나 운영자가 Firebase 설정을 넣지 않았으면)
+ *  이 파일은 아무 요청도 보내지 않고, 구글의 파일도 받지 않는다 → 게임은 v2.2 와 똑같이 움직인다.
+ *
+ *  SR.Fb   — Firebase 프로그램(구글 서버에 있는 공식 파일)을 필요할 때만 받아 온다.
+ *  SR.Push — 알림: 손님이 [설정]에서 「알림 받기」를 켜면 이 기기의 알림 주소(토큰)를 서버에 맡긴다. 끄면 바로 지운다.
+ *            알림을 띄우는 것은 sw.js. 게임을 보고 있는 동안에 온 알림은 sw.js 가 이 화면으로 넘겨준다(게임 안에서 알려 줌).
+ *            이 기기의 알림 상태는 진행 기록과 따로 둔다(진행 기록은 다른 기기로 옮겨 갈 수 있지만 알림은 기기마다 켜는 것이라서).
+ *  SR.Live — 실시간 방문: 같은 목장에 와 있는 손님(과 접속 중인 목장주)이 서로의 캐릭터를 본다.
+ *            방 = 목장 하나(rooms/이웃 코드/p/내 이웃 코드). 내 자리에는 「어디로 걸어가는지 · 고른 인사 번호 · 방금 도와준 일」만 쓴다.
+ *            자유롭게 쓴 글은 주고받지 않는다(정해진 인사말·이모티콘의 번호만). 이름·캐릭터는 서버가 입장권에 적어 준 것만 쓸 수 있다(데이터베이스 규칙).
+ *            연결은 필요할 때만: 이웃 목장에 가 있는 동안, 그리고 내 목장에 이웃이 와 있는 동안.
+ *            방에서 받은 값은 모두 믿지 않고 다시 다듬어 쓴다. 누가 도와줬다는 신호는 화면 효과에만 쓰고, 보상·치료 같은 실제 변화는 언제나 서버가 정한다.
+ */
+(function () {
+  'use strict';
+  const U = SR.U, D = SR.D, S = SR.S, R = SR.R, N = SR.Net, Soc = SR.Soc, bus = SR.bus;
+  const CODE_RE = /^R[2-9A-HJ-NP-Z]{7}$/;
+  const obj = v => v && typeof v === 'object' && !Array.isArray(v);
+  const num = (v, d) => (typeof v === 'number' && isFinite(v) ? v : d);
+  const delay = ms => new Promise(res => setTimeout(res, ms));
+  const fail = (code, msg) => Object.assign(new Error(msg || code), { code: code });
+  const errCode = e => String((e && (e.code || e.message)) || e || '').slice(0, 80);
+  const toast = (msg, kind, icon) => bus.emit('toast', { msg: msg, kind: kind, icon: icon });
+
+  /* =========================================================
+   * SR.Fb — Firebase 프로그램 받아 오기
+   *  구글이 올려 둔 공식 파일(버전 고정)을 모듈로 받는다. 한 번 받으면 이 화면이 열려 있는 동안 다시 받지 않는다.
+   *  받지 못하면(인터넷 끊김 등) 이 화면에서는 다시 시도해도 소용이 없어서(브라우저가 실패를 기억한다) 새로 고칠 때까지 쉰다.
+   * ========================================================= */
+  const FB_VER = '12.19.0';
+  const Fb = SR.Fb = { ver: FB_VER, dead: false, base: 'https://www.gstatic.com/firebasejs/' + FB_VER + '/firebase-' };
+  const mods = {}, waits = {};
+  let fbApp = null;
+  /** name = 'app' | 'auth' | 'database' | 'messaging' → 그 모듈 */
+  Fb.load = function (name) {
+    if (mods[name]) return Promise.resolve(mods[name]);
+    if (Fb.dead || !/^[a-z]+$/.test(name)) return Promise.reject(fail('FB_LOAD'));
+    let w = waits[name];
+    if (!w) {
+      w = waits[name] = { subs: [] };
+      const cb = '__srfb_' + name;
+      window[cb] = function (m) { mods[name] = m; w.subs.splice(0).forEach(f => f[0](m)); };
+      const s = document.createElement('script');
+      s.type = 'module';
+      s.textContent = 'import * as m from "' + Fb.base + name + '.js";window["' + cb + '"](m);';
+      s.onerror = function () { Fb.dead = true; w.subs.splice(0).forEach(f => f[1](fail('FB_LOAD'))); };
+      (document.head || document.documentElement).appendChild(s);
+    }
+    return new Promise((res, rej) => {
+      const pair = [res, rej];
+      w.subs.push(pair);
+      setTimeout(() => { const i = w.subs.indexOf(pair); if (i >= 0) { w.subs.splice(i, 1); rej(fail('FB_TIMEOUT')); } }, 20000);
+    });
+  };
+  /** 서버가 알려 준 Firebase 웹 앱 설정(공개 값) — 아는 칸의 글자만 */
+  Fb.cfg = function () {
+    const c = N.info && obj(N.info.live) && obj(N.info.live.cfg) ? N.info.live.cfg : null;
+    if (!c) return null;
+    const out = {};
+    ['apiKey', 'authDomain', 'databaseURL', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'].forEach(k => { if (typeof c[k] === 'string' && c[k] && c[k].length <= 200) out[k] = c[k]; });
+    return out.apiKey && out.projectId && out.appId ? out : null;
+  };
+  Fb.app = function () {
+    if (fbApp) return Promise.resolve(fbApp);
+    const cfg = Fb.cfg();
+    if (!cfg) return Promise.reject(fail('FB_CFG'));
+    return Fb.load('app').then(m => { if (!fbApp) fbApp = m.initializeApp(cfg); return fbApp; });
+  };
+
+  /* =========================================================
+   * SR.Push — 알림
+   * ========================================================= */
+  const PKEY = 'shinhwa_ranch_push';               // 이 기기의 알림 상태 {on, tok, pid, at, off}  (off = 서버에 '끄기'를 아직 알리지 못한 토큰)
+  const P = SR.Push = { busy: false };
+  let pRefreshing = false;
+  const pBlank = () => ({ on: false, tok: '', pid: '', at: 0, off: '' });
+  function pLoad() {
+    try {
+      const o = JSON.parse(U.store.get(PKEY) || 'null');
+      if (!obj(o)) return pBlank();
+      const str = (v, n) => (typeof v === 'string' && v.length <= n ? v : '');
+      return { on: o.on === true, tok: str(o.tok, 4096), pid: str(o.pid, 40), at: Math.max(0, num(o.at, 0)), off: str(o.off, 4096) };
+    } catch (e) { return pBlank(); }
+  }
+  function pSave(st) { U.store.set(PKEY, JSON.stringify(st)); }
+  const live = () => (N.info && obj(N.info.live) ? N.info.live : {});
+  /** 서버에서 알림이 켜져 있는가(운영자가 Firebase 설정을 넣었고 PUSH_OPEN=Y) */
+  P.serverOn = () => N.enabled() && live().push === true && typeof live().vapid === 'string' && !!live().vapid && !!(Fb.cfg() && Fb.cfg().messagingSenderId);
+  P.permission = function () { try { return typeof Notification !== 'undefined' && Notification.permission ? Notification.permission : 'default'; } catch (e) { return 'default'; } };
+  /** 기기 종류(서버 [알림] 시트의 '기기' 칸에 쓰인다 — 정해진 값만) */
+  function plat() {
+    const ua = navigator.userAgent || '';
+    const kind = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && (navigator.maxTouchPoints || 0) > 1) ? 'ios' : /Android/.test(ua) ? 'android' : 'desktop';
+    return kind + (SR.App && SR.App.standalone() ? '-app' : '');
+  }
+  /**
+   * 아이폰·아이패드에서 홈 화면 아이콘이 앱처럼 열려 알림을 받을 수 있는 것은 iOS 26 부터다.
+   * (그 전 버전은 manifest 의 display 가 standalone 이어야 하는데, 이 게임은 홈 화면 아이콘이 사파리로 열려 하던 목장이 그대로 보이게 minimal-ui 로 두었다 — 07b_app.js)
+   * 사파리는 자기 버전을 Version/26 처럼 알려 준다(26 부터 OS 버전 칸은 18_6 에 멈춰 있다). 확실히 예전 버전일 때만 참
+   */
+  function iosTooOld() {
+    const ua = navigator.userAgent || '';
+    const v = /Version\/(\d+)/.exec(ua);
+    if (v) return parseInt(v[1], 10) < 26;
+    const o = /OS (\d+)_/.exec(ua);
+    return !!o && parseInt(o[1], 10) < 18;
+  }
+  /**
+   * 이 브라우저에서 알림을 켤 수 있는가 → {ok} 또는 {ok:false, why}
+   *  why: 'off'(서버에서 꺼짐) · 'inapp'(네이버·카카오톡 앱 안 브라우저) · 'ios'(아이폰 — 홈 화면에 추가한 아이콘으로 열어야 함)
+   *       · 'iosold'(아이폰 — iOS 26 보다 예전이라 먼저 업데이트해야 함) · 'nosw'(파일로 열었거나 미리보기 화면) · 'old'(알림을 지원하지 않는 브라우저)
+   */
+  P.support = function () {
+    if (!P.serverOn()) return { ok: false, why: 'off' };
+    const pf = SR.App ? SR.App.platform() : 'desktop';
+    let has = false, site = false;
+    try {
+      has = 'serviceWorker' in navigator && 'PushManager' in window && typeof Notification !== 'undefined' && typeof Notification.requestPermission === 'function';
+      site = window.isSecureContext === true && /^https?:$/.test(location.protocol) && !!document.querySelector('link[rel="manifest"]');
+    } catch (e) { has = false; }
+    if (has && site) return { ok: true };
+    if (pf === 'inapp') return { ok: false, why: 'inapp' };
+    if (pf === 'ios') return { ok: false, why: iosTooOld() ? 'iosold' : 'ios' };
+    return { ok: false, why: site ? 'old' : 'nosw' };
+  };
+  /** 지금 이 기기로 알림이 오는 상태인가 */
+  P.isOn = function () { const st = pLoad(); return st.on && !!st.tok && P.permission() === 'granted'; };
+  /** 켜 두었는데 브라우저에서 권한이 사라졌는가(사이트 설정에서 막음) */
+  P.blocked = () => P.permission() === 'denied';
+  P.state = function () {
+    const st = pLoad(), sup = P.support();
+    return { on: P.isOn(), wanted: st.on, perm: P.permission(), ok: sup.ok, why: sup.why || '', busy: P.busy, quiet: P.quiet() };
+  };
+  /** 알림을 쉬는 시간 [시작 시, 끝 시] (서버 설정 — 없거나 같은 값이면 null) */
+  P.quiet = function () {
+    const q = live().quiet;
+    if (!Array.isArray(q) || q.length !== 2) return null;
+    const a = Math.floor(num(q[0], -1)), b = Math.floor(num(q[1], -1));
+    return a >= 0 && a < 24 && b >= 0 && b < 24 && a !== b ? [a, b] : null;
+  };
+  /** 서비스 워커(sw.js) — 등록돼 있지 않으면 지금 등록하고, 켜질 때까지 기다린다 */
+  function swReg() {
+    const sw = navigator.serviceWorker;
+    return sw.getRegistration().then(r => r || sw.register('sw.js')).then(r => {
+      try { const u = r.update(); if (u && u.catch) u.catch(() => {}); } catch (e) { /* 새 버전 확인은 다음에 */ }
+      if (r.active) return r;
+      return Promise.race([sw.ready, delay(12000).then(() => r)]);
+    });
+  }
+  /**
+   * 게임 주소에 올라가 있는 sw.js 가 알림을 띄울 줄 아는 파일(v2.3 부터)인가.
+   * 운영자가 index.html 만 올리고 sw.js 를 빠뜨리면 알림이 이 기기까지 와도 화면에 뜨지 않는다 → 켜기 전에 알려 준다.
+   * 확인하지 못했으면(인터넷이 잠깐 끊김 등) 막지 않는다 — 그때는 알림 주소를 받는 다음 단계가 알아서 실패한다
+   */
+  function swHasPush() {
+    let got;
+    try { got = fetch('sw.js', { cache: 'no-store', credentials: 'same-origin' }); } catch (e) { return Promise.resolve(true); }
+    return Promise.race([
+      got.then(r => (r && r.ok ? r.text() : null)).then(t => (typeof t === 'string' && t ? /addEventListener\(\s*['"]push['"]/.test(t) : true), () => true),
+      delay(8000).then(() => true)
+    ]);
+  }
+  /** 이 기기의 알림 주소(토큰) — 구글이 내준다 */
+  P.token = function () {
+    return Promise.all([Fb.app(), Fb.load('messaging'), swReg()]).then(a => {
+      const app = a[0], m = a[1], reg = a[2];
+      const sup = typeof m.isSupported === 'function' ? m.isSupported() : Promise.resolve(true);
+      return Promise.resolve(sup).then(ok => {
+        if (!ok) throw fail('UNSUPPORTED');
+        return m.getToken(m.getMessaging(app), { vapidKey: live().vapid, serviceWorkerRegistration: reg });
+      });
+    }).then(tok => {
+      if (typeof tok !== 'string' || !/^[A-Za-z0-9_:-]{32,2048}$/.test(tok)) throw fail('TOKEN');
+      return tok;
+    });
+  };
+  function askPermission() {
+    return new Promise(res => {
+      let r;
+      const done = v => res(v || P.permission());
+      try { r = Notification.requestPermission(done); } catch (e) { done(); return; }   // 옛 브라우저는 콜백으로, 요즘 브라우저는 약속(Promise)으로 알려 준다
+      if (r && typeof r.then === 'function') r.then(done, () => done());
+    });
+  }
+  /**
+   * 알림 켜기 — 꼭 손님이 누른 그 자리에서 불러야 한다(브라우저가 권한 창을 띄운다).
+   * → {ok:true} 또는 {ok:false, error:'UNSUPPORTED'|'DENIED'|'DISMISSED'|'NET'|'OLD_SW'|'TOKEN'|서버 오류코드, message, detail}
+   */
+  P.enable = function () {
+    const sup = P.support();
+    if (!sup.ok) return Promise.resolve({ ok: false, error: 'UNSUPPORTED', why: sup.why });
+    if (P.busy) return Promise.resolve(null);
+    P.busy = true;
+    bus.emit('push');
+    const end = r => { P.busy = false; bus.emit('push'); return r; };
+    return askPermission().then(perm => {
+      if (perm !== 'granted') return { ok: false, error: perm === 'denied' ? 'DENIED' : 'DISMISSED' };
+      return N.ensureRegistered().then(ok => {
+        if (!ok || !N.ready()) return { ok: false, error: 'NET', message: '서버에 연결하지 못했어요. 잠시 후 다시 시도해 주세요' };
+        return swHasPush().then(fresh => {
+          if (!fresh) return { ok: false, error: 'OLD_SW' };
+          return P.token().then(tok => Soc._call({ action: 'pushOn', pushToken: tok, plat: plat() }, true).then(r => {
+            if (r && r.ok) {
+              const old = pLoad();
+              pSave({ on: true, tok: tok, pid: S.g.net.playerId, at: Date.now(), off: old.off && old.off !== tok ? old.off : '' });
+            }
+            return r;
+          }), e => ({ ok: false, error: 'TOKEN', detail: errCode(e) }));
+        });
+      });
+    }).then(end, e => end({ ok: false, error: 'TOKEN', detail: errCode(e) }));
+  };
+  /** 알림 끄기 — 이 기기에서는 바로 꺼지고, 서버·구글에도 지워 달라고 한다(서버에 닿지 못했으면 다음에 다시 알린다) */
+  P.disable = function () {
+    const st = pLoad(), tok = st.tok || st.off;
+    pSave({ on: false, tok: '', pid: '', at: 0, off: tok || '' });
+    bus.emit('push');
+    const srv = tok ? pushOffNow(tok) : Promise.resolve(true);
+    // 구글에도 이 기기의 알림 주소를 지워 달라고 한다(이미 받아 둔 프로그램이 있을 때만 — 끄려고 일부러 받아 오지는 않는다)
+    if (mods.messaging && fbApp) { try { mods.messaging.deleteToken(mods.messaging.getMessaging(fbApp)).catch(() => {}); } catch (e) { /* 무시 */ } }
+    return srv;
+  };
+  function pushOffNow(tok) {
+    if (!N.ready() || S.g.net.moved) return Promise.resolve(false);
+    return Soc._call({ action: 'pushOff', pushToken: tok }).then(r => {
+      // 서버가 받았거나(ok), 이 계정으로는 더 알릴 수 없으면(계정이 바뀜·차단) 그만 알린다
+      const done = !!(r && (r.ok || r.error === 'AUTH' || r.error === 'BLOCKED' || r.error === 'BAD_REQUEST'));
+      if (done) { const s2 = pLoad(); if (s2.off === tok) { s2.off = ''; pSave(s2); } }
+      return done;
+    }, () => false);
+  }
+  /** 테스트 알림 한 번 */
+  P.test = function () {
+    if (!P.isOn()) return Promise.resolve({ ok: false, error: 'NO_TOKEN', message: '먼저 알림을 켜 주세요' });
+    return Soc._call({ action: 'pushTest' });
+  };
+  /** 게임을 열 때·계정이 바뀌었을 때: 켜 둔 기기의 알림 주소를 서버에 다시 확인해 둔다(3일에 한 번, 계정이 바뀌면 바로) */
+  P.refresh = function () {
+    const st = pLoad();
+    if (!N.ready() || S.g.net.moved) return;
+    if (st.off) pushOffNow(st.off);
+    if (!st.on || pRefreshing || P.busy) return;
+    if (!P.support().ok || P.permission() !== 'granted') return;
+    const pid = S.g.net.playerId;
+    if (st.tok && st.pid === pid && Date.now() - st.at < 3 * 86400000 && Date.now() >= st.at) return;
+    pRefreshing = true;
+    P.token().then(tok => Soc._call({ action: 'pushOn', pushToken: tok, plat: plat() }).then(r => {
+      if (!r || !r.ok) return;
+      const cur = pLoad();
+      if (!cur.on) return;                                            // 그사이 손님이 껐다
+      const oldTok = cur.tok && cur.tok !== tok ? cur.tok : '';
+      pSave({ on: true, tok: tok, pid: pid, at: Date.now(), off: cur.off });
+      if (oldTok) Soc._call({ action: 'pushOff', pushToken: oldTok }).catch(() => {});   // 구글이 주소를 바꿔 줬으면 예전 주소는 지운다
+    })).catch(() => {}).then(() => { pRefreshing = false; bus.emit('push'); });
+  };
+
+  /* ---------- sw.js 가 넘겨준 알림(게임을 보고 있는 동안 온 것 · 알림을 눌러 들어온 것) ---------- */
+  const KINDS = ['visit', 'help', 'prot', 'gift', 'credit', 'reject', 'coin', 'test', 'news'];
+  let pushWait = [];
+  function cleanPush(d) {
+    d = obj(d) ? d : {};
+    return { k: KINDS.indexOf(d.k) >= 0 ? d.k : 'news', t: S.cleanText(d.t, 60), b: S.cleanText(d.b, 180) };
+  }
+  function onPush(d, clicked, shown) {
+    if (!SR.UI || !SR.UI.started || !S.g) { if (pushWait.length < 5) pushWait.push([d, clicked, shown]); return; }   // 아직 제목 화면 → 시작한 뒤에
+    const so = S.g.social, k = d.k;
+    bus.emit('pushMsg', { k: k, t: d.t, b: d.b, clicked: clicked, shown: shown });
+    if (k === 'visit') {
+      // 실시간 방문을 쓸 수 있으면 바로 방으로 들어가 손님을 맞는다(누가 왔는지는 방에서 알려 준다). 아니면 한 줄로
+      if (L.available() && !Soc.visit) L.ownerHint(true);
+      else if (!shown && d.b) toast(d.b, 'good', 'neighbor');
+    } else if (k === 'help' || k === 'prot' || k === 'gift') {
+      // 받은 도움·보호·선물을 지금 가져온다(평소에는 다음 동기화 때) — 안내는 소식을 반영하면서 뜬다
+      try { if (so.on) Soc.publish({ force: true }); else if (so.code) Soc.publish({ off: true, force: true }); } catch (e) { /* 다음 동기화 때 */ }
+    } else if (k === 'credit' || k === 'coin' || k === 'reject') {
+      try { N.sync(); } catch (e) { /* 다음 동기화 때 */ }
+      if (k === 'reject' && !shown && d.b) toast(d.b, '', 'info');
+    } else if (k === 'test') {
+      if (!shown) toast('알림이 잘 와요!', 'good', 'bell');
+    }
+  }
+  P.flushWaiting = function () { pushWait.splice(0).forEach(a => { try { onPush(a[0], a[1], a[2]); } catch (e) { console.error('push', e); } }); };
+  try {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', e => {
+        const m = e && e.data;
+        if (!obj(m)) return;
+        try {
+          if (obj(m.srPush)) onPush(cleanPush(m.srPush), false, m.shown === true);
+          else if (obj(m.srPushClick)) onPush(cleanPush(m.srPushClick), true, true);
+        } catch (err) { console.error('push', err); }
+      });
+    }
+  } catch (e) { /* 서비스 워커를 쓸 수 없는 화면 */ }
+
+  /* =========================================================
+   * SR.Live — 실시간 방문
+   * ========================================================= */
+  const L = SR.Live = { state: 'off', room: '', role: '', peers: {}, err: '', fails: 0 };
+  /* 정해진 인사말(1~12)과 이모티콘(21~28). 방에는 이 번호만 오간다 */
+  L.SAYS = {
+    1: { t: '안녕하세요!', i: 'hand' }, 2: { t: '반가워요!', i: 'heart' }, 3: { t: '놀러 왔어요', i: 'neighbor' }, 4: { t: '어서 오세요!', i: 'house' },
+    5: { t: '목장이 멋져요!', i: 'star' }, 6: { t: '도와드릴게요', i: 'medicine' }, 7: { t: '고마워요!', i: 'heart' }, 8: { t: '최고예요!', i: 'trophy' },
+    9: { t: '선물 보낼게요', i: 'gift' }, 10: { t: '또 올게요!', i: 'hand' }, 11: { t: '안녕히 가세요', i: 'house' }, 12: { t: 'ㅎㅎㅎ', i: 'emo_laugh' },
+    21: { t: '', i: 'emo_smile', n: '웃음' }, 22: { t: '', i: 'emo_laugh', n: '깔깔' }, 23: { t: '', i: 'emo_love', n: '반했어요' }, 24: { t: '', i: 'emo_wow', n: '우와' },
+    25: { t: '', i: 'emo_cry', n: '훌쩍' }, 26: { t: '', i: 'heart', n: '하트' }, 27: { t: '', i: 'star', n: '별' }, 28: { t: '', i: 'sparkle', n: '반짝' }
+  };
+  const HELP_SAY = { heal: ['medicine', '치료했어요'], rat: ['hand', '들쥐를 쫓았어요'], fox: ['hand', '여우를 쫓았어요'], prot: ['shield', '지켜 줄게요'] };
+  const MAX_PEERS = 8;                 // 한 화면에 보여 주는 이웃 수
+  /* 시간 값(ms) — 한곳에 모아 둔다(테스트에서 줄여 쓸 수 있게) */
+  L.T = {
+    stale: 6 * 60000,                  // 이만큼 소식이 없는 자리는 연결이 끊긴 것으로 본다
+    beat: 120000,                      // 내 자리가 살아 있다고 알리는 간격
+    moveGap: 350,                      // 걸어갈 곳을 알리는 가장 짧은 간격
+    sayGap: 1200,                      // 인사를 보내는 가장 짧은 간격
+    ownerIdle: 90000,                  // 목장주: 아무도 없으면 이만큼 뒤에 방에서 나간다
+    ownerRest: 150000,                 // 목장주: 들어갔는데 아무도 없었으면 이만큼 쉰다(서버의 「이웃이 와 있음」 표시가 사라지는 시간)
+    hide: 20000,                       // 화면을 떠난 채 이만큼 지나면 방에서 나간다
+    gone: 3000,                        // 자리가 지워진 이웃을 이만큼 더 둔다(연결이 잠깐 끊겼다 바로 돌아오면 그대로)
+    join: 20000,                       // 방에 들어가는 데 이만큼 넘게 걸리면 그만둔다
+    tick: 5000,                        // 들어가고 나갈 때를 살피는 간격
+    backoff: 30000,                    // 방에 들어가지 못했을 때 쉬는 시간(실패가 이어지면 두 배씩, 최대 16배)
+    backoffLong: 600000                // 서버가 "지금은 안 된다"고 했을 때(꺼짐 · 공개 안 함) 쉬는 시간
+  };
+  let fbAuth = null, fbDb = null, auth = null, db = null;
+  let uid = '', card = null, cardKey = '', sessBusy = null;
+  let roomRef = null, meRef = null, unsubs = [];
+  let seq = 0, joinTimer = 0, beatTimer = 0, offTimer = 0, hideTimer = 0, moveTimer = 0, movePend = null, moveAt = 0, sayAt = 0;
+  let failUntil = 0, joinedAt = 0, lastPeerAt = 0, sawPeer = false, ownerRestUntil = 0, initial = false, srvOff = 0, reSetAt = 0, pullTimer = 0, started = false;
+  let srvKnown = false;                // 서버 시계와의 차이를 받았는가(받기 전에는 '오래된 자리'를 가리지 않는다 — 기기 시계가 틀려도 멀쩡한 자리를 지우지 않게)
+  const goneTimers = {};               // 자리가 지워진 이웃을 잠깐 더 두는 타이머
+  let quiet = false;                   // 조용히 다시 들어가는 중(이름을 바꿔 새 입장권으로) — 「와 있어요」 안내를 다시 띄우지 않는다
+  const emit = () => bus.emit('live');
+  const srvNow = () => Date.now() + srvOff;
+
+  /** 실시간 방문을 쓸 수 있는가 — 서버가 켜 두었고, 내 목장을 이웃에게 공개 중이고, 이웃 코드를 받았고, 이 기기에서 이어 하는 중 */
+  L.available = function () {
+    const li = live(), so = S.g && S.g.social, cfg = Fb.cfg();
+    return !!(started && N.enabled() && li.rt === true && cfg && cfg.databaseURL && !Fb.dead && typeof WebSocket !== 'undefined' &&
+      Soc.open() && so && so.on && CODE_RE.test(so.code) && N.ready() && !S.g.net.moved);
+  };
+  L.count = () => Object.keys(L.peers).length;
+  /** (테스트·진단용) 지금 상태 */
+  L.info = () => ({ state: L.state, room: L.room, role: L.role, peers: Object.keys(L.peers), err: L.err, fails: L.fails, uid: uid, initial: initial,
+    failIn: Math.max(0, failUntil - Date.now()), restIn: Math.max(0, ownerRestUntil - Date.now()), srvOff: srvOff, dead: Fb.dead });
+  L.list = () => Object.keys(L.peers).map(k => L.peers[k]);
+  /** 동기화에 실어 보낼 값: 내 목장에 있을 때 = 이웃이 와 있는지 물어봄 · 방에 들어가 있는 방문 중 = 「이웃이 와 있음」 표시를 이어 붙임 */
+  L.syncExtra = function () {
+    if (!L.available()) return null;
+    const v = Soc.visit;
+    if (v) return L.state === 'on' && L.room === v.code ? { visiting: v.code } : null;
+    return { live: S.g.social.code };
+  };
+
+  /** Firebase 준비 + 입장권으로 로그인. 이름·캐릭터가 바뀌었으면 새 입장권을 받는다 */
+  const wantKey = () => JSON.stringify(Soc.card()) + '|' + S.g.social.code + '|' + S.g.net.playerId;
+  let cardUntil = 0;
+  function session() {
+    const want = wantKey();
+    if (auth && auth.currentUser && card && cardKey === want && Date.now() < cardUntil) return Promise.resolve(true);
+    if (sessBusy) return sessBusy;
+    sessBusy = Promise.all([Fb.app(), Fb.load('auth'), Fb.load('database')]).then(a => {
+      fbAuth = a[1]; fbDb = a[2];
+      if (!auth) auth = fbAuth.initializeAuth(a[0], { persistence: fbAuth.inMemoryPersistence });   // 로그인 정보는 이 화면에만(저장하지 않음)
+      if (!db) db = fbDb.getDatabase(a[0]);
+      return Soc._call({ action: 'liveToken' });
+    }).then(r => {
+      if (!r || !r.ok) throw fail((r && r.error) || 'NET');
+      const c = obj(r.card) ? r.card : {};
+      if (typeof r.token !== 'string' || typeof r.uid !== 'string' || !CODE_RE.test(r.uid) || typeof c.n !== 'string' || typeof c.r !== 'string' || typeof c.a !== 'string') throw fail('TOKEN');
+      return fbAuth.signInWithCustomToken(auth, r.token).then(() => {
+        uid = r.uid; card = { n: c.n, r: c.r, a: c.a }; cardKey = want;   // 규칙이 입장권의 이름과 똑같은지 보므로 받은 글자 그대로 둔다
+        // 서버가 아는 이름·모습이 이 기기와 다르면(방금 바꿔서 아직 서버에 올라가지 않았거나, 쓸 수 없는 말이라 서버가 바꿔 보여 주는 이름)
+        // 1분 뒤에 방에 들어갈 때는 입장권을 다시 받아 본다. 같으면 바뀔 때까지 그대로 쓴다
+        const mine = Soc.card();
+        cardUntil = c.n === mine.owner && c.r === mine.ranch && c.a === mine.avatar ? Infinity : Date.now() + 60000;
+      });
+    }).then(() => { sessBusy = null; return true; }, e => { sessBusy = null; throw e; });
+    return sessBusy;
+  }
+  const xy = v => Math.round(U.clamp(num(v, 0), -500, 6000));
+  function meNode() {
+    const q = R.meDest();
+    return { n: card.n, r: card.r, a: card.a, x: xy(q.x), y: xy(q.y), t: fbDb.serverTimestamp(), e: 0, et: 0, k: '', ki: '', kx: 0, ky: 0, kt: 0 };
+  }
+  function upd(vals) {
+    if (L.state !== 'on' || !meRef) return;
+    vals.t = fbDb.serverTimestamp();
+    fbDb.update(meRef, vals).catch(e => { if (/permission/i.test(errCode(e))) failed(e); });
+  }
+
+  /** 방에 들어가기. role = 'visitor'(이웃 목장에 가 있음) | 'owner'(내 목장에 이웃이 와 있음) */
+  L.join = function (code, role) {
+    if (!L.available() || !CODE_RE.test(code)) return false;
+    if (L.state !== 'off' && L.room === code) return true;
+    if (L.state !== 'off') leaveNow();
+    if (Date.now() < failUntil || document.hidden) return false;
+    const my = ++seq;
+    L.state = 'joining'; L.room = code; L.role = role === 'owner' ? 'owner' : 'visitor'; L.peers = {}; L.err = '';
+    initial = false; sawPeer = false; joinedAt = Date.now(); lastPeerAt = 0; quiet = false;
+    clearTimeout(offTimer); clearTimeout(joinTimer);
+    joinTimer = setTimeout(() => { if (my === seq && L.state === 'joining') failed(fail('TIMEOUT')); }, L.T.join);
+    emit();
+    session().then(() => {
+      if (my !== seq) return;
+      fbDb.goOnline(db);
+      roomRef = fbDb.ref(db, 'rooms/' + code + '/p');
+      meRef = fbDb.child(roomRef, uid);
+      const mine = meRef, bad = e => { if (my === seq) failed(e); };
+      // 연결될 때마다(처음 · 끊겼다 다시): 연결이 끊기면 내 자리를 지워 달라고 맡겨 두고, 내 자리를 쓴다
+      unsubs.push(fbDb.onValue(fbDb.ref(db, '.info/connected'), snap => {
+        if (my !== seq || snap.val() !== true) return;
+        fbDb.onDisconnect(mine).remove().catch(() => {});
+        fbDb.set(mine, meNode()).then(() => {
+          if (my !== seq || L.state === 'on') return;
+          L.state = 'on'; L.fails = 0; joinedAt = Date.now();
+          clearTimeout(joinTimer);
+          clearInterval(beatTimer);
+          beatTimer = setInterval(() => upd({}), L.T.beat);
+          emit();
+          bus.emit('liveJoin', { room: code, role: L.role });
+        }, bad);
+      }));
+      unsubs.push(fbDb.onValue(fbDb.ref(db, '.info/serverTimeOffset'), snap => { const o = snap.val(); if (typeof o === 'number' && isFinite(o)) { srvOff = o; srvKnown = true; } }));
+      unsubs.push(fbDb.onChildAdded(roomRef, snap => { if (my === seq) peerSet(snap.key, snap.val()); }, bad));
+      unsubs.push(fbDb.onChildChanged(roomRef, snap => { if (my === seq) peerSet(snap.key, snap.val()); }, bad));
+      unsubs.push(fbDb.onChildRemoved(roomRef, snap => { if (my === seq) peerGone(snap.key); }, bad));
+      // 처음 한 번: 이미 와 있던 이웃을 다 받은 뒤(그 뒤에 오는 이웃은 '방금 들어온' 손님)
+      unsubs.push(fbDb.onValue(roomRef, () => {
+        if (my !== seq || initial) return;
+        initial = true;
+        bus.emit('liveRoom', { room: code, role: L.role, peers: L.list(), quiet: quiet });
+      }, bad, { onlyOnce: true }));
+    }).catch(e => { if (my === seq) failed(e); });
+    return true;
+  };
+  function failed(e) {
+    const code = errCode(e);
+    L.err = code;
+    L.fails++;
+    // 입장권 문제(권한 없음 · 로그인 실패)면 다음에는 새 입장권으로
+    if (/permission|auth\/|TOKEN|token/i.test(code)) { cardKey = ''; card = null; }
+    // 서버가 "지금은 안 된다"고 한 것(꺼짐 · 공개 안 함)은 길게, 그 밖에는 30초부터 점점 길게(최대 8분)
+    const longer = /LIVE_OFF|NOT_PUBLIC|NEIGHBOR_OFF|BLOCKED|FB_LOAD|FB_CFG/.test(code);
+    failUntil = Date.now() + (longer ? L.T.backoffLong : L.T.backoff * Math.pow(2, Math.min(4, L.fails - 1)));
+    leaveNow();
+    bus.emit('liveFail', { code: code });
+  }
+  function leaveNow() {
+    seq++;
+    clearTimeout(joinTimer); clearInterval(beatTimer); clearTimeout(moveTimer); clearTimeout(pullTimer);
+    moveTimer = 0; movePend = null; pullTimer = 0;
+    for (const k in goneTimers) { clearTimeout(goneTimers[k]); delete goneTimers[k]; }
+    unsubs.splice(0).forEach(f => { try { f(); } catch (e) { /* 무시 */ } });
+    const ref = meRef, was = L.state;
+    meRef = null; roomRef = null;
+    L.state = 'off'; L.room = ''; L.role = ''; L.peers = {};
+    R.peerClear();
+    if (ref && fbDb && db) {
+      // 내 자리를 지우고, 조금 뒤에도 다른 방에 들어가지 않았으면 연결을 끊는다(끊기면 서버가 남은 자리도 지운다)
+      try { fbDb.remove(ref).catch(() => {}); } catch (e) { /* 무시 */ }
+      clearTimeout(offTimer);
+      offTimer = setTimeout(() => { if (L.state === 'off' && fbDb && db) { try { fbDb.goOffline(db); } catch (e) { /* 무시 */ } } }, 4000);
+    }
+    if (was !== 'off') { emit(); bus.emit('liveLeave'); }
+  }
+  /** 방에서 나가기 */
+  L.leave = function () { if (L.state !== 'off') leaveNow(); };
+
+  function peerSet(key, v) {
+    if (key === uid || !CODE_RE.test(key) || !obj(v)) return;
+    if (goneTimers[key]) { clearTimeout(goneTimers[key]); delete goneTimers[key]; }      // 바로 돌아왔다
+    const old = L.peers[key], t = num(v.t, 0), now = srvNow();
+    // 오래 소식이 없는 자리(연결이 끊겼는데 지워지지 않은 것)는 보이지 않게 — 내 목장이면 지운다
+    if (srvKnown && t > 0 && now - t > L.T.stale) {
+      if (old) peerOut(key);
+      if (L.role === 'owner' && roomRef) { try { fbDb.remove(fbDb.child(roomRef, key)).catch(() => {}); } catch (e) { /* 무시 */ } }
+      return;
+    }
+    if (!old && L.count() >= MAX_PEERS) return;
+    const owner = key === L.room;
+    const p = {
+      id: key, owner: owner, n: S.cleanText(v.n, 12) || '목장지기', r: S.cleanText(v.r, 12) || '이웃 목장', a: D.avatarCode(v.a),
+      x: xy(v.x), y: xy(v.y), t: t, e: Math.floor(U.clamp(num(v.e, 0), 0, 40)), et: num(v.et, 0),
+      k: typeof v.k === 'string' && HELP_SAY[v.k] ? v.k : '', ki: typeof v.ki === 'string' && /^[0-9A-Za-z]{0,20}$/.test(v.ki) ? v.ki : '',
+      kx: xy(v.kx), ky: xy(v.ky), kt: num(v.kt, 0), sayAt: old ? old.sayAt : 0
+    };
+    L.peers[key] = p;
+    lastPeerAt = Date.now(); sawPeer = true;
+    // 방금 들어온 손님은 농가 옆길에서 걸어 들어온다(이미 와 있던 이웃·목장주는 서 있던 자리에 바로)
+    R.peerUpdate(key, { tag: (owner ? '목장주 ' : '') + p.n, avatar: p.a, x: p.x, y: p.y, walkIn: !old && initial && !owner });
+    if (!old) {
+      emit();
+      if (initial) bus.emit('livePeer', { p: p, in: true, role: L.role });
+      return;
+    }
+    if (p.et !== old.et && L.SAYS[p.e] && Date.now() - p.sayAt > 700) {
+      p.sayAt = Date.now();
+      const sy = L.SAYS[p.e];
+      R.peerSay(key, sy.i, sy.t, sy.t ? 4.5 : 3.2);
+      bus.emit('liveSay', { p: p, e: p.e });
+    }
+    if (p.kt !== old.kt && p.k) {
+      const hs = HELP_SAY[p.k];
+      R.peerSay(key, hs[0], hs[1], 3.2, 'work');
+      bus.emit('liveHelp', { p: p, k: p.k, id: p.ki, x: p.kx, y: p.ky, role: L.role });
+    }
+    if (p.n !== old.n || p.a !== old.a || p.r !== old.r) emit();
+  }
+  function peerGone(key) {
+    if (key === uid) {
+      // 내 자리가 지워졌다(오래된 자리로 보였거나 연결이 잠깐 끊김) → 방에 있는 동안이면 다시 쓴다(10초에 한 번까지만)
+      if (L.state === 'on' && meRef && Date.now() - reSetAt > 10000) { reSetAt = Date.now(); fbDb.set(meRef, meNode()).catch(() => {}); }
+      return;
+    }
+    if (!L.peers[key] || goneTimers[key]) return;
+    const my = seq;
+    goneTimers[key] = setTimeout(() => { delete goneTimers[key]; if (my === seq) peerOut(key); }, L.T.gone);
+  }
+  function peerOut(key) {
+    const old = L.peers[key];
+    if (!old) return;
+    delete L.peers[key];
+    R.peerRemove(key);
+    lastPeerAt = Date.now();
+    emit();
+    bus.emit('livePeer', { p: old, in: false, role: L.role });
+  }
+
+  /* ---------- 내가 보내는 것 ---------- */
+  /** 내 캐릭터가 걸어갈 곳(자주 눌러도 0.35초에 한 번, 마지막 것만) */
+  L.move = function (x, y) {
+    if (L.state !== 'on') return;
+    movePend = { x: xy(x), y: xy(y) };
+    if (moveTimer) return;
+    moveTimer = setTimeout(() => {
+      moveTimer = 0;
+      const m = movePend; movePend = null;
+      if (!m) return;
+      moveAt = Date.now();
+      upd({ x: m.x, y: m.y });
+    }, Math.max(0, L.T.moveGap - (Date.now() - moveAt)));
+  };
+  /** 정해진 인사말·이모티콘 보내기(번호) → 보냈으면 true */
+  L.say = function (i) {
+    i = Math.floor(+i);
+    const sy = L.SAYS[i];
+    if (!sy || L.state !== 'on') return false;
+    if (Date.now() - sayAt < L.T.sayGap) return false;
+    sayAt = Date.now();
+    R.peerSay('me', sy.i, sy.t, sy.t ? 4.5 : 3.2);
+    upd({ e: i, et: Date.now() });
+    bus.emit('liveSay', { p: null, e: i });
+    return true;
+  };
+  /** 방금 도와준 일을 같이 있는 이웃에게 알린다(화면 효과용 — 실제 치료·보상은 서버가 이미 처리했다) */
+  function helpOut(e) {
+    if (L.state !== 'on' || !e || !HELP_SAY[e.k]) return;
+    const q = R.meDest();
+    upd({ k: e.k, ki: typeof e.id === 'string' && /^[0-9A-Za-z]{0,20}$/.test(e.id) ? e.id : '', kx: xy(e.x === undefined ? q.x : e.x), ky: xy(e.y === undefined ? q.y : e.y), kt: Date.now() });
+  }
+  /** 같이 있는 이웃이 도와준 일을 내 화면에 반영 */
+  function helpIn(e) {
+    const v = Soc.visit, hs = HELP_SAY[e.k];
+    if (!hs) return;
+    if (v && v.code === L.room) {
+      // 같은 목장을 구경 중: 그 가축·들쥐가 내 화면에서도 바로 낫고 달아난다
+      if (e.k === 'heal') {
+        for (const id in v.g.pens) {
+          const a = v.g.pens[id].animals.find(x => x.oid === e.id);
+          if (a && a.sick) { a.sick = false; a.h = Math.max(a.h, 50); }
+        }
+        R.burst(e.x, e.y - 20, 'spark', 12, { up: true, g: -20, color: '#C8F7B0' });
+        R.burst(e.x, e.y - 20, 'heart', 3, { up: true, g: -30 });
+      } else if (e.k === 'rat' || e.k === 'fox') {
+        const t = v.threats.find(x => x.pid === e.id && x.st === 'act');
+        if (t) { t.st = 'caught'; t.t = 0; }
+        R.burst(e.x, e.y - 20, 'spark', 10, { up: true });
+      } else if (e.k === 'prot') {
+        v.threats.forEach(t => { if (t.st === 'act') { t.st = 'flee'; t.t = 0; } });
+        if (!v.prot) v.prot = { ranch: e.p.r, owner: e.p.n, avatar: e.p.a, until: 0, pending: !v.liveOn && !L.peers[v.code], mine: false };
+        if (v.prot && !v.prot.pending && !(v.prot.until > 0)) v.prot.until = Date.now() + v.protectMin * 60000;
+      }
+      bus.emit('visitChange', v);
+    } else if (L.role === 'owner' && !v) {
+      // 내 목장: 효과를 먼저 보여 주고, 받은 도움을 지금 서버에서 가져온다(치료·쫓기·보호가 실제로 반영되고 안내가 뜬다)
+      if (e.k === 'heal') { R.burst(e.x, e.y - 20, 'spark', 12, { up: true, g: -20, color: '#C8F7B0' }); R.burst(e.x, e.y - 20, 'heart', 3, { up: true, g: -30 }); }
+      else if (e.k !== 'prot') R.burst(e.x, e.y - 20, 'spark', 10, { up: true });
+      clearTimeout(pullTimer);
+      pullTimer = setTimeout(() => {
+        pullTimer = 0;
+        const so = S.g.social;
+        try { if (so.on) Soc.publish({ force: true }); } catch (err) { /* 다음 동기화 때 */ }
+      }, 500);
+    }
+  }
+
+  /* ---------- 언제 들어가고 나가는가 ---------- */
+  /**
+   * 내 목장에 이웃이 와 있다(동기화 응답 · 알림) → 방으로. force = 쉬는 시간을 보지 않는다(알림이 왔을 때)
+   * mark = 서버의 「이웃이 와 있음」 표시 값(그 표시가 생긴 시각). 지난번과 값이 다르면 새로 온 손님이므로 쉬는 중이어도 바로 들어간다
+   */
+  let lastMark = 0;
+  L.ownerHint = function (force, mark) {
+    if (mark && mark !== lastMark) { lastMark = mark; force = true; }
+    if (Soc.visit || L.state !== 'off' || !L.available() || document.hidden) return false;
+    if (!force && Date.now() < ownerRestUntil) return false;
+    if (force) failUntil = Math.min(failUntil, Date.now());
+    return L.join(S.g.social.code, 'owner');
+  };
+  /** 지금 상황에 맞게 다시 맞춘다(화면으로 돌아왔을 때 · 서버 안내가 바뀌었을 때) */
+  L.wake = function () {
+    if (document.hidden) return;
+    const v = Soc.visit;
+    if (!L.available()) { if (L.state !== 'off') leaveNow(); return; }
+    if (v) { if (v.rt && !(L.state !== 'off' && L.room === v.code)) L.join(v.code, 'visitor'); }
+    else if (L.state !== 'off' && L.role !== 'owner') leaveNow();
+  };
+  function tick() {
+    if (L.state === 'off') {
+      // 이웃 목장에 가 있는데 방에 못 들어가 있으면(연결 실패 뒤) 쉬는 시간이 지난 다음 다시 들어가 본다
+      const v = Soc.visit;
+      if (v && v.rt && !document.hidden && Date.now() >= failUntil && L.available()) L.join(v.code, 'visitor');
+      return;
+    }
+    if (!L.available()) { leaveNow(); return; }
+    // 목장주: 아무도 없으면 조금 기다렸다가 나간다. 한 번도 못 봤으면 한동안 다시 들어가지 않는다
+    if (L.role === 'owner' && L.state === 'on' && !L.count() && Date.now() - Math.max(joinedAt, lastPeerAt) > L.T.ownerIdle) {
+      if (!sawPeer) ownerRestUntil = Date.now() + L.T.ownerRest;
+      leaveNow();
+    }
+  }
+
+  L.start = function () {
+    if (started) return;
+    started = true;
+    R.onMeRoute = to => { if (L.state === 'on' && to) L.move(to.x, to.y); };
+    bus.on('visitStart', v => { if (L.state !== 'off') leaveNow(); if (v && v.rt) L.join(v.code, 'visitor'); });
+    bus.on('visitEnd', () => { if (L.state !== 'off') leaveNow(); });
+    bus.on('netSocial', s => { if (s && s.rt) L.ownerHint(false, s.rt); });
+    // 방에 있는 동안 이름·캐릭터를 바꿨다 → 서버에 올라간 뒤(socialSync) 새 입장권으로 다시 들어간다(이웃 화면에서는 이름표·모습만 바뀐다)
+    bus.on('socialSync', () => {
+      if (L.state !== 'on' || !cardKey || cardKey === wantKey()) return;
+      const room = L.room, role = L.role;
+      leaveNow();
+      if (L.join(room, role)) quiet = true;
+    });
+    bus.on('helpDone', helpOut);
+    bus.on('liveHelp', helpIn);
+    bus.on('netInfo', () => { setTimeout(() => { try { L.wake(); P.refresh(); } catch (e) { console.error('live', e); } }, 800); });
+    bus.on('netMoved', () => { if (L.state !== 'off') leaveNow(); });
+    bus.on('socialOn', on => { if (!on && L.state !== 'off') leaveNow(); });
+    bus.on('netLinked', () => setTimeout(() => { try { P.refresh(); } catch (e) { /* 무시 */ } }, 3000));
+    (function loop() { setTimeout(() => { try { tick(); } catch (e) { console.error('live', e); } loop(); }, L.T.tick); })();
+    document.addEventListener('visibilitychange', () => {
+      clearTimeout(hideTimer);
+      if (document.hidden) hideTimer = setTimeout(() => { if (document.hidden && L.state !== 'off') leaveNow(); }, L.T.hide);
+      else setTimeout(() => { try { L.wake(); } catch (e) { /* 무시 */ } }, 600);
+    });
+    window.addEventListener('pagehide', () => { if (L.state !== 'off') leaveNow(); });
+    document.addEventListener('freeze', () => { if (L.state !== 'off') leaveNow(); });
+    setTimeout(() => { try { P.flushWaiting(); P.refresh(); } catch (e) { console.error('push', e); } }, 4000);
+  };
+})();
+
+
+/* ==== game/07g_live_ui.js ==== */
+/* v2.3 알림 · 실시간 방문 화면 — [인사] 단추와 인사 고르기 창, 함께 있는 이웃 안내, 이웃 캐릭터를 눌렀을 때,
+ * [설정]의 「알림 받기」 카드, 새 기능 소식  (요청·연결은 07f_live.js 의 SR.Push · SR.Live, 그림은 05_render.js) */
+(function () {
+  'use strict';
+  const U = SR.U, D = SR.D, S = SR.S, R = SR.R, N = SR.Net, bus = SR.bus, C = SR.CONFIG, UI = SR.UI, Soc = SR.Soc, L = SR.Live, P = SR.Push;
+  const { ico, btn, chip, el } = UI._internal;
+  const $ = s => document.querySelector(s);
+  const sfx = (n, o) => bus.emit('sfx', { name: n, opts: o });
+  const face = (code, px) => el('img', { class: 'portrait av-face', alt: '', style: 'width:' + px + 'px;height:' + px + 'px',
+    src: R.portraitURL({ kind: 'person', look: D.avatarLook(code) }, 'happy', px) });
+  const nim = p => (p.owner ? '목장주 ' : '') + p.n + ' 님';
+
+  /* =========================================================
+   * [인사] 단추 — 같은 목장에 다른 사람이 있을 때만 보인다(숫자 = 함께 있는 사람 수)
+   * ========================================================= */
+  let palOpen = false, shownPal = '';
+  function liveHud() {
+    const b = $('#btnLive');
+    if (!b || !UI.started) return;
+    const n = L.count(), show = L.state === 'on' && n > 0 && S.g.tut.done;
+    if (b.hidden === show) { b.hidden = !show; if (show) b.classList.add('pop'); }
+    if (show) {
+      const t = String(n);
+      if ($('#liveCnt').textContent !== t) $('#liveCnt').textContent = t;
+      if (palOpen) drawPal();
+    } else if (palOpen) closePal();
+  }
+  function closePal() { palOpen = false; shownPal = ''; const p = $('#livePal'); if (p) p.hidden = true; }
+  function drawPal() {
+    const list = L.list();
+    const key = list.map(p => p.id + p.n + p.a).join('|');
+    if (key === shownPal) return;
+    shownPal = key;
+    $('#lpTitle').textContent = '함께 있는 이웃 ' + list.length + '명';
+    const who = $('#lpWho');
+    who.textContent = '';
+    list.forEach(p => {
+      const b = el('button', { class: 'lp-chip', type: 'button', 'aria-label': nim(p) + ' 정보 보기', dataset: { peer: p.id } }, [face(p.a, 26), el('span', { text: (p.owner ? '목장주 ' : '') + p.n })]);
+      b.addEventListener('click', () => { sfx('tap'); closePal(); UI.peerCard(p.id); });
+      who.appendChild(b);
+    });
+  }
+  /** 인사 창의 자리: 아래 메뉴(내 목장) · 아래 단추(방문 중) 바로 위, 위 막대 아래까지만(넘치면 창 안에서 스크롤) */
+  function placePal() {
+    const pal = $('#livePal');
+    if (!pal) return;
+    try { UI.measureInsets(); } catch (e) { /* 지난번 값 그대로 */ }
+    const top = R.insets.top || 0, bottom = R.insets.bottom || 0;
+    pal.style.bottom = (bottom + 8) + 'px';
+    pal.style.maxHeight = Math.max(150, window.innerHeight - top - bottom - 16) + 'px';
+  }
+  function openPal() {
+    const pal = $('#livePal');
+    if (!pal || L.state !== 'on') return;
+    palOpen = true; shownPal = '';
+    placePal();
+    const emos = $('#lpEmos'), says = $('#lpSays');
+    if (!emos.children.length) {
+      // 이모티콘(그림만) 한 줄 + 인사말 열두 가지 — 고르면 내 캐릭터 머리 위에 뜨고 함께 있는 이웃에게도 보인다
+      Object.keys(L.SAYS).map(Number).sort((a, b) => a - b).forEach(i => {
+        const sy = L.SAYS[i], emo = !sy.t;
+        const b = el('button', { class: emo ? 'lp-emo' : 'lp-say', type: 'button', 'aria-label': emo ? sy.n + ' 이모티콘 보내기' : sy.t, dataset: { say: String(i) } },
+          emo ? [ico(sy.i, 32)] : [ico(sy.i, 20), el('span', { text: sy.t })]);
+        b.addEventListener('click', () => send(i));
+        (emo ? emos : says).appendChild(b);
+      });
+    }
+    drawPal();
+    pal.hidden = false;
+    pal.scrollTop = 0;
+  }
+  function send(i) {
+    if (L.say(i)) { sfx('pop'); closePal(); }
+    else if (L.state === 'on') UI.toast('인사는 조금 천천히 보내 주세요', '', 'info');
+    else closePal();
+  }
+  UI.liveSay = send;
+  UI.livePal = { open: openPal, close: closePal, isOpen: () => palOpen };
+
+  /* ---------- 이웃 캐릭터를 눌렀을 때: 누구인지 + 그 목장으로 놀러 가기 ---------- */
+  UI.peerCard = function (id) {
+    const p = L.peers[id];
+    if (!p) return;
+    UI.modal((box, close) => {
+      box.classList.add('peer-modal');
+      box.appendChild(el('div', { class: 'ribbon green', text: p.owner ? '목장주' : '함께 있는 이웃' }));
+      box.appendChild(el('div', { class: 'row nowrap', style: 'justify-content:center' }, [face(p.a, 56), el('div', { class: 'grow', style: 'flex:0 1 auto;min-width:0' }, [
+        el('h2', { id: 'peerName', style: 'font-size:20px;margin:0;text-align:left', text: p.r }),
+        el('p', { class: 'muted', style: 'margin:0', text: '목장주 ' + p.n })
+      ])]));
+      const here = Soc.visit;
+      const btns = [btn('닫기', 'btn-ghost', () => close())];
+      btns.push(btn('인사하기', 'btn-blue', () => { close(); openPal(); }, { id: 'peerHello', icon: 'emo_smile' }));
+      // 내 목장에 온 손님이면 그 손님의 목장으로 놀러 갈 수 있다(이웃 목장에 가 있는 중에는 먼저 내 목장으로 돌아간 뒤에)
+      if (!p.owner && !here) btns.push(btn('놀러 가기', 'btn-orange', () => { close(); UI.visitRanch(p.id, p.r); }, { id: 'peerVisit', icon: 'neighbor' }));
+      box.appendChild(el('div', { class: 'btns' }, btns));
+    }, { stack: true });
+  };
+  R.handlers.peerTap = id => { sfx('tap'); UI.peerCard(id); };
+
+  /* ---------- 함께 있는 이웃 안내 ---------- */
+  bus.on('live', () => { try { liveHud(); UI.refresh(); } catch (e) { console.error('live hud', e); } });
+  bus.on('liveLeave', () => { closePal(); });
+  bus.on('liveRoom', e => {
+    if (!UI.started || !e || e.quiet) return;
+    const list = e.peers || [], n = list.length;
+    if (!n) return;
+    if (e.role === 'owner') {
+      sfx('sparkle');
+      UI.toast(list[0].n + ' 님' + (n > 1 ? ' 외 ' + (n - 1) + '명' : '') + '이 목장에 놀러 와 있어요! 오른쪽 [인사]로 반겨 주세요', 'good', 'neighbor');
+    } else {
+      const ow = list.find(p => p.owner);
+      if (ow) UI.toast('목장주 ' + ow.n + ' 님이 지금 목장에 있어요! 오른쪽 [인사]를 눌러 보세요', 'good', 'neighbor');
+      else UI.toast('다른 이웃 ' + n + '명이 함께 구경하고 있어요. 오른쪽 [인사]를 눌러 보세요', '', 'neighbor');
+    }
+  });
+  bus.on('livePeer', e => {
+    if (!UI.started || !e || !e.p) return;
+    const p = e.p;
+    if (e.in) {
+      sfx('pop');
+      if (e.role === 'owner') UI.toast(p.n + ' 님이 놀러 왔어요!', 'good', 'neighbor');
+      else if (p.owner) UI.toast('목장주 ' + p.n + ' 님이 들어왔어요!', 'good', 'neighbor');
+      else UI.toast(p.n + ' 님도 놀러 왔어요', '', 'neighbor');
+    } else if (e.role === 'owner') UI.toast(p.n + ' 님이 돌아갔어요', '', 'neighbor');
+    else if (p.owner) UI.toast('목장주 ' + p.n + ' 님이 자리를 비웠어요', '', 'house');
+  });
+  bus.on('liveSay', e => { if (e && e.p) sfx('pop', { volume: 0.6 }); });
+  bus.on('liveHelp', e => { if (e && e.p) sfx(e.k === 'heal' ? 'heal' : 'sparkle', { volume: 0.6 }); });
+
+  const baseTick = UI.tick;
+  UI.tick = function () {
+    baseTick();
+    try { liveHud(); } catch (e) { console.error('live hud', e); }
+  };
+  const baseInit = UI.initSocial;
+  UI.initSocial = function () {
+    if (baseInit) baseInit();
+    $('#btnLive').addEventListener('click', () => { sfx('tap'); if (palOpen) closePal(); else openPal(); });
+    $('#btnLive').addEventListener('animationend', () => $('#btnLive').classList.remove('pop'));
+    $('#lpClose').addEventListener('click', () => { sfx('close'); closePal(); });
+    // 목장 바닥을 누르면(걸어가기) 인사 창은 닫는다
+    $('#world').addEventListener('pointerdown', () => { if (palOpen) closePal(); });
+    window.addEventListener('resize', () => { if (palOpen) setTimeout(placePal, 80); });
+  };
+
+  /* =========================================================
+   * [설정] 「알림 받기」 카드 — 서버에서 알림이 켜져 있을 때만 보인다
+   * ========================================================= */
+  const WHY = {
+    inapp: '지금은 네이버·카카오톡 같은 앱 안의 브라우저로 열려 있어서 알림을 켤 수 없어요. 화면 메뉴(⋮ 또는 ···)에서 「다른 브라우저로 열기」를 눌러 크롬이나 사파리에서 열어 주세요.',
+    ios: '아이폰·아이패드는 사파리의 공유 버튼 → 「홈 화면에 추가」로 만든 신화목장 아이콘으로 열어야 알림을 켤 수 있어요(iOS 26 이상 · 추가할 때 「웹 앱으로 열기」를 켠 채로).',
+    iosold: '이 아이폰·아이패드의 iOS 버전에서는 알림을 받을 수 없어요. iOS 26 이상으로 업데이트한 뒤, 사파리의 공유 버튼 → 「홈 화면에 추가」로 만든 신화목장 아이콘으로 열면 켤 수 있어요.',
+    nosw: '이 화면에서는 알림을 켤 수 없어요. 게임 주소(https://…)로 열어 주세요.',
+    old: '이 브라우저는 알림을 지원하지 않아요. 크롬·엣지·삼성 인터넷의 최신 버전으로 열어 주세요.'
+  };
+  const hourText = h => (h === 0 ? '밤 12시' : h < 6 ? '새벽 ' + h + '시' : h < 12 ? '아침 ' + h + '시' : h === 12 ? '낮 12시' : h < 18 ? '오후 ' + (h - 12) + '시' : '밤 ' + (h - 12) + '시');
+  const DENIED_HELP = '브라우저에서 이 사이트의 알림이 막혀 있어요. 주소창 왼쪽의 자물쇠(사이트 설정)에서 「알림」을 허용으로 바꾼 뒤 다시 눌러 주세요. 설치한 앱이라면 기기의 설정 → 알림에서 신화목장을 허용해 주세요.';
+  function turnOn() {
+    P.enable().then(r => {
+      UI.refresh();
+      if (!r) return;
+      if (r.ok) {
+        sfx('sparkle');
+        UI.toast('알림을 켰어요! 확인용 알림을 하나 보내 드릴게요', 'good', 'bell');
+        setTimeout(() => { P.test().then(() => {}, () => {}); }, 1200);
+        return;
+      }
+      sfx('error');
+      if (r.error === 'DENIED') UI.alert('알림이 막혀 있어요', DENIED_HELP, { icon: 'bell', stack: true });
+      else if (r.error === 'DISMISSED') UI.toast('알림 권한을 「허용」해야 켤 수 있어요. 다시 눌러 주세요', '', 'bell');
+      else if (r.error === 'UNSUPPORTED') UI.toast(WHY[r.why] || WHY.old, 'bad', 'bell');
+      else if (r.error === 'OLD_SW') UI.alert('알림을 켜지 못했어요', '알림을 띄우는 파일(sw.js)이 아직 새 버전으로 올라오지 않았어요. 10분쯤 뒤에 다시 눌러 주세요. 계속 같으면 운영자에게 알려 주세요.', { icon: 'bell', stack: true });
+      else if (r.error === 'TOKEN') UI.alert('알림을 켜지 못했어요', '기기의 알림 주소를 받지 못했어요. 인터넷 연결을 확인하고, 화면을 새로 고친 뒤 다시 시도해 주세요.' + (r.detail ? ' (' + r.detail + ')' : ''), { icon: 'bell', stack: true });
+      else UI.toast(r.message || '알림을 켜지 못했어요. 잠시 후 다시 시도해 주세요', 'bad', 'bell');
+    });
+    UI.refresh();
+  }
+  function turnOff() {
+    P.disable();
+    UI.toast('알림을 껐어요. 이 기기로는 더 보내지 않아요', '', 'bell');
+    UI.refresh();
+  }
+  let testing = false;
+  function sendTest() {
+    if (testing) return;
+    testing = true; UI.refresh();
+    P.test().then(r => {
+      testing = false;
+      if (r && r.ok) UI.toast('테스트 알림을 보냈어요. 곧 도착해요', 'good', 'bell');
+      else { sfx('error'); UI.toast((r && r.message) || '알림을 보내지 못했어요. 잠시 후 다시 시도해 주세요', 'bad', 'bell'); }
+      UI.refresh();
+    }, () => { testing = false; UI.refresh(); });
+  }
+  /** [설정]의 알림 카드. 서버에서 알림이 꺼져 있으면(Firebase 설정 전) null */
+  UI.pushCard = function () {
+    if (!P.serverOn()) return null;
+    const st = P.state();
+    const card = el('div', { class: 'card push-card', id: 'pushCard', style: 'flex-direction:column;align-items:stretch;gap:8px' });
+    const head = (sub, right) => el('div', { class: 'row nowrap' }, [ico('bell', 32), el('div', { class: 'grow' }, [el('h3', { text: '알림 받기' }), el('p', { class: 'muted', text: sub })]), right || null]);
+    if (!st.ok) {
+      card.appendChild(head(WHY[st.why] || WHY.old));
+      if (st.why === 'ios' || st.why === 'inapp') {
+        card.appendChild(el('p', { class: 'muted app-note', id: 'pushNote', text: (st.why === 'ios' ? '홈 화면 앱은 사파리와 진행 기록이 따로 저장될 수 있어요.' : '다른 브라우저는 진행 기록이 따로 저장돼요.') +
+          (N.naverAvailable() || S.g.net.linked ? ' 옮기기 전에 [네이버 로그인]으로 목장을 보관해 두면 그쪽에서 같은 계정으로 이어서 할 수 있어요.' : '') }));
+      }
+      return card;
+    }
+    const sw = el('button', { class: 'switch' + (st.on ? ' on' : ''), type: 'button', role: 'switch', 'aria-checked': st.on ? 'true' : 'false', 'aria-label': '알림 받기', id: 'pushSwitch', disabled: st.busy ? true : null });
+    sw.addEventListener('click', () => { if (P.busy) return; sfx('tap'); if (P.isOn()) turnOff(); else turnOn(); });
+    const q = st.quiet;
+    const what = '이웃이 놀러 오거나 도와줬을 때, 선물·코인이 도착했을 때 이 기기로 알려 드려요. 광고 알림은 보내지 않아요.';
+    card.appendChild(head(st.busy ? '알림을 켜는 중이에요…' : st.on ? what : '켜면 ' + what, sw));
+    if (st.on) {
+      card.appendChild(el('div', { class: 'row', id: 'pushOnRow' }, [
+        chip('켜짐', 'ok', 'check'),
+        q ? el('span', { class: 'muted', id: 'pushQuiet', text: hourText(q[0]) + '~' + hourText(q[1]) + '에는 보내지 않아요' }) : null,
+        btn(testing ? '보내는 중…' : '테스트 알림', 'btn-ghost btn-sm', sendTest, { id: 'pushTest', disabled: testing })
+      ]));
+    } else if (st.perm === 'denied') card.appendChild(el('div', { class: 'notice', id: 'pushDenied', text: DENIED_HELP }));
+    else if (st.wanted && st.perm !== 'granted') card.appendChild(el('div', { class: 'notice', id: 'pushLost', text: '이 브라우저의 알림 권한이 풀려서 알림이 꺼졌어요. 스위치를 눌러 다시 켜 주세요.' }));
+    return card;
+  };
+  bus.on('push', () => UI.refresh());
+  // 알림을 눌러 게임으로 들어왔을 때: 무슨 알림이었는지 한 줄로(게임을 보고 있던 중에 온 알림은 07f 가 필요한 것만 알려 준다)
+  bus.on('pushMsg', e => {
+    if (!UI.started || !e || !e.clicked) return;
+    if (e.k === 'gift') { UI.setTab('neighbors', 'mail'); UI.open('neighbors'); }
+    else if (e.k === 'help' || e.k === 'prot') { UI.setTab('neighbors', 'got'); UI.open('neighbors'); }
+    else if (e.k === 'credit' || e.k === 'reject') { UI.setTab('store', 'mine'); UI.open('store'); }
+  });
+  /** 알림을 켜 보라는 안내 한 번: 이웃 소식을 처음 받았는데 알림을 켤 수 있고 아직 꺼져 있을 때 */
+  bus.on('social', fresh => {
+    const g = S.g;
+    if (!UI.started || !fresh || !fresh.length || !g.live || g.live.tip) return;
+    if (!P.support().ok || P.isOn() || P.permission() === 'denied') return;
+    g.live.tip = Date.now(); S.save();
+    setTimeout(() => UI.toast('알림을 켜면 이웃 소식을 바로 받을 수 있어요 — [설정] → 알림 받기', '', 'bell'), 3500);
+  });
+
+  /* =========================================================
+   * 새 기능 소식(v2.2 이전부터 하던 목장에 한 번) — 서버에서 알림이나 실시간 방문을 실제로 쓸 수 있게 된 뒤에 보여 준다
+   * ========================================================= */
+  UI.news23Items = function () {
+    const li = (N.info && N.info.live) || {}, items = [];
+    if (li.rt === true) items.push(['neighbor', '함께 있는 이웃', '이웃 목장에 놀러 가면 그곳에 와 있는 다른 손님과 접속 중인 목장주의 캐릭터가 걸어 다니는 모습이 보여요. 오른쪽 [인사]로 인사말·이모티콘을 주고받아요.']);
+    if (P.serverOn()) items.push(['bell', '알림 받기', '[설정]에서 알림을 켜면 이웃이 놀러 오거나 도와줬을 때, 선물·코인이 도착했을 때 알려 드려요. 언제든 끌 수 있어요.']);
+    items.push(['check', '접속 중 표시', '[이웃] 목록에서 지금 게임에 들어와 있는 이웃을 알 수 있어요.']);
+    return items;
+  };
+  UI.whatsNew23 = function () {
+    const g = S.g, li = N.info && N.info.live;
+    if (!g.flags.news23 || !UI.started || !g.tut.done) return;
+    if (!li || (li.rt !== true && !P.serverOn())) return;              // 아직 쓸 수 없으면 쓸 수 있게 된 뒤에
+    if (g.flags.news19 || g.flags.news20 || g.flags.news22) return;    // 앞의 소식 창을 먼저(다음에 열 때 이 소식)
+    delete g.flags.news23; S.save();
+    const canPush = P.support().ok && !P.isOn();
+    UI.modal((box, close) => {
+      box.classList.add('news-modal');
+      box.appendChild(el('div', { class: 'ribbon green', text: '새 기능' }));
+      box.appendChild(el('h2', { id: 'news23Title', text: li.rt === true ? '이웃과 함께 놀 수 있어요!' : '알림을 받을 수 있어요!' }));
+      box.appendChild(el('div', { class: 'cb-list', id: 'news23List' }, UI.news23Items().map(UI.newsRow)));
+      box.appendChild(el('div', { class: 'btns' }, [btn(canPush ? '나중에' : '좋아요!', canPush ? 'btn-ghost' : 'btn-plum', () => close(), { id: 'news23Later' }),
+        canPush ? btn('알림 설정 열기', 'btn-orange', () => { close(); UI.open('settings'); }, { id: 'news23Go', icon: 'bell' }) : null]));
+    });
+  };
+  bus.on('netInfo', () => { if (UI.started && S.g.flags.news23) setTimeout(() => { try { UI.whatsNew23(); } catch (e) { console.error(e); } }, 2200); });
+})();
+
+
 /* ==== game/08_main.js ==== */
 /* 시작·게임 루프·입력 */
 (function () {
@@ -25476,10 +26616,13 @@ SR.CONFIG = {
       if (S.g.flags.news19 && UI.whatsNew19) UI.whatsNew19();      // v1.8 이전부터 하던 목장: 내 캐릭터·이웃 목장 소식 한 번
       if (S.g.flags.news20 && UI.whatsNew20) UI.whatsNew20();      // v1.9 이전부터 하던 목장: 배치·펫·쿠마 등 v2.0 소식 한 번
       if (S.g.flags.news22 && UI.whatsNew22) UI.whatsNew22();      // v2.1 이전부터 하던 목장: 목장 꾸미기 소식 한 번(더 오래된 목장은 위의 창에 함께)
+      // v2.2 이전부터 하던 목장: 알림·실시간 방문 소식 한 번 — 서버에서 그 기능을 쓸 수 있을 때만(서버 안내를 받은 뒤에 본다)
+      if (S.g.flags.news23 && UI.whatsNew23) setTimeout(() => { try { UI.whatsNew23(); } catch (e) { console.error(e); } }, 2600);
       if (!S.g.tut.done) UI.tutorialStart();
       else if (!Sim.attendState().claimed) setTimeout(() => UI.toast('오늘 출석 보상이 기다려요! 왼쪽 [출석]을 눌러요', 'gold', 'calendar'), 1500);
       N.start(netOpts);
       if (SR.Soc) SR.Soc.start();                                 // v1.9 내 캐릭터가 걷기 시작 · 이웃 목장 주기
+      if (SR.Live) SR.Live.start();                               // v2.3 알림 · 실시간 방문(서버가 켜 두었을 때만 동작)
       R.placeAtPost();                                            // v2.0 배치해 둔 곳이 있으면 캐릭터는 거기에 서 있다
       afterStart.splice(0).forEach(f => { try { f(); } catch (e) { console.error('afterStart', e); } });
       setTimeout(() => { try { if (UI.naverNews) UI.naverNews(); } catch (e) { console.error(e); } }, 2500);
