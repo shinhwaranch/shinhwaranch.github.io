@@ -1,6 +1,8 @@
-/* 신화목장 타이쿤 — 서비스 워커 (게임 v1.5부터 · v2.3 알림)
+/* 신화목장 타이쿤 — 서비스 워커 (게임 v1.5부터 · v2.3 알림 · v2.5 새 버전 바로 받기)
  * · 바탕화면(홈 화면)에 설치한 게임이 인터넷이 잠깐 끊겨도 열리도록 게임 파일을 이 기기에 저장해 둔다.
  * · 인터넷이 되면 언제나 새 파일을 먼저 받는다(네트워크 먼저) → GitHub에 새 버전을 올리면 다음 실행부터 바로 바뀐다.
+ * · v2.5: 게임 화면을 열 때는 브라우저가 잠깐(GitHub 은 10분) 보관해 둔 옛 화면을 그냥 쓰지 않고, 서버에 새 파일이 있는지 꼭 물어본다.
+ *   게임이 「새 버전이 올라왔나」 확인하는 요청(주소에 vchk=)은 손대지 않고 저장도 하지 않는다.
  * · 게임 폴더(이 파일이 있는 곳) 안의 GET 요청만 다룬다. 서버(구글)·네이버·글꼴 요청은 손대지 않는다.
  * · 진행 기록은 여기와 상관없이 브라우저 저장소에 그대로 있다.
  * · v2.3 알림: 손님이 게임 [설정]에서 「알림 받기」를 켠 기기에만 온다. 서버가 보낸 알림(제목 t · 내용 b · 종류 k · 묶음 g)을 화면에 띄우고,
@@ -16,19 +18,31 @@ self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(c => Promise.all(CORE.map(u => c.add(u).catch(() => null)))).then(() => self.skipWaiting()));
 });
 
+/** 주소에 ?… 가 붙은 채 저장된 것을 지운다(예전 서비스 워커가 「새 버전 확인」 요청을 통째로 저장해 둔 것 — 쓰이지 않고 자리만 차지한다) */
+const sweep = () => caches.open(CACHE)
+  .then(c => c.keys().then(reqs => Promise.all(reqs.filter(r => { try { return !!new URL(r.url).search; } catch (e) { return false; } }).map(r => c.delete(r)))))
+  .catch(() => null);
+
 self.addEventListener('activate', event => {
   event.waitUntil(caches.keys()
     .then(keys => Promise.all(keys.filter(k => k.indexOf('shinhwa-ranch-') === 0 && k !== CACHE).map(k => caches.delete(k))))
+    .then(sweep)
     .then(() => self.clients.claim()));
 });
+
+/** 게임 화면 받기: 브라우저가 보관해 둔 화면을 그냥 쓰지 않고 서버에 물어본다(바뀌지 않았으면 서버가 「그대로」라고만 답해 빠르다).
+ *  그렇게 받은 것을 화면에 쓸 수 없으면(다른 주소로 넘겨졌거나 오류) 원래 요청 그대로 다시 받는다 */
+const freshPage = req => fetch(req.url, { cache: 'no-cache', credentials: 'same-origin' })
+  .then(res => (res && res.ok && !res.redirected && res.type === 'basic' ? res : fetch(req)), () => fetch(req));
 
 self.addEventListener('fetch', event => {
   const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin || url.pathname.indexOf(BASE) !== 0) return;
+  if (url.searchParams.has('vchk')) return;                    // v2.5 새 버전 확인: 늘 서버에서 바로 받는다(여기서 저장하지 않는다)
   const page = req.mode === 'navigate';                        // 게임 화면(주소에 ?code=… 가 붙어도 같은 파일)
-  event.respondWith(fetch(req).then(res => {
+  event.respondWith((page ? freshPage(req) : fetch(req)).then(res => {
     if (res && res.ok && res.type === 'basic') {
       const copy = res.clone();
       caches.open(CACHE).then(c => c.put(page ? './' : req, copy)).catch(() => {});
