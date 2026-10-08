@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="sr-version" content="2.5.0">
+<meta name="sr-version" content="2.6.0">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#8FD06A">
 <meta name="description" content="닭·돼지·소를 키우고 가공해서 손님에게 배송하는 목장 경영 타이쿤 게임">
@@ -876,6 +876,35 @@ button.card.gift-an[disabled] { cursor: default; }
 #btnSettings.has-upd::after { content: ''; position: absolute; right: -3px; top: -3px; width: 11px; height: 11px; border-radius: 50%; background: var(--berry); border: 2px solid #fff; box-shadow: 0 1px 2px rgba(0,0,0,.25); }
 @media (max-width: 359px) { .ver-card { flex-wrap: wrap; } .ver-card .btn { margin-left: auto; } }
 
+/* ===== v2.6 자동 이어하기 · 기기 연결 코드 ===== */
+/* 첫 화면의 작은 단추들(설치 · 크롬·사파리로 열기 · 연결 코드로 이어하기): 자리가 되면 한 줄에 나란히 — 낮은 화면에서 아래 글과 겹치지 않게 */
+.title-smalls { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px 8px; max-width: 100%; }
+.title-smalls .btn { margin-top: 0; }
+.btn.title-pair { --c: rgba(255,255,255,.94); --cd: rgba(71,154,46,.55); color: var(--leaf-d); text-shadow: none; margin-top: 2px; }
+.btn.title-repair { min-width: 236px; }
+@media (max-width: 359px) { .btn.title-repair { min-width: 0; } }
+/* 연결 코드(크게) · 남은 시간 · 복사 */
+.pair-box { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border: 3px dashed #9EDDB8; border-radius: 16px; background: #F3FBF6; }
+.pair-code { margin: 0; text-align: center; font: bold 34px/1.15 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .12em; color: var(--wood-d); -webkit-user-select: all; user-select: all; }
+.pair-left { margin: 0; flex: 1 1 auto; min-width: 0; font-size: 12px; line-height: 1.35; }
+.pair-left.bad { color: #B03A2E; font-weight: bold; }
+.pair-box .btn { flex: none; }
+.pair-ask { display: flex; flex-direction: column; gap: 4px; }
+.text-input.pair-input { min-height: 52px; text-align: center; font: bold 26px/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .14em; text-transform: uppercase; }
+.text-input.pair-input::placeholder { font-size: 18px; font-weight: normal; letter-spacing: .04em; text-transform: none; color: #B9A88E; }
+.pair-card { border-color: #9EDDB8; background: #F3FBF6; }
+.pair-card .row .btn { flex: 1 1 auto; }
+/* 돌아와서 다른 곳의 진행을 확인하는 동안(목장 시간을 멈춤): 화면을 누르지 못하게 덮고, 조금 걸리면 작은 안내를 띄운다 */
+#cloudHold { position: absolute; inset: 0; z-index: 110; display: flex; justify-content: center; align-items: flex-start; padding: calc(var(--safe-t) + 74px) 16px 0; pointer-events: auto; }
+#cloudHold .hold-chip { padding: 7px 14px; border: 3px solid var(--wood-d); border-radius: 999px; background: rgba(255,247,232,.97); box-shadow: 0 3px 0 var(--wood-d), 0 4px 10px var(--shadow); font-family: var(--font-display); font-size: 14px; color: var(--wood-d); animation: fadeIn .2s .6s both; }
+/* 넘겨받기를 기다리는 점 셋 */
+.cloud-dots { display: flex; justify-content: center; gap: 8px; padding: 2px 0; }
+.cloud-dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--leaf-d); animation: dotBlink 1.2s ease-in-out infinite; }
+.cloud-dots i:nth-child(2) { animation-delay: .2s; }
+.cloud-dots i:nth-child(3) { animation-delay: .4s; }
+@keyframes dotBlink { 0%, 80%, 100% { opacity: .25; transform: scale(.8); } 40% { opacity: 1; transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .cloud-dots i { animation: none; opacity: .7; } }
+
 </style>
 </head>
 <body>
@@ -989,8 +1018,11 @@ button.card.gift-an[disabled] { cursor: default; }
       <button id="btnStart" class="btn btn-big" type="button">목장 시작하기</button>
       <p id="titleLinked" class="title-linked" hidden></p>
       <p id="titleNote" class="title-note">소리를 켜면 더 즐거워요 🔊</p>
-      <button id="btnInstall" class="btn btn-sm title-install" type="button" hidden><span class="ic20" aria-hidden="true"></span><span>바탕화면에 설치</span></button>
-      <button id="btnOpenOut" class="btn btn-sm title-out" type="button" hidden><span>크롬·사파리로 열기</span></button>
+      <div class="title-smalls">
+        <button id="btnInstall" class="btn btn-sm title-install" type="button" hidden><span class="ic20" aria-hidden="true"></span><span>바탕화면에 설치</span></button>
+        <button id="btnOpenOut" class="btn btn-sm title-out" type="button" hidden><span>크롬·사파리로 열기</span></button>
+        <button id="btnPairIn" class="btn btn-sm title-pair" type="button" hidden><span>연결 코드로 이어하기</span></button>
+      </div>
     </div>
     <p id="titleVer" class="title-ver" aria-label="게임 버전"></p>
     <p class="title-foot">© 신화미트 · 모든 그림과 소리는 직접 코드로 만들었어요</p>
@@ -14850,6 +14882,9 @@ const SR = {};
  * 탐험(v2.4 — 낚시·채집·보물 캐기)은 서버를 바꾸지 않아요. 물고기·열매·보물의 값과 확률, 도구 값은 게임 파일(02c_wild.js)에 들어 있고,
  *               확률은 게임 안 [탐험 → 도구]에 그대로 보여요. 가방·도감은 진행 기록과 함께 저장돼요(네이버 로그인을 했으면 서버 보관본에도).
  * v2.5(목장 옮기기 · 새 버전 알아채기)도 서버를 바꾸지 않아요.
+ * v2.6(자동 이어하기 — 네이버 로그인 · 기기 연결 코드로 어디서 열든 가장 최근 진행)은 서버 v1.9 가 필요해요. 여기서 고칠 것은 없고,
+ *               서버를 올린 뒤 시트 메뉴 「초기설정」을 한 번 실행하면 켜져요([기기] 시트가 생김). 서버가 v1.8 이하이거나 초기설정 전이면
+ *               게임은 v2.5 와 똑같이 동작해요(다른 기기에서 로그인하면 먼저 쓰던 기기는 「다른 기기에서 이어하는 중」).
  * HOME_URL    : 게임을 올려 둔 「지금 주소」(끝에 / 까지). 예전 주소로 들어온 손님의 목장을 이 주소로 넘겨줄 때에만 써요.
  * OLD_URLS    : 예전에 쓰던 게임 주소들. 이 주소로 열린 게임은 「주소가 바뀌었어요」라고 알리고 하던 목장을 HOME_URL 로 옮겨 줘요
  *               (예전 주소의 저장소에도 같은 index.html 을 한 번 올려 두어야 해요). 주소를 또 옮기게 되면 그때의 주소를 여기에 더하고 HOME_URL 을 바꿔요.
@@ -14857,7 +14892,7 @@ const SR = {};
  */
 /* SR은 이 함수 안에서만 */
 SR.CONFIG = {
-  VERSION: '2.5.0',
+  VERSION: '2.6.0',
   TITLE: '신화목장 타이쿤',
   SERVER_URL: 'https://script.google.com/macros/s/AKfycbwGEjjmnhrW0WnHJz0WkAXiHLlkAtlq6onudAWx5x_5lG0jfFu998FubrgyxWeytkvRuQ/exec',
   STORE_URL: 'https://smartstore.naver.com/shmeat_',
@@ -14871,8 +14906,8 @@ SR.CONFIG = {
   DEV: false,
   TERMS_TEXT: '신화목장 타이쿤 이용 안내\n\n' +
     '1. 이 게임은 신화미트가 무료로 제공하는 목장 경영 게임입니다. 유료 결제와 광고가 없습니다.\n' +
-    '2. 게임 진행 기록은 이 기기의 브라우저에 저장됩니다. 브라우저마다 따로 저장되므로 카카오톡 등 앱 안에서 연 화면과 크롬·사파리의 목장은 서로 다릅니다. 네이버로 로그인하지 않았다면 브라우저 데이터를 지울 때 진행 기록이 사라질 수 있습니다. [설정]의 「목장 옮기기」로 하던 목장을 다른 브라우저로 옮길 수 있으며, 옮기기 코드에는 이 목장의 계정 정보가 들어 있으므로 다른 사람에게 알려 주면 안 됩니다.\n' +
-    '3. 네이버 로그인(선택): 네이버로 로그인하면 진행 기록 사본을 서버에 보관해 다른 기기에서도 이어서 할 수 있습니다. 네이버 계정 하나에는 목장 하나만 보관되며, 한 번에 한 기기에서만 이어서 할 수 있습니다(다른 기기에서 이어하면 먼저 쓰던 기기의 진행은 서버에 보관되지 않습니다). 연결은 [설정]에서 언제든 해제할 수 있습니다.\n' +
+    '2. 게임 진행 기록은 이 기기의 브라우저에 저장됩니다. 브라우저마다 따로 저장되므로 카카오톡 등 앱 안에서 연 화면과 크롬·사파리의 목장은 서로 다릅니다(3항의 네이버 로그인이나 기기 연결로 이어 두면 어디서 열든 같은 목장으로 이어집니다). 네이버로 로그인하지 않았다면 브라우저 데이터를 지울 때 진행 기록이 사라질 수 있습니다. [설정]의 「목장 옮기기」로 하던 목장을 다른 브라우저로 옮길 수 있으며, 옮기기 코드에는 이 목장의 계정 정보가 들어 있으므로 다른 사람에게 알려 주면 안 됩니다.\n' +
+    '3. 네이버 로그인 · 기기 연결(선택): 네이버로 로그인하거나, 하던 기기에서 만든 연결 코드를 다른 기기에 넣으면 진행 기록 사본을 서버에 보관해 연결한 곳(카카오톡 안의 화면·크롬·사파리·PC 등) 어디서 열든 가장 최근 진행으로 이어서 할 수 있습니다. 한 번에 한 곳에서만 진행되며, 다른 곳에서 열면 먼저 하던 곳은 멈추고 그때까지의 진행을 넘겨줍니다. 두 곳에서 따로 진행한 경우(인터넷이 끊긴 채 진행한 경우 등)에는 어느 진행으로 할지 고르게 하며, 고르지 않은 진행은 서버에 남지 않습니다. 네이버 계정 하나에는 목장 하나만 보관됩니다. 연결 코드는 10분 동안 한 번만 쓸 수 있고 목장의 열쇠와 같으므로 다른 사람에게 알려 주면 안 됩니다. 연결은 [설정]에서 언제든 해제할 수 있으며, 해제하면 연결한 다른 기기의 연결도 함께 풀립니다(각 기기의 목장은 그대로 남습니다). 게임이 이전 방식만 쓰는 동안에는 한 번에 한 기기에서만 이어서 할 수 있습니다.\n' +
     '4. 게임 코인과 게임 속 물건은 돈이나 실제 상품으로 바꿀 수 없습니다. 실물 경품 교환은 하지 않습니다.\n' +
     '5. 구매 적립은 게임 코인으로만 드립니다. 운영자가 실제 스토어 주문을 확인한 뒤 승인하며, 입력한 정보가 주문과 다르면 반려될 수 있습니다. 구매 적립은 네이버로 로그인한 목장만 신청하도록 운영될 수 있으며, 적립률과 조건은 운영 사정에 따라 바뀔 수 있습니다.\n' +
     '6. 이벤트 선물이나 오류 보정을 위해 운영자가 게임 코인을 지급하거나 조정(회수)할 수 있습니다.\n' +
@@ -14882,12 +14917,13 @@ SR.CONFIG = {
     '10. 문의: 신화미트 스마트스토어 톡톡',
   PRIVACY_TEXT: '개인정보 처리 안내\n\n' +
     '· 수집 항목: 목장 이름(닉네임), 목장주 이름과 캐릭터 모습, 무작위 기기 식별값, 게임 진행 기록(레벨·플레이 시간·접속일 등). 구매 적립을 신청할 때만 네이버 아이디·주문번호·구매일·결제금액을 추가로 받습니다. 이름·전화번호·주소는 받지 않습니다.\n' +
-    '· 네이버 로그인(선택): 로그인하면 네이버가 이 게임에만 발급하는 회원 식별값을 받아, 알아볼 수 없게 바꾼 값만 계정에 저장하고 진행 기록 사본을 보관합니다. 이름·이메일·전화번호는 받지 않습니다. 별명 제공에 동의하면 별명은 처음 목장 이름을 제안할 때만 쓰고 서버에 저장하지 않습니다. [설정]에서 연결을 해제하면 보관된 진행 기록 사본을 바로 지웁니다.\n' +
+    '· 네이버 로그인(선택): 로그인하면 네이버가 이 게임에만 발급하는 회원 식별값을 받아, 알아볼 수 없게 바꾼 값만 계정에 저장하고 진행 기록 사본을 보관합니다. 이름·이메일·전화번호는 받지 않습니다. 별명 제공에 동의하면 별명은 처음 목장 이름을 제안할 때만 쓰고 서버에 저장하지 않습니다. [설정]에서 연결을 해제하면 보관된 진행 기록 사본을 바로 지웁니다. 여러 곳에서 이어서 하도록 로그인한 기기마다 그 기기의 로그인 정보(알아볼 수 없게 바꾼 값)와 연 곳의 종류(예: 안드로이드 · 카카오톡), 등록·최근 사용 시각을 서버에 저장합니다.\n' +
+    '· 기기 연결(선택): 연결 코드를 만들면 이 기기의 진행 기록 사본을 서버에 보관하고, 6자리 연결 코드를 알아볼 수 없게 바꾼 값으로 10분 동안만 보관합니다(한 번 쓰거나 10분이 지나면 지웁니다). 코드를 넣은 기기에는 그 기기만의 로그인 정보를 발급하고, 연 곳의 종류와 등록·최근 사용 시각을 저장합니다. 연결을 끊으면 보관된 진행 기록 사본과 기기 정보를 바로 지우며, 270일 동안 쓰지 않은 기기 정보는 자동으로 지웁니다.\n' +
     '· 이웃 목장(선택): [이웃] 기능을 켠 경우에만 목장 이름·목장주 이름·캐릭터·레벨·목장의 모습(가축·시설 상태·꾸미기)을 서버에 올려 다른 이용자에게 보여 줍니다. 계정 번호·기기 식별값·네이버 연결 정보·구매 적립 정보는 다른 이용자에게 보이지 않습니다. 누가 누구를 도왔는지(치료·쫓기·보호·선물)는 부정 이용 확인을 위해 서버에 기록됩니다. [설정]에서 끄면 이웃 목록에서 바로 빠집니다.\n' +
     '· 실시간 방문(이웃 기능을 켠 경우): 같은 목장에 함께 있는 동안 목장 이름·목장주 이름·캐릭터, 캐릭터가 걸어가는 위치, 고른 인사말·이모티콘 번호, 방금 도와준 일이 Google Firebase(Realtime Database)를 거쳐 함께 있는 이용자에게 전달됩니다. 자리를 떠나면 바로 지워지며 따로 보관하지 않습니다. 이웃 목록에는 지금 접속 중인지가 표시됩니다.\n' +
     '· 알림(선택): [설정]에서 알림을 켠 경우에만, 이 기기로 알림을 보내는 데 필요한 알림 주소(Google Firebase 클라우드 메시징이 발급한 값)와 기기 종류(안드로이드·아이폰·PC)를 서버에 저장합니다. 알림을 끄면 바로 지우고, 9개월 동안 확인되지 않은 기기는 자동으로 지웁니다.\n' +
     '· 목장 옮기기(선택): 옮기기 코드는 이 기기 안에서만 만들어지며, 게임 서버로 보내거나 보관하지 않습니다. 코드에는 게임 진행 기록과 서버 계정 식별값이 들어 있고, 코드를 붙여 넣은 브라우저가 그 목장을 그대로 이어 갑니다.\n' +
-    '· 목적: 게임 서비스 제공, 진행 기록 보관(네이버 로그인), 이웃 목장 기능 제공, 부정 이용 방지. 구매 적립 정보는 신화미트 스토어의 실제 주문과 대조해 구매를 확인하는 데에만 씁니다. 구매 적립에 적은 네이버 아이디는 다음 신청 때 다시 쓰도록 이 기기에도 저장됩니다.\n' +
+    '· 목적: 게임 서비스 제공, 진행 기록 보관과 여러 기기에서 이어서 하기(네이버 로그인 · 기기 연결), 이웃 목장 기능 제공, 부정 이용 방지. 구매 적립 정보는 신화미트 스토어의 실제 주문과 대조해 구매를 확인하는 데에만 씁니다. 구매 적립에 적은 네이버 아이디는 다음 신청 때 다시 쓰도록 이 기기에도 저장됩니다.\n' +
     '· 보관: 구매 적립 기록은 처리 후 1년, 게임 계정 정보와 보관된 진행 기록은 마지막 접속 후 1년 보관한 뒤 파기합니다.\n' +
     '· 보관 위치: Google 스프레드시트(국외 서버)에 저장됩니다. 알림과 실시간 방문에는 Google Firebase(국외 서버)를 이용합니다.\n' +
     '· 목장 이름·목장주 이름에 실명·연락처를 적지 마세요. 만 14세 미만은 보호자와 함께 이용해 주세요. 구매 적립은 만 14세 이상만, 개인정보 수집·이용에 동의한 경우에만 신청할 수 있습니다(동의하지 않을 수 있으며, 이때는 구매 적립만 이용할 수 없습니다).\n' +
@@ -15003,6 +15039,28 @@ SR.CONFIG = {
       delete this.mem[key];
       try { window.localStorage.removeItem(key); } catch (e) { /* 무시 */ }
     }
+  };
+
+  /* v2.6 gzip + base64 (서버에 진행 기록을 줄여 올리고 · 줄인 보관본을 받아 풀기). 브라우저에 압축 기능이 없으면 gzip64 는 null */
+  const toB64 = bytes => { let s = ''; for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000)); return btoa(s); };
+  const fromB64 = str => { const s = atob(str); const out = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) out[i] = s.charCodeAt(i); return out; };
+  U.canGzip = () => typeof CompressionStream === 'function' && typeof DecompressionStream === 'function' && typeof Response === 'function' &&
+    typeof Blob === 'function' && !!Blob.prototype.stream;
+  /** 글자 → gzip → base64 (Promise). 압축을 못 하면 null */
+  U.gzip64 = function (text) {
+    try {
+      if (!U.canGzip()) return Promise.resolve(null);
+      const st = new Blob([new TextEncoder().encode(String(text))]).stream().pipeThrough(new CompressionStream('gzip'));
+      return new Response(st).arrayBuffer().then(buf => toB64(new Uint8Array(buf)), () => null);
+    } catch (e) { return Promise.resolve(null); }
+  };
+  /** base64(gzip) → 글자 (Promise — 풀지 못하면 실패) */
+  U.gunzip64 = function (b64) {
+    try {
+      if (!U.canGzip()) return Promise.reject(new Error('OLD_BROWSER'));
+      const st = new Blob([fromB64(String(b64))]).stream().pipeThrough(new DecompressionStream('gzip'));
+      return new Response(st).arrayBuffer().then(buf => new TextDecoder('utf-8').decode(new Uint8Array(buf)));
+    } catch (e) { return Promise.reject(e); }
   };
 
   // DOM 헬퍼 (문자열은 textContent로만 넣는다)
@@ -16105,8 +16163,14 @@ SR.CONFIG = {
       attend: { last: '', streak: 0 },
       tut: { step: 0, done: false },
       settings: { sfx: true, bgm: true, vib: true, daynight: true },
-      // 서버 계정. linked = 네이버 로그인으로 연결됨(진행 기록을 서버에 올림), moved = 다른 기기에서 이어하는 중(이 기기 토큰이 무효)
-      net: { deviceId: U.uuid().replace(/-/g, '').slice(0, 24), playerId: '', token: '', nick: '', linked: false, moved: false, saveAt: 0, revs: [] },
+      // 서버 계정. linked = 서버에 진행 기록을 보관함(네이버 로그인 · v2.6 기기 연결 코드), moved = 다른 기기에서 이어하는 중(이 기기 토큰이 무효)
+      // v2.6 자동 이어하기(이 브라우저만의 값 — 서버 보관본에는 넣지 않는다):
+      //   revs = 이 목장이 이어 온 보관본 표시들(올렸거나 받아 쓴 것, 마지막 = 지금 진행의 기준점) · chain = 보관본에 함께 적는 이어 온 표시들
+      //   pointAt = 마지막으로 올린(받아 쓴) 시각 · playAt = 진행 화면이 보이는 동안 목장이 돌아간 마지막 시각(→ 기준점 뒤로 진행했는가)
+      //   yielded = (쓰지 않음 — 늘 0. 다른 곳에 넘겨준 화면도 손님이 한 일이 남아 있으면 이어 할 때 고르게 한다) · dev = 기기 토큰(처음 연결한 기기가 아님)
+      //   naver = 진짜 네이버 연결(연결 코드만이면 false)
+      net: { deviceId: U.uuid().replace(/-/g, '').slice(0, 24), playerId: '', token: '', nick: '', linked: false, moved: false, saveAt: 0, revs: [],
+        chain: [], pointAt: 0, playAt: 0, yielded: 0, dev: false, naver: false },
       threat: { foxAt: now + 240000, ratAt: now + 300000 },
       rank: 0, flags: {},
       cashback: { got: {}, ack: {}, total: 0, naverId: '' },    // 구매 적립: 받은 신청번호(다시 받지 않음)·서버에 알릴 번호·받은 코인 합·마지막에 적은 네이버 아이디
@@ -16306,6 +16370,7 @@ SR.CONFIG = {
     const pre22 = !('deco' in g);       // v2.1 이전 기록(목장 꾸미기 — 장식·스킨이 없던 때)
     const pre23 = !('live' in g);       // v2.2 이전 기록(알림·실시간 방문이 없던 때)
     const pre24 = !('wild' in g);       // v2.3 이전 기록(탐험 — 낚시·채집·보물 캐기가 없던 때)
+    const pre26 = !(g.net && typeof g.net === 'object' && 'chain' in g.net);   // v2.5 이전 기록(자동 이어하기 — 이어 온 표시·진행 시각이 없던 때)
     const base = S.newGame();   // 빠진 필드 채우기용(S.g를 덮으므로 아래에서 다시 지정)
     for (const k in base) if (!(k in g)) g[k] = base[k];
     for (const k in base.stats) if (!(k in g.stats)) g.stats[k] = base.stats[k];
@@ -16397,8 +16462,22 @@ SR.CONFIG = {
     g.net.linked = g.net.linked === true;
     g.net.moved = g.net.moved === true;
     g.net.saveAt = Math.max(0, num(g.net.saveAt, 0));
-    g.net.revs = Array.isArray(g.net.revs) ? g.net.revs.filter(r => typeof r === 'string' && /^[a-z0-9]{8,16}$/.test(r)).slice(-5) : [];
-    delete g.cloudRev;
+    const revOk = r => typeof r === 'string' && /^[a-z0-9]{8,16}$/.test(r);
+    g.net.revs = Array.isArray(g.net.revs) ? g.net.revs.filter(revOk).slice(-8) : [];
+    g.net.chain = Array.isArray(g.net.chain) ? g.net.chain.filter(revOk).slice(-20) : [];
+    if (pre26) {
+      // v2.5 에서 처음 여는 기록: 이 기기가 올렸던 표시들이 곧 이어 온 표시들. 마지막으로 서버가 받았다고 한 뒤에 저장한 적이 있으면 그 뒤로 진행한 것
+      g.net.chain = g.net.revs.slice();
+      g.net.pointAt = g.net.saveAt;
+      g.net.playAt = g.net.linked && num(g.last, 0) > g.net.saveAt + 30000 ? num(g.last, 0) : 0;
+      g.net.naver = g.net.linked;                                  // v2.5 까지는 네이버 로그인으로만 연결됐다
+    }
+    g.net.pointAt = Math.max(0, num(g.net.pointAt, 0));
+    g.net.playAt = Math.max(0, num(g.net.playAt, 0));
+    g.net.yielded = g.net.yielded ? 1 : 0;
+    g.net.dev = g.net.dev === true;
+    g.net.naver = g.net.naver === true;
+    delete g.cloudRev; delete g.cloudChain;
     // v1.9 목장주 이름·캐릭터·이웃 목장
     g.owner = S.cleanOwner(g.owner);
     g.avatar = D.avatarCode(g.avatar);
@@ -16602,7 +16681,9 @@ SR.CONFIG = {
       ['deviceId', 'playerId', 'token', 'nick'].forEach(k => { if (typeof from.net[k] === 'string') to.net[k] = from.net[k]; });
       to.net.linked = from.net.linked === true;
       to.net.moved = from.net.moved === true;
-      if (Array.isArray(from.net.revs)) to.net.revs = from.net.revs.slice(-5);
+      if (Array.isArray(from.net.revs)) to.net.revs = from.net.revs.slice(-8);
+      if (Array.isArray(from.net.chain)) to.net.chain = from.net.chain.slice(-20);   // v2.6 새 목장도 같은 보관본에서 이어지는 것으로(다음 저장이 서버 보관본을 바꾼다)
+      ['dev', 'naver'].forEach(k => { to.net[k] = from.net[k] === true; });
     }
     if (from.cashback && typeof from.cashback === 'object') {
       to.cashback = { got: Object.assign({}, from.cashback.got), ack: Object.assign({}, from.cashback.ack), total: 0, naverId: typeof from.cashback.naverId === 'string' ? from.cashback.naverId : '' };
@@ -16626,19 +16707,34 @@ SR.CONFIG = {
       to.social = ts;
     }
   };
-  /** 서버에 올릴 진행 기록(JSON 문자열) — 계정 토큰·인증 실패 기록, 구매 적립에 적었던 네이버 아이디는 빼고.
-   *  rev = 이번에 올리는 기록의 표시(이 기기가 올린 기록인지 나중에 알아보는 데 씀) */
-  S.exportCloud = function (rev) {
+  /** 서버에 올릴 진행 기록(JSON 문자열) — 계정 토큰·인증 실패 기록, 구매 적립에 적었던 네이버 아이디, 이 브라우저만의 값은 빼고.
+   *  rev = 이번에 올리는 기록의 표시(이 기기가 올린 기록인지 나중에 알아보는 데 씀) · chain = v2.6 이 진행이 이어 온 표시들(마지막 = rev) */
+  S.exportCloud = function (rev, chain) {
     const copy = JSON.parse(JSON.stringify(S.g));
-    if (copy.net) ['token', 'authFails', 'authFailAt', 'moved', 'revs'].forEach(k => { delete copy.net[k]; });
+    if (copy.net) ['token', 'authFails', 'authFailAt', 'moved', 'revs', 'chain', 'pointAt', 'playAt', 'yielded', 'dev', 'naver'].forEach(k => { delete copy.net[k]; });
     if (copy.cashback) delete copy.cashback.naverId;
     if (copy.flags) delete copy.flags.mvOut;                   // v2.5 「다른 브라우저로 옮겼다」는 표시는 이 브라우저만의 것
     if (rev) copy.cloudRev = rev;
+    if (Array.isArray(chain) && chain.length) copy.cloudChain = chain.slice(-20);
     return JSON.stringify(copy);
   };
   /** 보관본 문자열의 rev(없거나 읽지 못하면 '') */
   S.cloudRevOf = function (text) {
     try { const o = JSON.parse(text); return o && typeof o.cloudRev === 'string' ? o.cloudRev : ''; } catch (e) { return ''; }
+  };
+  /** 보관본 글자의 겉 정보 → {rev, chain, name, level, coins, last} (읽지 못하면 null) */
+  S.cloudInfoOf = function (text) {
+    try {
+      const o = JSON.parse(text);
+      if (!valid(o)) return null;
+      const ok = r => typeof r === 'string' && /^[a-z0-9]{8,16}$/.test(r);
+      const rev = ok(o.cloudRev) ? o.cloudRev : '';
+      const chain = Array.isArray(o.cloudChain) ? o.cloudChain.filter(ok).slice(-20) : [];
+      if (rev && chain[chain.length - 1] !== rev) chain.push(rev);
+      const num = (v, d) => (typeof v === 'number' && isFinite(v) ? v : d);
+      return { rev: rev, chain: chain, name: S.cleanText(o.name, 12) || '목장', level: U.clamp(Math.floor(num(o.level, 1)), 1, D.MAX_LEVEL),
+        coins: Math.max(0, Math.floor(num(o.coins, 0))), last: Math.max(0, num(o.last, 0)) };
+    } catch (e) { return null; }
   };
   /** 서버에 보관된 진행 기록으로 바꾸기(네이버로 이어하기). net = 이 기기에서 쓸 계정 정보.
    *  마지막 저장 시각은 보관본 그대로 둬서 다음 시작 때 떠나 있던 동안의 진행을 계산한다. 저장까지 하고 새 상태를 돌려준다 */
@@ -16646,13 +16742,15 @@ SR.CONFIG = {
     const g = JSON.parse(text);
     if (!valid(g)) throw new Error('진행 기록 모양이 올바르지 않아요');
     const myNaverId = S.g && S.g.cashback && S.g.cashback.naverId;
-    const rev = typeof g.cloudRev === 'string' ? g.cloudRev : '';
-    delete g.cloudRev;
+    const info = S.cloudInfoOf(text) || { rev: '', chain: [] };
+    delete g.cloudRev; delete g.cloudChain;
     const m = migrateKeep(g);
     delete m.flags.mvOut;
     m.net = Object.assign({}, m.net, net);
     m.net.linked = true; m.net.moved = false;
-    m.net.revs = /^[a-z0-9]{8,16}$/.test(rev) ? [rev] : [];   // 이 기기의 목장 = 그 보관본에서 이어짐
+    m.net.revs = info.rev ? [info.rev] : [];                  // 이 기기의 목장 = 그 보관본에서 이어짐
+    m.net.chain = info.chain.length ? info.chain : m.net.revs.slice();
+    m.net.pointAt = Date.now(); m.net.playAt = 0; m.net.yielded = 0;   // v2.6 받아 쓴 지금이 기준점(그 뒤로 아직 진행하지 않음)
     if (myNaverId && !m.cashback.naverId) m.cashback.naverId = myNaverId;   // 이 기기에서 적었던 아이디(보관본에는 없음)
     if (!(typeof m.last === 'number' && isFinite(m.last) && m.last > 0)) m.last = Date.now();
     S.g = m;
@@ -16721,6 +16819,34 @@ SR.CONFIG = {
       if (U.store.get(C.SAVE_KEY) !== JSON.stringify(S.g)) throw new Error('옮겨 온 목장을 저장하지 못했어요');
     } catch (e) { S.g = prev; throw e; }
     return m;
+  };
+  /** v2.6 목장의 큰 숫자들(코인 · 경험치 · 매출 · 창고 · 가축 · 건설 · 꾸미기 · 탐험)을 한 수로 — 손님이 무언가 바꿨는지 견주는 데만 쓴다
+   *  (08_main 의 게임 루프: 한 그림과 다음 그림 사이 — 목장 시간 계산 밖 — 에 이 수가 바뀌면 손님이 조작했거나 보상을 받은 것) */
+  S.fingerprint = function (g) {
+    g = g || S.g;
+    if (!g) return 0;
+    const num = v => (typeof v === 'number' && isFinite(v) ? v : 0);
+    const st = g.stats || {};
+    let f = num(g.coins) * 1.000003 + num(g.xp) * 3.1 + num(g.level) * 7919 + num(st.revenue) * 0.37 + num(st.cost) * 0.53 + num(st.invested) * 0.71 + num(st.deliveries) * 104729;
+    const bag = (o, w) => { if (o && typeof o === 'object') for (const k in o) f += num(o[k]) * (w + (k.length * 7 + k.charCodeAt(0)) % 97); };
+    bag(g.inv, 11);
+    for (const id in g.pens) { const pen = g.pens[id]; f += (pen && Array.isArray(pen.animals) ? pen.animals.length : 0) * 1299709; }
+    for (const id in g.parcels) { const p = g.parcels[id]; if (p) f += p.st === 'done' ? 15485867 : p.st === 'building' ? 2750159 : 0; }
+    if (g.deco) { bag(g.deco.inv, 13); f += (Array.isArray(g.deco.items) ? g.deco.items.length : 0) * 611953; }
+    if (g.wild) { bag(g.wild.bag, 17); f += num(g.wild.bait) * 4111 + num(g.wild.stat && g.wild.stat.coins) * 0.29; }
+    return Math.round(f * 1000) / 1000;
+  };
+  /** v2.6 지금 이 브라우저의 목장을 7일 동안 맡아 둔다 — 다른 곳의 진행(서버 보관본 · 연결 코드)으로 바꾸기 전에([설정 → 목장 옮기기]에서 되돌림).
+   *  막 시작한 새 목장은 맡지 않는다 → 맡았으면 true */
+  S.keepPremove = function () {
+    const prev = S.g;
+    const blank = !prev || (!prev.named && prev.level <= 1 && !(prev.tut && prev.tut.done) && !(prev.stats && prev.stats.deliveries > 0));
+    if (blank) return false;
+    try { S.save(); } catch (e) { /* 무시 */ }
+    const cur = U.store.get(C.SAVE_KEY);
+    if (!cur) return false;
+    U.store.set(PRE_KEY, cur); U.store.set(PRE_KEY + '_at', String(Date.now()));
+    return true;
   };
   /** 옮겨 오기 전에 이 브라우저에 있던 목장(7일 안) → {at, name, owner, level, coins, last, …} 또는 null */
   S.premoveInfo = function () {
@@ -23329,12 +23455,15 @@ SR.CONFIG = {
   const nvHead = (title, sub) => el('div', { class: 'row nowrap' }, [el('span', { class: 'nv-badge' }, [naverMark(20)]), el('div', { class: 'grow' }, [
     el('h3', { text: title }), sub ? el('p', { class: 'muted', text: sub }) : null
   ])]);
-  /** 구매 적립 막음: 네이버 로그인이 필요하거나(moved=false) 다른 기기에서 이어하는 중(moved=true) */
+  /** 구매 적립 막음: 네이버 로그인이 필요하거나(moved=false) 다른 기기에서 이어하는 중(moved=true).
+   *  v2.6 연결 코드로만 이은 목장(서버 보관은 되지만 네이버 연결이 아님)도 네이버 로그인이 필요하다 */
   function naverGate(moved, back) {
+    const pair = !moved && S.g.net.linked && !S.g.net.naver;
     return el('div', { class: 'card nv-card', style: 'flex-direction:column;align-items:stretch;gap:8px' }, [
       nvHead(moved ? '다른 기기에서 이어하는 중이에요' : '네이버로 로그인하고 신청해요',
         moved ? '이 목장은 다른 기기에서 이어서 하고 있어요. 이 기기에서 신청하려면 네이버로 다시 로그인해 주세요.'
-          : '적립 코인이 이 기기에만 남지 않도록, 구매 적립은 네이버로 로그인한 목장만 신청할 수 있어요. 로그인하면 진행 기록도 서버에 보관돼요.'),
+          : pair ? '구매 적립은 네이버로 로그인한 목장만 신청할 수 있어요. 로그인해도 연결한 기기들은 그대로 이어져요.'
+            : '적립 코인이 이 기기에만 남지 않도록, 구매 적립은 네이버로 로그인한 목장만 신청할 수 있어요. 로그인하면 진행 기록도 서버에 보관돼요.'),
       naverBtn(moved ? '네이버로 다시 로그인' : '네이버 로그인', back)
     ]);
   }
@@ -23343,19 +23472,41 @@ SR.CONFIG = {
   function naverCard(g) {
     const N = SR.Net, net = g.net;
     if (!N.enabled() || (!net.linked && !net.moved && !N.naverAvailable())) return null;
-    const testing = !N.naverInfo().open;
+    const testing = !N.naverInfo().open, multi = N.multi();
+    const pair = multi && !net.naver;                                // v2.6 연결 코드로만 이은 목장(네이버 연결이 아님)
     const card = el('div', { class: 'card nv-card', style: 'flex-direction:column;align-items:stretch;gap:8px', id: 'naverCard' });
-    if (net.moved) {
+    const saveRow = () => el('div', { class: 'row' }, [
+      btn(cloudBusy ? '보관하는 중…' : '지금 보관하기', 'btn-blue btn-sm', saveNow, { icon: 'check', disabled: cloudBusy, id: 'naverSaveNow' }),
+      btn(pair ? '연결 끊기' : '연결 해제', 'btn-ghost btn-sm', unlinkAsk, { id: 'naverUnlink' })
+    ]);
+    const saved = net.saveAt ? '마지막 보관 ' + fmtWhen(net.saveAt) + ' · 바뀐 내용은 몇 분마다 자동으로 보관돼요' : '곧 진행 기록을 서버에 보관해요';
+    if (net.moved && pair) {
+      card.appendChild(el('div', { class: 'row nowrap' }, [ico('link', 32), el('div', { class: 'grow' }, [el('h3', { text: '다른 기기와의 연결이 풀렸어요' }),
+        el('p', { class: 'muted', text: '이 기기의 진행은 서버에 보관되지 않아요. 하던 기기에서 연결 코드를 다시 만들어 넣으면 다시 이어져요.' })])]));
+      const row = el('div', { class: 'row' }, [btn('코드로 다시 연결', 'btn-orange btn-sm', () => UI.pairIn && UI.pairIn(), { icon: 'link', id: 'naverRePair' })]);
+      if (N.naverAvailable()) row.appendChild(naverBtn('네이버 로그인', 'settings', 'btn-sm'));
+      card.appendChild(row);
+    } else if (net.moved) {
       card.appendChild(nvHead('다른 기기에서 이어하는 중', '이 네이버 계정의 목장을 다른 기기에서 이어서 하고 있어요. 이 기기의 진행은 서버에 보관되지 않아요.'));
       card.appendChild(naverBtn('네이버로 다시 로그인', 'settings'));
+    } else if (net.linked && pair) {
+      card.appendChild(el('div', { class: 'row nowrap' }, [ico('link', 32), el('div', { class: 'grow' }, [el('h3', { text: '다른 기기와 연결됨' }),
+        el('p', { class: 'muted', text: saved + ' · 연결한 기기끼리는 어디서 열든 가장 최근 진행으로 이어져요' })])]));
+      card.appendChild(saveRow());
+      if (N.naverAvailable()) {
+        card.appendChild(el('div', { class: 'nv-ask' }, [
+          el('span', { class: 'muted', text: '네이버로 로그인해 두면 휴대폰을 잃어버리거나 기록을 지워도 목장을 되찾을 수 있어요' + (N.naverRequired() ? ' · 구매 적립도 신청할 수 있어요' : '') }),
+          naverBtn('네이버 로그인', 'settings', 'btn-sm')
+        ]));
+      }
     } else if (net.linked) {
-      card.appendChild(nvHead('네이버 계정에 연결됨', net.saveAt ? '마지막 보관 ' + fmtWhen(net.saveAt) + ' · 바뀐 내용은 몇 분마다 자동으로 보관돼요' : '곧 진행 기록을 서버에 보관해요'));
-      card.appendChild(el('div', { class: 'row' }, [
-        btn(cloudBusy ? '보관하는 중…' : '지금 보관하기', 'btn-blue btn-sm', saveNow, { icon: 'check', disabled: cloudBusy, id: 'naverSaveNow' }),
-        btn('연결 해제', 'btn-ghost btn-sm', unlinkAsk, { id: 'naverUnlink' })
-      ]));
+      card.appendChild(nvHead('네이버 계정에 연결됨', saved));
+      if (multi) card.appendChild(el('p', { class: 'muted nv-note', text: '카카오톡·크롬·PC 등 다른 곳에서도 이 네이버 계정으로 한 번 로그인하면, 그 뒤로는 어디서 열든 가장 최근 진행으로 이어져요(한 번에 한 곳에서만 진행돼요).' }));
+      card.appendChild(saveRow());
     } else {
-      card.appendChild(nvHead('네이버로 목장 지키기' + (testing ? ' (테스트 중)' : ''), '네이버로 로그인하면 진행 기록이 서버에 보관돼요. 휴대폰을 바꾸거나 브라우저 기록을 지워도 같은 네이버 계정으로 로그인하면 이어서 할 수 있어요.'));
+      card.appendChild(nvHead('네이버로 목장 지키기' + (testing ? ' (테스트 중)' : ''), multi
+        ? '네이버로 로그인하면 진행 기록이 서버에 보관돼요. 카카오톡·크롬·PC 어디서 열든 같은 네이버 계정으로 로그인하면 가장 최근 진행으로 이어서 할 수 있어요.'
+        : '네이버로 로그인하면 진행 기록이 서버에 보관돼요. 휴대폰을 바꾸거나 브라우저 기록을 지워도 같은 네이버 계정으로 로그인하면 이어서 할 수 있어요.'));
       card.appendChild(naverBtn('네이버 로그인', 'settings'));
       card.appendChild(el('p', { class: 'muted nv-note', text: '네이버 회원번호를 알아볼 수 없게 바꾼 값과 진행 기록 사본만 보관해요. 이름·이메일·전화번호는 받지 않아요.' + (testing ? ' 지금은 테스트 목장(테스터 계정)에만 보여요.' : '') }));
     }
@@ -23373,12 +23524,13 @@ SR.CONFIG = {
     }, e => { console.error(e); cloudBusy = false; UI.refresh(); });
   }
   function unlinkAsk() {
-    const N = SR.Net;
-    UI.confirm('네이버 연결을 해제할까요?', '서버에 보관된 진행 기록이 지워져요. 이 기기의 목장은 그대로 남아요.' + (N.naverRequired() ? ' 연결을 해제하면 구매 적립을 신청할 수 없어요.' : ''), '연결 해제', () => {
+    const N = SR.Net, multi = N.multi(), pair = multi && !S.g.net.naver;
+    UI.confirm(pair ? '다른 기기와의 연결을 끊을까요?' : '네이버 연결을 해제할까요?', '서버에 보관된 진행 기록이 지워져요. 이 기기의 목장은 그대로 남아요.' +
+      (multi ? ' 연결한 다른 기기들도 연결이 풀려요(그 기기의 목장도 그대로 남아요).' : '') + (N.naverRequired() && !pair ? ' 연결을 해제하면 구매 적립을 신청할 수 없어요.' : ''), pair ? '연결 끊기' : '연결 해제', () => {
       const done = UI.busy('연결을 해제하는 중이에요…', { icon: 'link' });
       N.naverUnlink().then(r => {
         done();
-        if (r && r.ok) UI.toast('네이버 연결을 해제했어요', 'good', 'check');
+        if (r && r.ok) UI.toast(pair ? '다른 기기와의 연결을 끊었어요' : '네이버 연결을 해제했어요', 'good', 'check');
         else if (!(r && r.error === 'MOVED')) UI.alert('연결을 해제하지 못했어요', (r && r.message && r.error !== 'NET' ? r.message : '') || '서버에 연결하지 못했어요. 잠시 후 다시 시도해 주세요.', { icon: 'cross' });
         UI.refresh();
       }, e => { console.error(e); done(); UI.refresh(); });
@@ -23388,8 +23540,15 @@ SR.CONFIG = {
   bus.on('netMoved', () => {
     UI.refresh();
     if (!UI.started) return;
+    const N = SR.Net, pair = N.multi() && !S.g.net.naver;          // v2.6 연결 코드로만 이은 목장: 이 기기의 연결이 풀림(연결한 기기가 너무 많음 등)
     UI.modal((box, close) => {
       box.appendChild(el('div', { class: 'ribbon', text: '알림' }));
+      if (pair) {
+        box.appendChild(el('h2', { text: '다른 기기와의 연결이 풀렸어요' }));
+        box.appendChild(el('p', { class: 'lead', text: '이 기기에서 하는 진행은 서버에 보관되지 않아요. 하던 기기에서 [설정 → 다른 기기에서도 하기 → 연결 코드 만들기]로 받은 코드를 넣으면 다시 이어져요.' }));
+        box.appendChild(el('div', { class: 'btns' }, [btn('닫기', 'btn-ghost', () => close()), btn('코드로 다시 연결', 'btn-orange', () => { close(); if (UI.pairIn) UI.pairIn(); }, { icon: 'link', id: 'movedRePair' })]));
+        return;
+      }
       box.appendChild(el('h2', { text: '다른 기기에서 이어하고 있어요' }));
       box.appendChild(el('p', { class: 'lead', text: '이 네이버 계정의 목장을 다른 기기에서 이어서 하고 있어요. 이 기기에서 하는 진행은 서버에 보관되지 않고, 구매 적립도 신청할 수 없어요. 이 기기에서 계속하려면 네이버로 다시 로그인해 주세요.' }));
       box.appendChild(el('div', { class: 'btns' }, [btn('닫기', 'btn-ghost', () => close()), naverBtn('네이버로 다시 로그인', '')]));
@@ -23405,7 +23564,8 @@ SR.CONFIG = {
       box.appendChild(el('div', { class: 'ribbon green', text: '새 기능' }));
       box.appendChild(el('h2', { text: '네이버로 목장을 지켜요' }));
       box.appendChild(el('div', { style: 'display:flex;justify-content:center' }, [el('span', { class: 'nv-badge big' }, [naverMark(30)])]));
-      box.appendChild(el('p', { class: 'lead', text: '네이버로 로그인하면 진행 기록이 서버에 보관돼요. 휴대폰을 바꾸거나 브라우저 기록을 지워도 같은 네이버 계정으로 로그인하면 이어서 할 수 있어요.' + (N.naverRequired() ? ' 구매 적립도 네이버로 로그인한 뒤 신청할 수 있어요.' : '') }));
+      box.appendChild(el('p', { class: 'lead', text: (N.multi() ? '네이버로 로그인하면 진행 기록이 서버에 보관돼요. 카카오톡·크롬·PC 어디서 열든 같은 네이버 계정으로 로그인하면 가장 최근 진행으로 이어서 할 수 있어요.'
+        : '네이버로 로그인하면 진행 기록이 서버에 보관돼요. 휴대폰을 바꾸거나 브라우저 기록을 지워도 같은 네이버 계정으로 로그인하면 이어서 할 수 있어요.') + (N.naverRequired() ? ' 구매 적립도 네이버로 로그인한 뒤 신청할 수 있어요.' : '') }));
       box.appendChild(el('div', { class: 'btns' }, [btn('다음에', 'btn-ghost', () => close()), naverBtn('네이버 로그인', '')]));
     });
   };
@@ -23559,7 +23719,8 @@ SR.CONFIG = {
     }
     // v1.4: 네이버 로그인이 열리면 로그인한 목장만 신청(다른 기기에서 이어하는 중이면 이 기기에서는 못 함)
     const net = S.g.net;
-    if (net.moved || (N.naverRequired() && !net.linked)) { body.appendChild(naverGate(net.moved, 'buy')); return; }
+    // v2.6 연결 코드로만 이은 목장(net.naver 아님)도 네이버 로그인이 필요하다
+    if (net.moved || (N.naverRequired() && !(net.linked && net.naver))) { body.appendChild(naverGate(net.moved, 'buy')); return; }
     const rate = +pi.ratePct || 0, perWon = pi.coinPerWon === undefined ? 1 : +pi.coinPerWon;
     const maxAmount = Math.max(100, Math.floor(+pi.maxAmount || 1000000)), maxDays = Math.max(0, Math.floor(+pi.maxDays || 0));
     body.appendChild(el('div', { class: 'card hl', style: 'flex-direction:column;align-items:stretch;gap:6px' }, [
@@ -23969,6 +24130,9 @@ SR.CONFIG = {
       ])]));
       const nv = naverCard(g);
       if (nv) body.appendChild(nv);
+      // v2.6 다른 기기에서도 하기(기기 연결 코드 — 서버가 자동 이어하기를 쓸 수 있을 때만)
+      const pcd = UI.pairCard ? UI.pairCard() : null;
+      if (pcd) body.appendChild(pcd);
       // v2.5 목장 옮기기(카카오톡 안의 화면 → 크롬·사파리 · 예전 주소 → 새 주소)
       const mv = UI.moveCard ? UI.moveCard() : null;
       if (mv) body.appendChild(mv);
@@ -23979,7 +24143,7 @@ SR.CONFIG = {
       const vc = UI.versionCard ? UI.versionCard() : null;
       if (vc) body.appendChild(vc);
       body.appendChild(storeLink(C.STORE_NAME + ' 바로가기', 'btn-blue'));
-      const resetLead = '목장·코인·가축이 모두 사라지고 되돌릴 수 없어요. 캐릭터 꾸미기와 산 장식·스킨은 새 목장에도 남아요(장식은 보관함으로).' + (g.net.linked && !g.net.moved ? ' 네이버 계정에 보관된 진행 기록도 새 목장으로 바뀌어요.' : '');
+      const resetLead = '목장·코인·가축이 모두 사라지고 되돌릴 수 없어요. 캐릭터 꾸미기와 산 장식·스킨은 새 목장에도 남아요(장식은 보관함으로).' + (g.net.linked && !g.net.moved ? (SR.Net.multi() ? ' 서버에 보관된 진행 기록도 새 목장으로 바뀌어요(연결한 다른 기기도 새 목장으로 이어져요).' : ' 네이버 계정에 보관된 진행 기록도 새 목장으로 바뀌어요.') : '');
       body.appendChild(el('div', { class: 'row spread' }, [
         el('span', { class: 'muted', text: C.TITLE + ' v' + C.VERSION }),
         btn('게임 초기화', 'btn-ghost btn-sm', () => UI.confirm('정말 처음부터 할까요?', resetLead, '초기화', () => UI.confirm('마지막 확인', '진짜로 모든 진행을 지울까요?', '모두 지우기', () => { S.reset(); location.reload(); }, { okCls: 'btn-red' }), { okCls: 'btn-red' }))
@@ -24111,7 +24275,11 @@ SR.CONFIG = {
     // v2.5 목장 옮기기 · 새 버전
     if (UI.moveCard) items.push(['truck', '목장 옮기기', '진행 기록은 브라우저마다 따로 저장돼요(카카오톡 안에서 연 화면 · 크롬 · 사파리가 서로 달라요). [설정 → 기본]의 「목장 옮기기」에서 하던 목장을 그대로 다른 브라우저로 가져갈 수 있어요. 카카오톡 안에서는 [크롬·사파리로 옮기기]를 한 번 누르면 되고, 그 밖에는 [옮기기 코드 복사] 뒤 옮겨 갈 브라우저의 [코드로 가져오기]에 붙여 넣어요. 옮기기 코드는 내 목장의 열쇠와 같으니 다른 사람에게 보내지 마세요.']);
     if (UI.versionCard) items.push(['sparkle', '새 버전', '새 버전이 나오면 게임이 스스로 알아채요. 첫 화면에서는 바로 새 버전으로 열리고, 게임을 하는 중에는 물어본 뒤 새로 열어요(하던 목장은 그대로예요). 지금 버전은 첫 화면 오른쪽 위와 [설정 → 기본] 아래쪽에서 볼 수 있어요.']);
-    if (SR.Net.naverAvailable() || S.g.net.linked) items.push(['lock', '네이버 로그인', '첫 화면이나 [설정 → 기본]에서 네이버로 로그인하면 진행 기록이 서버에 보관돼요. 휴대폰을 바꿔도 같은 네이버 계정으로 로그인하면 이어서 할 수 있어요. 한 번에 한 기기에서만 이어서 할 수 있어요.']);
+    // v2.6 서버가 자동 이어하기를 쓸 수 있으면: 여러 곳에서 같은 목장(네이버 로그인 · 연결 코드)
+    if (SR.Net.multi()) {
+      items.push(['link', '어디서 열든 이어서 하기', '네이버로 로그인한 목장은 카카오톡·크롬·사파리·PC 어디서 열든 가장 최근 진행으로 이어져요. 쓰는 곳마다 네이버 로그인을 한 번씩만 하면 그 뒤로는 저절로 이어져요. 네이버 계정이 없으면 하던 기기의 [설정 → 다른 기기에서도 하기 → 연결 코드 만들기]로 6자리 코드를 받아, 새 기기 첫 화면의 [연결 코드로 이어하기]에 넣으면 돼요(10분 동안 한 번). 카카오톡 안에서 [크롬·사파리로 열기]를 누르면 코드 없이 바로 이어져요. 한 번에 한 곳에서만 진행되고, 다른 곳에서 열면 먼저 하던 곳은 멈추면서 그때까지의 진행을 넘겨줘요.']);
+      if (SR.Net.naverAvailable() || S.g.net.linked) items.push(['lock', '네이버 로그인', '첫 화면이나 [설정 → 기본]에서 네이버로 로그인하면 진행 기록이 서버에 보관돼요. 휴대폰을 바꾸거나 기록을 지워도 같은 네이버 계정으로 로그인하면 이어서 할 수 있어요.']);
+    } else if (SR.Net.naverAvailable() || S.g.net.linked) items.push(['lock', '네이버 로그인', '첫 화면이나 [설정 → 기본]에서 네이버로 로그인하면 진행 기록이 서버에 보관돼요. 휴대폰을 바꿔도 같은 네이버 계정으로 로그인하면 이어서 할 수 있어요. 한 번에 한 기기에서만 이어서 할 수 있어요.']);
     items.forEach(([ic, t, d]) => body.appendChild(el('div', { class: 'card' }, [ico(ic, 40), el('div', { class: 'grow' }, [el('h3', { text: t }), el('p', { class: 'muted', text: d })])])));
     body.appendChild(btn('처음 안내 다시 보기', 'btn-ghost', () => { UI.close(); UI.tutorialRestart(); }));
   }
@@ -24787,17 +24955,29 @@ SR.CONFIG = {
  * · v1.7 서버의 네이버 로그인 안내를 이 기기에 기억(다음 접속 때 첫 화면에 로그인 버튼이 바로 보이게)
  * · v2.0 서버 v1.7 hello.game(펫 값·쿠마·가축을 잃는 시간·건설 시간 배율) → D.applyTune · N.idleMs(조작 없이 지난 시간)
  * · v2.3 서버 v1.8: 동기화에 live(내 목장에 이웃이 와 있나)·visiting(방문 중인 목장) — 값은 07f_live.js 가 정한다 · 화면을 떠날 때는 bye:1(「접속 중」에서 바로 빠짐)
- *        hello.live = {push, rt, cfg, vapid, quiet} 는 N.info.live 로 그대로 두고 07f_live.js 가 읽는다 */
+ *        hello.live = {push, rt, cfg, vapid, quiet} 는 N.info.live 로 그대로 두고 07f_live.js 가 읽는다
+ * · v2.6 서버 v1.9 자동 이어하기(명세 spec/API_SPEC_v1.9.md): 모든 요청에 이 화면(place)·이 브라우저(bid)·연 곳(where)을 붙인다.
+ *        서버에 보관하는 목장(네이버 로그인 · 기기 연결 코드)은 '진행하는 곳'을 잡은(claim) 화면만 동기화·저장·이웃 요청을 보낸다.
+ *        진행 기록은 gzip 으로 줄여 올리고(화면을 떠날 때도), 올린 기록마다 표시(rev)를 붙여 이어 온 표시들(revs·chain)을 함께 보낸다.
+ *        다른 곳이 진행하는 곳이 되면(elsewhere · ELSEWHERE · handover) 이 화면은 멈춘다(N.away) — 화면 흐름은 08_main.js */
 (function () {
   'use strict';
   const U = SR.U, S = SR.S, C = SR.CONFIG, bus = SR.bus;
-  const N = SR.Net = { info: null, account: null, status: 'off', lastSyncOk: 0, helloFailAt: 0, paused: false, skew: 0 };
+  // claim: 'none'(아직 확인 전 · 확인 실패) | 'ok'(이 화면이 진행하는 곳) | 'away'(다른 곳에서 하는 중 — 멈춤) · away = 그 곳 {where, at, live, handed}
+  // held = 목장 시간을 멈춤(돌아와서 확인하는 동안 · 다른 곳에서 하는 중) — 08_main 의 게임 루프가 본다
+  const N = SR.Net = { info: null, account: null, status: 'off', lastSyncOk: 0, helloFailAt: 0, paused: false, skew: 0, claim: 'none', away: null, held: false };
   const NV_KEY = 'shinhwa_ranch_naver';            // 네이버 로그인 다녀오기: {state, at, back} (돌아오면 바로 지움)
   const NV_INFO = 'shinhwa_ranch_nvinfo';          // 서버가 마지막으로 알려 준 네이버 로그인 안내 {clientId, open, flow} (공개 값만)
+  const MULTI_KEY = 'shinhwa_ranch_multi';         // v2.6 서버가 마지막으로 알려 준 자동 이어하기(hello.multi) '1' | '0'
+  const BID_KEY = 'shinhwa_ranch_bid';             // v2.6 이 브라우저의 표시(진행 기록·옮기기 코드에 넣지 않는다)
+  const PLACE_KEY = 'shinhwa_ranch_place';         // v2.6 이 화면(탭)의 표시 — 같은 탭에서 새로 열어도 그대로(sessionStorage)
   const NV_AUTHORIZE = 'https://nid.naver.com/oauth2.0/authorize';
   const UPLOAD_EVERY = 180000;                     // 진행 기록 올리기 간격(3분, 바뀐 게 있을 때만)
+  const IDLE_AFTER = UPLOAD_EVERY + 20000;         // v2.6 이만큼 손을 놓았고 그 뒤 진행을 이미 올렸으면 idle(다른 곳이 기다리지 않고 넘겨받음)
+  const KEEPALIVE_MAX = 63000;                     // 페이지를 닫아도 끝까지 보내는 요청의 크기 한도(64KB) 안쪽
   const TIMEOUT = 15000;
-  let sessionId = U.uuid().replace(/-/g, '').slice(0, 20);
+  const rid = n => U.uuid().replace(/-/g, '').slice(0, n);
+  let sessionId = rid(20);
   let playSec = 0, lastInput = Date.now(), syncing = false, helloAt = 0;
   let regFails = 0, regNextAt = 0;
 
@@ -24805,9 +24985,53 @@ SR.CONFIG = {
   /** 서버 계정이 있어 플레이어 요청을 보낼 수 있는가 */
   N.ready = () => N.enabled() && !!(S.g && S.g.net.playerId && S.g.net.token);
 
+  /* ---------- v2.6 이 화면 · 이 브라우저 · 연 곳 ---------- */
+  let placeMemo = '';
+  N.place = function () {
+    if (placeMemo) return placeMemo;
+    let v = '';
+    try { v = window.sessionStorage.getItem(PLACE_KEY) || ''; } catch (e) { v = ''; }
+    if (!/^[A-Za-z0-9]{8,24}$/.test(v)) {
+      v = 'p' + rid(15);
+      try { window.sessionStorage.setItem(PLACE_KEY, v); } catch (e) { /* 이 탭에서만 */ }
+    }
+    placeMemo = v;
+    return v;
+  };
+  let bidMemo = '';
+  N.bid = function () {
+    if (bidMemo) return bidMemo;
+    let v = U.store.get(BID_KEY) || '';
+    if (!/^[A-Za-z0-9]{8,32}$/.test(v)) { v = 'b' + rid(19); U.store.set(BID_KEY, v); }
+    bidMemo = v;
+    return v;
+  };
+  /** 어디서 열었나: 'kakao-android' 같은 모양(서버 RE.WHERE 와 같은 목록) */
+  N.where = function () {
+    const ua = navigator.userAgent || '';
+    const os = /Android/i.test(ua) ? 'android' : (/iPhone|iPad|iPod/i.test(ua) || (/Macintosh/i.test(ua) && (navigator.maxTouchPoints || 0) > 1)) ? 'ios' : 'desktop';
+    let standalone = false;
+    try { standalone = !!(SR.App && SR.App.standalone && SR.App.standalone()); } catch (e) { standalone = false; }
+    const app = /KAKAOTALK/i.test(ua) ? 'kakao' : /NAVER\(inapp|NAVER\//.test(ua) ? 'naver' : standalone ? 'app' : /SamsungBrowser/i.test(ua) ? 'samsung'
+      : /Whale\//i.test(ua) ? 'whale' : /Edg(e|A|iOS)?\//.test(ua) ? 'edge' : /Firefox|FxiOS/i.test(ua) ? 'firefox' : /Chrome|CriOS/.test(ua) ? 'chrome'
+        : /Safari/.test(ua) ? 'safari' : 'other';
+    return app + '-' + os;
+  };
+  const WHERE_APP = { kakao: '카카오톡', naver: '네이버 앱', samsung: '삼성 인터넷', whale: '웨일', edge: '엣지', firefox: '파이어폭스', chrome: '크롬', safari: '사파리', app: '설치한 앱', other: '브라우저' };
+  const WHERE_OS = { android: '안드로이드', ios: '아이폰', desktop: 'PC' };
+  /** 연 곳 → 화면 글자 (예: 'PC 크롬', '안드로이드 카카오톡'). 모르면 '다른 곳' */
+  N.whereText = function (w) {
+    const m = /^([a-z]+)-([a-z]+)$/.exec(String(w || ''));
+    return m && WHERE_APP[m[1]] && WHERE_OS[m[2]] ? WHERE_OS[m[2]] + ' ' + WHERE_APP[m[1]] : '다른 곳';
+  };
+  /** 요청 본문에 화면·브라우저·연 곳을 붙인다(서버 v1.8 이하는 모르는 칸이라 버린다) */
+  function stamp(body) { body.place = N.place(); body.bid = N.bid(); body.where = N.where(); return body; }
+  const bytesOf = s => (typeof TextEncoder !== 'undefined' ? new TextEncoder().encode(s).length : s.length * 3);
+
   function post(body) {
     if (!N.enabled()) return Promise.resolve({ ok: false, error: 'OFF' });
     body.v = C.VERSION;
+    stamp(body);
     const ctl = typeof AbortController !== 'undefined' ? new AbortController() : null;
     const timer = setTimeout(() => { if (ctl) ctl.abort(); }, TIMEOUT);
     // 헤더를 붙이지 않는다(프리플라이트 방지). 본문은 문자열 → text/plain
@@ -24848,16 +25072,41 @@ SR.CONFIG = {
     // 꺼져 있다는 안내도 기억한다(다음 접속 때 로그인 자리를 잡아 두고 기다리지 않게). 같은 값이면 다시 쓰지 않음
     if (!nvHad || old.clientId !== nv.clientId || old.open !== nv.open || old.flow !== nv.flow) { U.store.set(NV_INFO, JSON.stringify(nv)); nvHad = true; }
   }
+  /** v2.6 서버가 자동 이어하기를 쓸 수 있는가 — 서버 응답이 있으면 그 값, 없으면 지난번에 받은 값 */
+  N.multi = function () {
+    if (!N.enabled()) return false;
+    if (N.info && typeof N.info.multi === 'boolean') return N.info.multi;
+    return U.store.get(MULTI_KEY) === '1';
+  };
+  /** 서버에 보관하는 목장이고 자동 이어하기를 쓰는가(→ 진행하는 곳을 잡은 화면만 보낸다) */
+  N.cloudOn = function () {
+    const net = S.g && S.g.net;
+    return !!(net && N.multi() && net.linked && !net.moved && net.playerId && net.token);
+  };
+  /** 서버로 보내기를 멈춰야 하는가 — 다른 기기에서 이어하는 중(moved) · 다른 곳에서 하는 중(away) · 아직 진행하는 곳을 잡지 못함 */
+  N.halted = function () {
+    const net = S.g && S.g.net;
+    return !net || net.moved || N.claim === 'away' || (N.cloudOn() && N.claim !== 'ok');
+  };
+  /** 기준점(마지막으로 올리거나 받아 쓴 때) 뒤로 이 화면에서 손님이 진행했는가 — playAt = 손님의 조작(또는 받은 보상)으로 목장이 바뀐 마지막 시각
+   *  (08_main 의 게임 루프가 적는다. 목장 시간이 흘러 저절로 바뀐 것 · 버튼만 누른 것은 넣지 않는다 — 다른 곳도 똑같이 계산하므로) */
+  N.dirty = function () {
+    if (N.notePlay) N.notePlay();                    // 마지막 그림 뒤에 바뀐 것까지(08_main)
+    const net = S.g && S.g.net;
+    return !!net && !net.yielded && (net.playAt || 0) > (net.pointAt || 0) + 1000;
+  };
 
   /** hello → {notice, storeUrl, purchase:{open, ratePct, coinPerWon, maxAmount, maxDays, dailyLimit, notice}} */
   N.hello = function (force) {
     if (!N.enabled()) return Promise.resolve(null);
     if (!force && N.info && Date.now() - helloAt < 60000) return Promise.resolve(N.info);
-    return post({ action: 'hello' }).then(r => {
+    return post({ action: 'hello', multi: 1 }).then(r => {
       if (r && r.ok) {
         if (!r.purchase || typeof r.purchase !== 'object') r.purchase = { open: false };
         r.naver = cleanNaver(r.naver);
         rememberNaver(r.naver);
+        r.multi = r.multi === true;                                                // v2.6 서버 v1.9 의 자동 이어하기(예전 서버는 이 칸이 없음 = false)
+        U.store.set(MULTI_KEY, r.multi ? '1' : '0');
         try { SR.D.applyTune(r.game); } catch (e) { /* 기본값 그대로 */ }       // v2.0 서버 v1.7 의 게임 조절값(없으면 기본값)
         N.info = r; helloAt = Date.now(); N.helloFailAt = 0; bus.emit('netInfo', r);
       } else N.helloFailAt = Date.now();
@@ -24888,9 +25137,25 @@ SR.CONFIG = {
     if (g.flags.tamper) st.tamper = true;
     return st;
   }
+  /** 이 기기의 서버 계정을 놓는다(목장은 그대로) — 다음 요청 때 새로 가입 */
+  function dropAccount() {
+    const net = S.g.net;
+    net.playerId = ''; net.token = ''; net.authFails = 0; net.authFailAt = 0;
+    net.linked = false; net.dev = false; net.naver = false; net.saveAt = 0; net.revs = []; net.chain = []; net.yielded = 0;
+    N.claim = 'none'; N.away = null; N.held = false;
+    S.save();
+  }
   function onAuthFail() {
-    // 시트 문제 등으로 잠깐 인증이 안 될 수 있으니 바로 계정을 버리지 않는다(24시간 넘게 계속 실패할 때만 새로 가입)
     const net = S.g.net, now = Date.now();
+    // v2.6 서버에 보관하던 목장인데 계정이 맞지 않음 = 연결이 풀렸다(다른 기기에서 연결 해제 · 계정 정리) → 이 기기는 서버 보관 없이 이어 간다
+    if (net.linked) {
+      dropAccount();
+      bus.emit('netLinked', false);
+      bus.emit('toast', { msg: '연결이 풀려 이 기기의 목장은 이제 서버에 보관되지 않아요. [설정]에서 다시 연결할 수 있어요', kind: 'bad' });
+      N.ensureRegistered();
+      return;
+    }
+    // 시트 문제 등으로 잠깐 인증이 안 될 수 있으니 바로 계정을 버리지 않는다(24시간 넘게 계속 실패할 때만 새로 가입)
     if (!net.authFailAt) net.authFailAt = now;
     net.authFails = (net.authFails || 0) + 1;
     if (net.authFails >= 5 && now - net.authFailAt > 86400000) {
@@ -24898,6 +25163,14 @@ SR.CONFIG = {
     }
     S.save();
   }
+  /** 서버 오류 응답 공통 처리(다른 기기 · 다른 곳 · 인증) → 처리했으면 true */
+  N.onError = function (r) {
+    if (!r || r.ok) return false;
+    if (r.error === 'MOVED') { N.markMoved(); return true; }
+    if (r.error === 'ELSEWHERE') { N.markAway(r.elsewhere); return true; }
+    if (r.error === 'AUTH') { onAuthFail(); return true; }
+    return false;
+  };
   /** 기기 시계가 뒤로 돌아갔을 때 기다림 타이머들도 같이 옮긴다 */
   N.onClockShift = function (d) {
     if (regNextAt) regNextAt += d;
@@ -24916,16 +25189,45 @@ SR.CONFIG = {
     bus.emit('tester', !!on);
     return true;
   };
+  /** 서버가 알려 준 계정 상태(연결 · 진짜 네이버 · 테스터)를 이 목장에 반영 */
+  function applyAccount(a) {
+    const net = S.g.net;
+    if (!a || typeof a !== 'object') return;
+    N.account = a;
+    if (a.blocked) bus.emit('toast', { msg: '이용이 제한된 계정이에요. 스토어 톡톡으로 문의해 주세요.', kind: 'bad' });
+    // 연결 상태는 서버가 기준(운영자가 연결을 풀었을 수도 있음)
+    if (typeof a.linked === 'boolean' && a.linked !== net.linked) {
+      net.linked = a.linked;
+      if (!net.linked) { net.saveAt = 0; net.naver = false; }
+      S.save(); bus.emit('netLinked', net.linked);
+    }
+    // v2.6 서버 v1.9: 진짜 네이버 연결인지(연결 코드만으로 이은 목장은 false)
+    if (typeof a.naver === 'boolean' && a.naver !== net.naver) { net.naver = a.naver; S.save(); bus.emit('netLinked', net.linked); }
+    // 서버가 정한 테스터 여부(예전 서버는 이 값을 보내지 않음 → 그대로 둠)
+    if (typeof a.tester === 'boolean') N.setTesterSrv(a.tester);
+  }
+  /** 손을 놓은 지 오래됐고(3분 20초) 그 뒤 진행을 이미 올렸는가 → 다른 곳이 넘겨받기를 기다리지 않아도 됨 */
+  N.idleClean = function () {
+    const net = S.g && S.g.net;
+    return !!net && Date.now() - lastInput > IDLE_AFTER && (net.pointAt || 0) >= lastInput;
+  };
   /**
    * 동기화. 응답의 credits(받을 구매 적립 코인)는 신청번호마다 한 번만 더하고, 더한 번호는 다음 동기화의 ack 로 보낸다.
    * throttled 응답에도 credits·acked 가 올 수 있다.
    * v1.6: gifts:1(운영자 코인 지급을 받을 수 있음)을 알리고, 응답 gifts 는 지급번호마다 한 번만 반영 → 다음 동기화의 giftAck.
    *       account.tester(서버가 정한 테스터 여부)를 이 목장에 반영. 화면을 떠날 때(beacon)는 응답을 못 받으니 gifts:1 을 보내지 않는다.
+   * v2.6: 서버에 보관하는 목장은 진행하는 곳을 잡은 화면만 동기화한다(아직이면 netClaimNeeded — 08_main 이 확인부터 한다).
+   *       응답 elsewhere = 다른 곳이 진행하는 곳 → 멈춤 · handover = 다른 곳이 넘겨 달라고 함 → 지금 진행을 올리고 멈춤.
+   *       opts.up = 화면을 떠나며 곧 올릴 보관본의 표시(비콘) · 손을 놓고 이미 올렸으면 idle:1
    */
-  N.sync = function (mode) {
+  N.sync = function (mode, opts) {
     const net = S.g.net;
-    if (!N.enabled() || N.paused || syncing || net.moved) return Promise.resolve(null);   // 다른 기기에서 이어하는 중이면 보내지 않음
+    if (!N.enabled() || N.paused || syncing || net.moved || N.claim === 'away') return Promise.resolve(null);   // 다른 기기·다른 곳에서 이어하는 중이면 보내지 않음
     if (!net.playerId) { if (mode !== 'beacon') N.ensureRegistered(); return Promise.resolve(null); }
+    if (N.cloudOn() && N.claim !== 'ok') {
+      if (mode !== 'beacon') bus.emit('netClaimNeeded');
+      return Promise.resolve(null);
+    }
     const sent = Math.round(playSec);
     const body = { action: 'sync', playerId: net.playerId, token: net.token, sessionId: sessionId, playSec: sent, stats: stats(), clientTime: Date.now(), v: C.VERSION };
     const ack = SR.Sim.ackList();
@@ -24938,9 +25240,14 @@ SR.CONFIG = {
       let ex = null;
       try { ex = SR.Live ? SR.Live.syncExtra() : null; } catch (e) { ex = null; }
       if (ex) Object.assign(body, ex);
-    } else body.bye = 1;                                              // v2.3: 화면을 떠남 → 이웃 목록의 「접속 중」에서 바로 빠진다
+      if (N.cloudOn() && N.idleClean()) body.idle = 1;                // v2.6 손을 놓았고 이미 올렸음 → 다른 곳이 바로 넘겨받아도 됨
+    } else {
+      body.bye = 1;                                                   // v2.3: 화면을 떠남 → 이웃 목록의 「접속 중」에서 바로 빠진다
+      if (opts && opts.up) body.up = opts.up;                         // v2.6 이 표시의 저장이 곧 도착함(다른 곳이 잠깐 기다려 줌)
+      if (opts && opts.yield) body.yield = 1;
+    }
     if (mode === 'beacon') {
-      try { if (navigator.sendBeacon) navigator.sendBeacon(C.SERVER_URL, JSON.stringify(body)); } catch (e) { /* 무시 */ }
+      try { if (navigator.sendBeacon) navigator.sendBeacon(C.SERVER_URL, JSON.stringify(stamp(body))); } catch (e) { /* 무시 */ }
       return Promise.resolve(null);
     }
     syncing = true;
@@ -24950,15 +25257,9 @@ SR.CONFIG = {
         if (r && r.ok) {
           if (!r.throttled) { playSec = Math.max(0, playSec - sent); N.lastSyncOk = Date.now(); }
           if (net.authFails) { net.authFails = 0; net.authFailAt = 0; }
-          N.account = r.account || N.account;
-          if (r.account && r.account.blocked) bus.emit('toast', { msg: '이용이 제한된 계정이에요. 스토어 톡톡으로 문의해 주세요.', kind: 'bad' });
-          // 네이버 연결 상태는 서버가 기준(운영자가 연결을 풀었을 수도 있음)
-          if (r.account && typeof r.account.linked === 'boolean' && r.account.linked !== net.linked) {
-            net.linked = r.account.linked; if (!net.linked) net.saveAt = 0;
-            S.save(); bus.emit('netLinked', net.linked);
-          }
-          // 서버가 정한 테스터 여부(예전 서버는 이 값을 보내지 않음 → 그대로 둠)
-          if (r.account && typeof r.account.tester === 'boolean') N.setTesterSrv(r.account.tester);
+          applyAccount(r.account);
+          // v2.6 다른 곳이 진행하는 곳 → 이 화면은 멈춘다(서버는 아무것도 처리하지 않았다)
+          if (r.elsewhere && typeof r.elsewhere === 'object') { N.markAway(r.elsewhere); return r; }
           // 지급완료로 처리된 번호는 ack 목록에서 빼고, 새 적립 코인은 신청번호마다 한 번만 받는다
           let got = 0;
           if (Array.isArray(r.acked)) SR.Sim.applyAcked(r.acked);
@@ -24968,11 +25269,12 @@ SR.CONFIG = {
           if (Array.isArray(r.gifts) && r.gifts.length) got += SR.Sim.applyGifts(r.gifts).length;
           // v1.9 이웃 목장: 받을 소식이 있으면(social.news) 07c_social 이 바로 가져온다
           if (r.social && typeof r.social === 'object') bus.emit('netSocial', r.social);
-          // 받은 코인이 이 기기에만 남지 않게, 네이버에 연결된 목장은 바로 진행 기록을 올린다
+          // 받은 코인이 이 기기에만 남지 않게, 서버에 보관하는 목장은 바로 진행 기록을 올린다
           if (got && net.linked && !net.moved) setTimeout(() => { try { N.uploadSave(); } catch (e) { /* 무시 */ } }, 1500);
           bus.emit('netAccount', N.account);
-        } else if (r && r.error === 'AUTH') onAuthFail();
-        else if (r && r.error === 'MOVED') N.markMoved();
+          // v2.6 다른 곳이 넘겨 달라고 함 → 지금까지의 진행을 올리고 멈춘다
+          if (r.handover && typeof r.handover === 'object') N.handover(r.handover);
+        } else N.onError(r);
       } catch (e) { console.error('sync 처리', e); }
       return r;
     });
@@ -24984,19 +25286,18 @@ SR.CONFIG = {
    */
   N.purchaseSubmit = function (v, requestId) {
     if (!N.enabled()) return Promise.resolve({ ok: false, error: 'OFF' });
-    const rid = requestId || U.uuid().replace(/-/g, '');
+    const rid2 = requestId || U.uuid().replace(/-/g, '');
     return N.ensureRegistered().then(ok => {
       if (!ok) return { ok: false, error: 'NET', message: '서버에 연결하지 못했어요. 잠시 후 다시 시도해 주세요' };
       const net = S.g.net;
       const body = () => ({
-        action: 'purchaseSubmit', playerId: net.playerId, token: net.token, requestId: rid,
+        action: 'purchaseSubmit', playerId: net.playerId, token: net.token, requestId: rid2,
         purchaseDate: String(v.purchaseDate || ''), orderNo: String(v.orderNo || ''), naverId: String(v.naverId || ''), amount: Math.floor(+v.amount || 0)
       });
       return post(body()).then(r => ((r && (r.error === 'NET' || r.error === 'BUSY')) ? delay(1500).then(() => post(body())) : r))
         .then(r => {
-          if (r && r.error === 'AUTH') onAuthFail();
-          else if (r && r.error === 'MOVED') N.markMoved();
-          else if (r && r.error === 'LOGIN_REQUIRED' && S.g.net.linked) { S.g.net.linked = false; S.save(); bus.emit('netLinked', false); }
+          if (r && r.error === 'LOGIN_REQUIRED' && S.g.net.linked && S.g.net.naver) { S.g.net.naver = false; S.save(); bus.emit('netLinked', S.g.net.linked); }
+          else N.onError(r);
           return r;
         });
     });
@@ -25014,8 +25315,7 @@ SR.CONFIG = {
       if (!ok) return { ok: false, error: 'NET' };
       const net = S.g.net;
       return post({ action: 'myPurchases', playerId: net.playerId, token: net.token }).then(r => {
-        if (r && r.error === 'AUTH') onAuthFail();
-        else if (r && r.error === 'MOVED') N.markMoved();
+        N.onError(r);
         return r;
       });
     });
@@ -25027,7 +25327,8 @@ SR.CONFIG = {
    *    token 방식: 주소 #access_token=…&state=…  /  code 방식: ?code=…&state=…  (state 는 떠나기 전에 저장해 둔 값과 같아야 함)
    *  · 서버가 토큰을 네이버에 직접 물어 계정을 잇고(linked) / 이어하기(restore: 새 토큰 + 저장본) / 새로 만든다(created).
    *  · 연결된 목장은 3분마다(바뀐 게 있으면)·화면을 떠날 때 진행 기록을 올린다.
-   *  · 다른 기기에서 같은 네이버 계정으로 이어하면 이 기기 토큰이 무효 → 서버가 MOVED → 이 기기는 보내기를 멈춤(moved).
+   *  · 서버 v1.8 이하: 다른 기기에서 같은 네이버 계정으로 이어하면 이 기기 토큰이 무효 → 서버가 MOVED → 이 기기는 보내기를 멈춤(moved).
+   *  · v2.6 서버 v1.9: 다른 기기는 따로 기기 토큰을 받는다(multi:1) — 이 기기는 그대로. 어디서 하는지는 진행하는 곳(claim)으로 가린다.
    * ========================================================= */
   N.naverInfo = () => (N.info && N.info.naver) || rememberedNaver();     // 서버 응답 전에는 지난번에 받은 안내
   /** 네이버 로그인을 쓸 수 있는지 이미 아는가 — 서버 응답을 받았거나, 지난번 안내를 기억하고 있거나, 서버를 쓰지 않는 게임 */
@@ -25042,9 +25343,10 @@ SR.CONFIG = {
   N.naverStart = function (opts) {
     const nv = N.naverInfo();
     if (!N.enabled() || !nv.clientId) return false;
-    const state = U.uuid().replace(/-/g, '');
+    const state = rid(32);
     U.store.set(NV_KEY, JSON.stringify({ state: state, at: Date.now(), back: (opts && opts.back) || '' }));
     try { S.save(); } catch (e) { /* 무시 */ }
+    try { if (N.claim === 'ok') N.leave(); } catch (e) { /* 무시 */ }   // v2.6 이 화면을 떠난다(진행하는 곳이면 지금까지를 올려 둔다)
     const q = 'response_type=' + (nv.flow === 'code' ? 'code' : 'token') + '&client_id=' + encodeURIComponent(nv.clientId) +
       '&redirect_uri=' + encodeURIComponent(N.naverRedirectUri()) + '&state=' + state;
     N.naverGo(NV_AUTHORIZE + '?' + q);
@@ -25072,11 +25374,11 @@ SR.CONFIG = {
     if (p.get('access_token')) return { accessToken: p.get('access_token'), back: back };
     return { code: p.get('code'), state: p.get('state'), back: back };
   };
-  /** 돌아온 값으로 서버에 로그인 → 서버 응답 그대로 (mode: linked | same | restore | created) */
+  /** 돌아온 값으로 서버에 로그인 → 서버 응답 그대로 (mode: linked | same | restore | created). v2.6: multi:1 + 이 목장이 이어 온 표시들 */
   N.naverFinish = function (cb) {
     if (!N.enabled()) return Promise.resolve({ ok: false, error: 'OFF', message: '서버에 연결되지 않았어요' });
     const g = S.g, net = g.net;
-    const body = { action: 'naverLogin', deviceId: net.deviceId, nickname: g.named ? g.name : '' };
+    const body = { action: 'naverLogin', deviceId: net.deviceId, nickname: g.named ? g.name : '', multi: 1, revs: (net.revs || []).slice(-8) };
     if (cb.accessToken) body.accessToken = cb.accessToken;
     else { body.code = cb.code; body.state = cb.state; }
     if (net.playerId && net.token) { body.playerId = net.playerId; body.token = net.token; }
@@ -25085,59 +25387,147 @@ SR.CONFIG = {
   /** 로그인 결과의 계정을 이 기기에 쓴다(이 기기의 목장은 그대로) */
   N.applyNaver = function (r) {
     const net = S.g.net;
+    const devTok = r.mode === 'restore' && r.multi === true;            // v2.6 다른 기기에서 이어 온 목장 → 이 기기만의 기기 토큰
     if (r.playerId) net.playerId = r.playerId;
-    if (r.token) net.token = r.token;
+    if (r.token) { net.token = r.token; net.dev = devTok; }
     if (r.nickname) net.nick = r.nickname;
-    net.linked = true; net.moved = false; net.authFails = 0; net.authFailAt = 0;
+    net.linked = true; net.moved = false; net.authFails = 0; net.authFailAt = 0; net.naver = true; net.yielded = 0;
+    N.claim = 'none'; N.away = null;
     S.save();
     bus.emit('netLinked', true);
   };
-  /** 서버에 보관된 목장으로 바꾼다(저장까지 — 부르는 쪽이 새로고침) */
+  /** 서버에 보관된 목장으로 바꾼다(저장까지 — 부르는 쪽이 새로고침). r = 로그인·살펴보기·연결 코드 응답(save 글자 포함) */
   N.adoptNaver = function (r) {
     const net = S.g.net;
-    S.adopt(r.save, { deviceId: net.deviceId, playerId: r.playerId, token: r.token, nick: r.nickname || '', saveAt: Date.now(), authFails: 0, authFailAt: 0 });
+    const devTok = r.token ? (r.mode === 'restore' && r.multi === true) || r.paired === true : net.dev === true;
+    S.adopt(r.save, { deviceId: net.deviceId, playerId: r.playerId || net.playerId, token: r.token || net.token, nick: r.nickname || net.nick || '',
+      saveAt: Date.now(), authFails: 0, authFailAt: 0, dev: devTok, naver: r.naver === false ? false : (r.naver === true || net.naver !== false) });
   };
   /** 다른 기기에서 이어하는 중 — 보내기를 멈추고 한 번 알린다 */
   N.markMoved = function () {
     const net = S.g && S.g.net;
     if (!net || net.moved) return;
     net.moved = true;
+    N.claim = 'none';
     S.save();
     bus.emit('netMoved');
   };
-  /** 진행 기록 올리기. mode 'keepalive' = 화면을 떠날 때(응답을 기다리지 않음, 60KB 이하만) */
+  /** v2.6 다른 곳에서 하는 중 — 보내기를 멈추고 목장 시간을 멈춘다.
+   *  이 화면에서 손님이 한 일 중 아직 올리지 못한 것이 있으면(dirty — 인터넷이 끊겼던 동안 · 기다리지 않고 넘겨받음) 버리지 않고 남겨 둔다
+   *  → 여기서 다시 이어 할 때 「어느 진행으로 할까요?」 */
+  N.markAway = function (info) {
+    const net = S.g && S.g.net;
+    if (!net || N.claim === 'away') return;
+    N.claim = 'away';
+    N.away = Object.assign({ where: '', at: 0, live: false, handed: false }, info && typeof info === 'object' ? info : {});
+    N.held = true;
+    try { S.save(); } catch (e) { /* 무시 */ }
+    bus.emit('netAway', N.away);
+  };
+  /** v2.6 다른 곳이 넘겨 달라고 함 → 목장 시간을 멈추고 지금까지의 진행을 올린 뒤(yield) 멈춘다 */
+  let handing = false;
+  N.handover = function (h) {
+    if (N.claim !== 'ok' || handing) return;
+    handing = true;
+    N.held = true;
+    const done = ok => {
+      handing = false;
+      if (!ok) { try { N.claim = 'ok'; N.sync('beacon', { yield: 1 }); } catch (e) { /* 무시 */ } }   // 올리지 못했어도 넘겨준다(남은 진행은 버림)
+      N.markAway({ where: h && h.where || '', handed: true });
+    };
+    N.uploadSave('yield').then(r => done(!!(r && r.ok)), () => done(false));
+  };
+
+  /* ---------- 진행 기록 올리기 ---------- */
   let upBusy = false, upTryAt = 0;
-  N.uploadSave = function (mode) {
+  /** 올리기 전에 이 기록의 표시를 붙여 둔다(응답을 못 받아도 서버에는 들어갔을 수 있으니 보내기 전에) → 되돌리기 함수 */
+  function markUpload(rev) {
+    const net = S.g.net;
+    const prev = { revs: (net.revs || []).slice(), chain: (net.chain || []).slice(), pointAt: net.pointAt || 0 };
+    net.revs = prev.revs.concat(rev).slice(-8);
+    net.chain = prev.chain.concat(rev).slice(-20);
+    net.pointAt = Date.now();
+    upTryAt = Date.now();
+    return function rollback() {                                       // 서버가 확실히 거절했을 때만(ELSEWHERE · CONFLICT)
+      if (net.revs[net.revs.length - 1] !== rev) return;
+      net.revs = prev.revs; net.chain = prev.chain; net.pointAt = prev.pointAt;
+      S.save();
+    };
+  }
+  /** 화면을 떠나며 지금까지의 진행을 올린다(응답을 기다리지 않음) → 올린 기록의 표시('' = 보내지 않음) */
+  function leaveUpload() {
+    const net = S.g.net;
+    const rev = rid(12);
+    const textLen = JSON.stringify(S.g).length;
+    if (!U.canGzip() && textLen * 1.05 > KEEPALIVE_MAX) return '';        // 압축 없이 64KB 를 넘으면 보내지 못한다(다음에 돌아와서 올림)
+    markUpload(rev);
+    const text = S.exportCloud(rev, net.chain);
+    try { S.save(); } catch (e) { /* 무시 */ }
+    const body = { action: 'saveUpload', playerId: net.playerId, token: net.token, v: C.VERSION, revs: net.revs.slice(), bye: 1 };
+    U.gzip64(text).then(z => {
+      if (z) body.z = z; else body.save = text;
+      const s = JSON.stringify(stamp(body));
+      if (bytesOf(s) > KEEPALIVE_MAX) return;
+      try { fetch(C.SERVER_URL, { method: 'POST', body: s, keepalive: true }).catch(() => {}); } catch (e) { /* 무시 */ }
+    });
+    return rev;
+  }
+  /**
+   * 진행 기록 올리기. mode 'keepalive' = 화면을 떠날 때(응답을 기다리지 않음 — 서버 v1.8 이하용, 60KB 이하만) · 'yield' = 넘겨주기(v2.6)
+   * opts.force = 손님이 「이 기기 진행으로 계속하기」를 고름(서버 보관본을 이 진행으로 바꾸고 이 화면이 진행하는 곳이 됨)
+   * opts.idle = 손을 놓은 채 올림(첫 화면) — 서버가 이 화면을 '지금 하고 있음'으로 보지 않는다(3분 넘게 손을 놓았으면 저절로)
+   * v2.6(서버 multi): gzip 으로 줄여 z 로, revs 와 함께. 거절(ELSEWHERE · CONFLICT)되면 붙였던 표시를 되돌린다.
+   *   CONFLICT 인데 서버 보관본이 이 기기가 올린 것이면(늦게 도착한 먼저 보낸 것) 조용히 넘어간다.
+   */
+  N.uploadSave = function (mode, opts) {
     const net = S.g && S.g.net;
     if (!N.ready() || !net.linked || net.moved || N.paused) return Promise.resolve(null);
-    if (upBusy) return Promise.resolve(null);
-    // 올리는 기록마다 표시(rev)를 붙여 이 기기에 기억해 둔다 → 나중에 다시 로그인했을 때 보관본이 이 기기가 올린 것인지(그러면 그대로 이어서)
-    // 다른 기기가 올린 것인지(그러면 고르게) 알 수 있다. 응답을 못 받아도 서버에는 들어갔을 수 있으니 보내기 전에 기억한다
-    const rev = U.uuid().replace(/-/g, '').slice(0, 12);
-    const text = S.exportCloud(rev);
-    const body = { action: 'saveUpload', playerId: net.playerId, token: net.token, save: text, v: C.VERSION };
-    upTryAt = Date.now();
-    net.revs = (Array.isArray(net.revs) ? net.revs : []).concat(rev).slice(-5);
+    const multi = N.multi(), force = !!(opts && opts.force);
+    if (multi && N.claim !== 'ok' && !force) return Promise.resolve(null);   // 진행하는 곳이 아니면 올리지 않는다
+    if (upBusy && mode !== 'yield' && !force) return Promise.resolve(null);
+    // 올리는 기록마다 표시(rev)를 붙여 이 기기에 기억해 둔다 → 나중에 보관본이 이 기기가 올린 것인지(그러면 그대로 이어서)
+    // 다른 곳이 올린 것인지(그러면 받아 오거나 고르게) 알 수 있다
+    const rev = rid(12);
+    const rollback = markUpload(rev);
+    const text = S.exportCloud(rev, multi ? net.chain : null);
     S.save();
-    if (mode === 'keepalive') {
-      // 페이지를 닫아도 끝까지 보내는 요청은 64KB까지라 그보다 크면 보내지 않는다(다음에 화면으로 돌아오면 평소대로 올림).
-      // 응답을 못 받으니 '보관함' 표시(saveAt)는 바꾸지 않는다
-      const s = JSON.stringify(body);
-      const bytes = typeof TextEncoder !== 'undefined' ? new TextEncoder().encode(s).length : s.length * 3;
-      if (bytes > 60000) return Promise.resolve(null);
-      try { fetch(C.SERVER_URL, { method: 'POST', body: s, keepalive: true }).catch(() => {}); } catch (e) { /* 무시 */ }
-      return Promise.resolve(null);
+    if (!multi) {
+      const body = { action: 'saveUpload', playerId: net.playerId, token: net.token, save: text, v: C.VERSION };
+      if (mode === 'keepalive') {
+        // 페이지를 닫아도 끝까지 보내는 요청은 64KB까지라 그보다 크면 보내지 않는다(다음에 화면으로 돌아오면 평소대로 올림).
+        // 응답을 못 받으니 '보관함' 표시(saveAt)는 바꾸지 않는다
+        const s = JSON.stringify(stamp(Object.assign(body, { v: C.VERSION })));
+        if (bytesOf(s) > 60000) return Promise.resolve(null);
+        try { fetch(C.SERVER_URL, { method: 'POST', body: s, keepalive: true }).catch(() => {}); } catch (e) { /* 무시 */ }
+        return Promise.resolve(null);
+      }
+      upBusy = true;
+      return post(body).then(r => { upBusy = false; afterUpload(r, rev, rollback); return r; }, e => { upBusy = false; throw e; });
     }
     upBusy = true;
-    return post(body).then(r => {
-      upBusy = false;
-      if (r && r.ok) { net.saveAt = Date.now(); S.save(); bus.emit('cloudSaved'); }
-      else if (r && r.error === 'MOVED') N.markMoved();
-      else if (r && r.error === 'NOT_LINKED') { net.linked = false; net.saveAt = 0; S.save(); bus.emit('netLinked', false); }
-      else if (r && r.error === 'AUTH') onAuthFail();
-      return r;
-    }, e => { upBusy = false; throw e; });
+    return U.gzip64(text).then(z => {
+      const body = { action: 'saveUpload', playerId: net.playerId, token: net.token, v: C.VERSION, revs: net.revs.slice() };
+      if (z) body.z = z; else body.save = text;
+      if (force) body.force = 1;
+      if (mode === 'yield') body.yield = 1;
+      else if ((opts && opts.idle) || Date.now() - lastInput > UPLOAD_EVERY) body.idle = 1;
+      return post(body);
+    }).then(r => { upBusy = false; afterUpload(r, rev, rollback); return r; }, e => { upBusy = false; throw e; });
   };
+  function afterUpload(r, rev, rollback) {
+    const net = S.g.net;
+    if (r && r.ok) { net.saveAt = Date.now(); S.save(); bus.emit('cloudSaved'); return; }
+    if (!r) return;
+    if (r.error === 'ELSEWHERE') { rollback(); N.markAway(r.elsewhere); }
+    else if (r.error === 'CONFLICT') {
+      const theirs = r.meta && r.meta.rev;
+      if (theirs && (net.revs || []).indexOf(theirs) >= 0) return;     // 서버 보관본이 이 기기가 올린 것 — 늦게 도착한 먼저 보낸 저장(괜찮음)
+      rollback();
+      bus.emit('netConflict', r.meta || null);                          // 08_main: 어느 진행으로 할지 고르게
+    } else if (r.error === 'MOVED') N.markMoved();
+    else if (r.error === 'NOT_LINKED') { net.linked = false; net.saveAt = 0; net.naver = false; S.save(); bus.emit('netLinked', false); }
+    else if (r.error === 'AUTH') onAuthFail();
+  }
   /** 바뀐 게 있고 마지막으로 올린 지 오래됐으면 올린다 */
   N.uploadIfDue = function (minGap) {
     const g = S.g, net = g && g.net;
@@ -25145,13 +25535,124 @@ SR.CONFIG = {
     if (Date.now() - upTryAt < 30000) return;
     if (Date.now() - (net.saveAt || 0) >= (minGap === undefined ? UPLOAD_EVERY : minGap) && (g.last || 0) > (net.saveAt || 0)) N.uploadSave();
   };
-  /** 네이버 연결 해제 (서버 저장본도 지움) */
+  /** v2.6 화면을 떠남(다른 앱 · 탭 닫기): 진행하는 곳이면 지금까지를 올리고(gzip, 응답 없이) 비콘에 bye·up 을 붙인다. 두 번 불려도 한 번만
+   *  again = 떠난 뒤에 진행하는 곳이 됨(떠나는 사이에 온 확인 응답) → 한 번 더 알린다 */
+  let leftAt = 0;
+  N.leave = function (again) {
+    if (!N.enabled() || N.paused) return;
+    const now = Date.now();
+    if (!again && now - leftAt < 1500) return;
+    leftAt = now;
+    const net = S.g && S.g.net;
+    if (!net || !net.playerId) return;
+    let up = '';
+    if (net.linked && !net.moved) {
+      if (N.multi()) { if (N.claim === 'ok' && N.dirty()) up = leaveUpload(); }
+      else if ((S.g.last || 0) > (net.saveAt || 0) && now - upTryAt > 30000) N.uploadSave('keepalive');
+    }
+    N.sync('beacon', up ? { up: up } : null);
+  };
+  /** 네이버 연결 해제 (서버 저장본도 지움). v2.6: 기기 토큰으로 들어온 기기면 서버가 새 토큰을 준다(이 기기가 계정을 이어 감) */
   N.naverUnlink = function () {
     if (!N.ready()) return Promise.resolve({ ok: false, error: 'NET', message: '서버에 연결하지 못했어요' });
     const net = S.g.net;
     return post({ action: 'naverUnlink', playerId: net.playerId, token: net.token }).then(r => {
-      if (r && r.ok) { net.linked = false; net.saveAt = 0; S.save(); bus.emit('netLinked', false); }
-      else if (r && r.error === 'MOVED') N.markMoved();
+      if (r && r.ok) {
+        if (typeof r.token === 'string' && /^[0-9a-f]{32}$/.test(r.token)) net.token = r.token;
+        net.linked = false; net.saveAt = 0; net.dev = false; net.naver = false; net.yielded = 0;
+        N.claim = 'none'; N.away = null;
+        S.save(); bus.emit('netLinked', false);
+      } else N.onError(r);
+      return r;
+    });
+  };
+
+  /* =========================================================
+   * v2.6 자동 이어하기 — 보관본 살펴보기 · 기기 연결 코드 (화면 흐름은 08_main.js · 07j_cloud.js)
+   * ========================================================= */
+  /** 응답의 saveZ(gzip+base64)를 풀어 save(글자)로 */
+  function unpackSave(r) {
+    if (r && r.ok && typeof r.saveZ === 'string' && r.saveZ) {
+      return U.gunzip64(r.saveZ).then(t => { r.save = t; delete r.saveZ; return r; }, () => ({ ok: false, error: 'BAD_SAVE', message: '보관된 진행을 풀지 못했어요' }));
+    }
+    return Promise.resolve(r);
+  }
+  /**
+   * 서버 보관본이 이 기기 진행과 어떤 사이인지 묻는다 → 서버 응답 {state, meta, active, wait?, soft?, claimed?, save?}
+   * opts.claim = 1 | 'force' | 'soft' (이 화면을 진행하는 곳으로 — soft: 다른 곳이 지금 하고 있으면 넘겨 달라고 하지 않음)
+   * opts.idle = 잡되 '지금 하고 있음'으로 보지 않게(첫 화면 — 다른 곳이 열면 기다리지 않고 넘겨받음) · opts.want = 'save'(보관본을 늘 받음)
+   */
+  N.peek = function (opts) {
+    const o = opts || {};
+    const net = S.g && S.g.net;
+    if (!N.ready() || !net.linked) return Promise.resolve({ ok: false, error: 'OFF' });
+    const body = { action: 'savePeek', playerId: net.playerId, token: net.token, revs: (net.revs || []).slice(-8), gz: U.canGzip() ? 1 : 0 };
+    if (o.claim) { body.claim = o.claim; body.dirty = N.dirty() ? 1 : 0; if (o.idle) body.idle = 1; }
+    if (o.want) body.want = o.want;
+    return post(body).then(unpackSave).then(r => {
+      if (r && r.ok) {
+        if (r.claimed) {
+          N.claim = 'ok'; N.away = null;
+          if (net.yielded) { net.yielded = 0; S.save(); }
+          bus.emit('netClaim', r);
+        }
+      } else if (r && r.error === 'NO_MULTI') {
+        if (N.info) N.info.multi = false;
+        U.store.set(MULTI_KEY, '0');
+      } else if (r && r.error === 'NOT_LINKED') {
+        net.linked = false; net.saveAt = 0; net.naver = false; S.save(); bus.emit('netLinked', false);
+      } else if (r && (r.error === 'MOVED' || r.error === 'AUTH')) N.onError(r);
+      return r;
+    });
+  };
+  /** 기기 연결 코드 만들기(하던 기기): 지금 진행을 함께 올린다 → {ok, code, until, naver} (아직 연결하지 않은 목장은 이때부터 서버에 보관).
+   *  이미 서버에 보관하는 목장인데 이 화면이 진행하는 곳이 아니면: opts.ref(첫 화면의 카카오톡 → 크롬)일 때만 진행 없이 코드를 받는다
+   *  (서버 보관본 = 가장 최근 진행을 새 기기가 이어받음) */
+  N.pairCode = function (opts) {
+    if (!N.enabled() || !N.multi()) return Promise.resolve({ ok: false, error: 'NO_MULTI', message: '지금은 다른 기기와 연결할 수 없어요' });
+    return N.ensureRegistered().then(ok => {
+      if (!ok) return { ok: false, error: 'NET', message: '서버에 연결하지 못했어요. 잠시 후 다시 시도해 주세요' };
+      const net = S.g.net;
+      if (net.linked && N.claim !== 'ok') {
+        if (!(opts && opts.ref)) {
+          bus.emit('netClaimNeeded');
+          return { ok: false, error: 'NOT_PLACE', message: '서버와 연결을 확인하고 있어요. 잠시 후 다시 시도해 주세요' };
+        }
+        return post({ action: 'pairCode', playerId: net.playerId, token: net.token }).then(r => { if (!(r && r.ok)) N.onError(r); return r; });
+      }
+      const rev = rid(12);
+      const rollback = markUpload(rev);
+      const text = S.exportCloud(rev, net.chain);
+      S.save();
+      return U.gzip64(text).then(z => {
+        const body = { action: 'pairCode', playerId: net.playerId, token: net.token, revs: net.revs.slice() };
+        if (z) body.z = z; else body.save = text;
+        return post(body);
+      }).then(r => {
+        if (r && r.ok) {
+          const was = net.linked;
+          net.linked = true; net.naver = r.naver === true; net.saveAt = Date.now(); net.yielded = 0;
+          N.claim = 'ok'; N.away = null;
+          S.save();
+          if (!was) bus.emit('netLinked', true);
+          bus.emit('cloudSaved');
+        } else if (r && (r.error === 'ELSEWHERE' || r.error === 'CONFLICT')) {
+          rollback();
+          if (r.error === 'ELSEWHERE') N.markAway(r.elsewhere);
+          else bus.emit('netConflict', r.meta || null);
+        } else {
+          N.onError(r);
+        }
+        return r;
+      });
+    });
+  };
+  /** 연결 코드로 이어받기(새 기기) → 서버 응답 {ok, playerId, token, nickname, naver, meta, save} (save 를 받아 쓰는 일은 부르는 쪽이) */
+  N.pairJoin = function (code) {
+    if (!N.enabled()) return Promise.resolve({ ok: false, error: 'OFF', message: '서버에 연결되지 않았어요' });
+    const net = S.g.net;
+    return post({ action: 'pairJoin', code: String(code || ''), deviceId: net.deviceId, gz: U.canGzip() ? 1 : 0 }).then(unpackSave).then(r => {
+      if (r && r.ok) { r.paired = true; r.mode = 'restore'; r.multi = true; }
       return r;
     });
   };
@@ -25168,21 +25669,28 @@ SR.CONFIG = {
     N.hello().then(() => N.ensureRegistered()).then(ok => {
       if (!ok) return;
       N.sync();
-      if (opts && opts.uploadNow) setTimeout(() => N.uploadSave(), 1200);   // 막 네이버에 연결했으면 바로 올린다
+      if (opts && opts.uploadNow) setTimeout(() => N.uploadSave(), 1200);   // 막 연결했으면 바로 올린다
     });
     setInterval(() => { if (!document.hidden) N.sync(); }, Math.max(25, C.SYNC_INTERVAL_SEC) * 1000);
     // 운영자가 구매 적립을 열고 닫거나 적립률·안내를 바꾸면 켜 둔 게임에도 5분 안에 반영
     setInterval(() => { if (!document.hidden) N.hello(true); }, 300000);
-    // 네이버에 연결된 목장: 바뀐 게 있으면 3분마다 진행 기록을 올림
-    setInterval(() => { if (!document.hidden && Date.now() - lastInput < UPLOAD_EVERY) N.uploadIfDue(); }, 60000);
+    // 서버에 보관하는 목장: 하는 동안은 바뀐 게 있으면 3분마다, 손을 놓으면 마지막으로 한 일까지 한 번 더 올려 둔다(v2.6 — 다른 곳이 기다리지 않고 넘겨받게)
+    setInterval(() => {
+      if (document.hidden) return;
+      if (Date.now() - lastInput < UPLOAD_EVERY) N.uploadIfDue();
+      else if (N.cloudOn() && N.claim === 'ok' && (S.g.net.pointAt || 0) < lastInput && Date.now() - upTryAt > 30000) N.uploadSave();
+    }, 60000);
     document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        N.sync('beacon'); playSec = 0;
-        const net = S.g.net;
-        if (net.linked && !net.moved && (S.g.last || 0) > (net.saveAt || 0) && Date.now() - upTryAt > 30000) N.uploadSave('keepalive');
-      } else { sessionId = U.uuid().replace(/-/g, '').slice(0, 20); playSec = 0; N.hello(); setTimeout(() => N.sync(), 1500); }
+      if (document.hidden) { N.leave(); playSec = 0; }
+      else {
+        leftAt = 0;
+        sessionId = rid(20); playSec = 0; N.hello();
+        // v2.6 서버에 보관하는 목장은 08_main 이 먼저 보관본을 확인한 뒤(netReturn) 동기화한다 — 다른 곳에서 하는 중이던 화면도(그곳이 쉬고 있으면 이어받기)
+        if (N.claim === 'away' || N.cloudOn()) bus.emit('netReturn');
+        else setTimeout(() => { if (!document.hidden) N.sync(); }, 1500);
+      }
     });
-    window.addEventListener('pagehide', () => N.sync('beacon'));
+    window.addEventListener('pagehide', () => N.leave());
   };
 })();
 
@@ -25309,6 +25817,7 @@ SR.CONFIG = {
         .then(r => (retry && r && (r.error === 'NET' || r.error === 'BUSY') ? delay(1300).then(() => N.post(mk())) : r))
         .then(r => {
           if (r && r.error === 'MOVED') N.markMoved();
+          else if (r && r.error === 'ELSEWHERE') N.markAway(r.elsewhere);   // v2.6 다른 곳에서 이 목장을 하는 중(돕기·보호·선물은 진행하는 곳에서만)
           if (r && !r.ok && !r.message) r.message = '잠시 후 다시 시도해 주세요';
           return r || { ok: false, error: 'NET', message: '서버에 연결하지 못했어요' };
         });
@@ -25717,7 +26226,7 @@ SR.CONFIG = {
   Soc.publish = function (opts) {
     const o = opts || {}, g = S.g, so = g && g.social;
     // 방문 중에는 내 목장 모습을 올리지 않는다('끄기' 알림은 목장 모습 없이 보내므로 방문 중에도 보냄)
-    if (!so || !N.ready() || g.net.moved || N.paused || !Soc.open() || (Soc.visit && !o.off)) return Promise.resolve(null);
+    if (!so || !N.ready() || g.net.moved || N.paused || N.claim === 'away' || !Soc.open() || (Soc.visit && !o.off)) return Promise.resolve(null);
     if (!so.on && !o.off) return Promise.resolve(null);
     if (pubBusy) { publishLater(4000); return Promise.resolve(null); }
     if (!o.force && !o.off && Date.now() - pubTryAt < 6000) { publishLater(7000); return Promise.resolve(null); }
@@ -25752,6 +26261,7 @@ SR.CONFIG = {
         // 방금 반영한 소식은 '반영한 뒤의 목장 모습'과 함께 받았다고 알린다(이웃 기능을 꺼 둔 목장은 목장 모습 없이)
         if (so.ack.length && !Soc.visit) setTimeout(() => { try { Soc.publish(so.on ? { force: true } : { off: true, force: true }); } catch (e) { /* 무시 */ } }, 1500);
       } else if (r && r.error === 'MOVED') N.markMoved();
+      else if (r && r.error === 'ELSEWHERE') N.markAway(r.elsewhere);   // v2.6 다른 곳이 진행하는 곳(그곳이 내 목장을 올린다)
       else if (r && (r.error === 'RATE' || r.error === 'BUSY')) publishLater(20000);   // 잠깐 몰린 것 → 조금 뒤 한 번 더
       return r;
     }, e => { pubBusy = false; pubFails++; throw e; });
@@ -27358,7 +27868,7 @@ SR.CONFIG = {
   L.available = function () {
     const li = live(), so = S.g && S.g.social, cfg = Fb.cfg();
     return !!(started && N.enabled() && li.rt === true && cfg && cfg.databaseURL && !Fb.dead && typeof WebSocket !== 'undefined' &&
-      Soc.open() && so && so.on && CODE_RE.test(so.code) && N.ready() && !S.g.net.moved);
+      Soc.open() && so && so.on && CODE_RE.test(so.code) && N.ready() && !S.g.net.moved && N.claim !== 'away');   // v2.6 다른 곳에서 하는 중이면 그곳이
   };
   L.count = () => Object.keys(L.peers).length;
   /** (테스트·진단용) 지금 상태 */
@@ -27670,6 +28180,7 @@ SR.CONFIG = {
     bus.on('liveHelp', helpIn);
     bus.on('netInfo', () => { setTimeout(() => { try { L.wake(); P.refresh(); } catch (e) { console.error('live', e); } }, 800); });
     bus.on('netMoved', () => { if (L.state !== 'off') leaveNow(); });
+    bus.on('netAway', () => { if (L.state !== 'off') leaveNow(); });   // v2.6 다른 곳에서 이어서 하는 중 → 방에서 나간다
     bus.on('socialOn', on => { if (!on && L.state !== 'off') leaveNow(); });
     bus.on('netLinked', () => setTimeout(() => { try { P.refresh(); } catch (e) { /* 무시 */ } }, 3000));
     (function loop() { setTimeout(() => { try { tick(); } catch (e) { console.error('live', e); } loop(); }, L.T.tick); })();
@@ -28874,12 +29385,14 @@ SR.CONFIG = {
   UI.moveCard = function () {
     if (!U.store.ok) return null;
     const kakao = M.kakao(), old = M.atOld();
+    const multi = !!(SR.Net && SR.Net.enabled() && SR.Net.multi());   // v2.6 연결하면 두 곳 모두에서 이어짐
     const sub = old ? '게임 주소가 바뀌었어요. 새 버전은 새 주소에만 올라와요 — 하던 목장을 그대로 새 주소로 옮겨 주세요.'
+      : kakao && multi ? '지금은 카카오톡 안의 화면으로 열려 있어요. [크롬·사파리에서도 하기]를 누르면 이 목장을 크롬·사파리에서도 열고, 그 뒤로는 어디서 열든 가장 최근 진행으로 이어져요.'
       : kakao ? '지금은 카카오톡 안의 화면으로 열려 있어요. 여기와 크롬·사파리는 진행 기록이 따로 저장돼요. 하던 목장을 그대로 크롬·사파리로 옮길 수 있어요.'
         : '진행 기록은 브라우저마다 따로 저장돼요. 하던 목장을 그대로 다른 브라우저로 옮길 수 있어요(카카오톡 안의 화면 → 크롬·사파리 등).';
     const row = el('div', { class: 'row' });
     if (old) row.appendChild(btn('새 주소로 목장 옮기기', 'btn-orange btn-sm', () => UI.moveHome(), { icon: 'truck', id: 'mvHome' }));
-    else if (kakao) row.appendChild(btn('크롬·사파리로 옮기기', 'btn-orange btn-sm', () => UI.moveOut(), { icon: 'truck', id: 'mvOut' }));
+    else if (kakao) row.appendChild(btn(multi ? '크롬·사파리에서도 하기' : '크롬·사파리로 옮기기', 'btn-orange btn-sm', () => UI.moveOut(), { icon: 'truck', id: 'mvOut' }));
     row.appendChild(btn('옮기기 코드 복사', 'btn-blue btn-sm', () => UI.moveCode(), { icon: 'copy', id: 'mvCopy' }));
     row.appendChild(btn('코드로 가져오기', 'btn-sm', () => UI.moveIn(), { id: 'mvIn' }));
     const card = el('div', { class: 'card mv-card', id: 'moveCard', style: 'flex-direction:column;align-items:stretch;gap:8px' }, [
@@ -28895,8 +29408,13 @@ SR.CONFIG = {
     }
     return card;
   };
-  /** 카카오톡 안 → 크롬·사파리 (한 번 눌러 옮기기) */
+  /** 카카오톡 안 → 크롬·사파리 — v2.6 서버가 연결 코드를 쓸 수 있으면 옮기지 않고 연결한다(UI.pairOut — 07j_cloud.js: 그 뒤로 두 곳 모두에서 이어짐) */
   UI.moveOut = function () {
+    if (UI.pairOut && SR.Net && SR.Net.enabled() && SR.Net.multi()) { UI.pairOut(); return; }
+    UI.moveOutLegacy();
+  };
+  /** 카카오톡 안 → 크롬·사파리 (한 번 눌러 옮기기 — v2.5) */
+  UI.moveOutLegacy = function () {
     const g = S.g;
     UI.confirm('크롬·사파리로 목장을 옮길까요?', '하던 목장(' + g.name + ' · Lv.' + g.level + ')을 그대로 가지고 크롬(아이폰은 사파리)에서 열어요. 옮긴 뒤에는 그쪽에서 이어서 하면 돼요.', '옮기기', () => {
       M.exportNow().then(code => {
@@ -29030,6 +29548,209 @@ SR.CONFIG = {
 })();
 
 
+/* ==== game/07j_cloud.js ==== */
+/* v2.6 자동 이어하기 — 기기 연결 코드(네이버 계정이 없는 손님도 여러 기기에서)
+ * · [설정 → 기본]의 「다른 기기에서도 하기」 카드: [연결 코드 만들기](이 기기 진행을 서버에 올리고 6자리 코드 — 10분 · 한 번) · [코드로 이어받기]
+ * · 카카오톡 안에서 [크롬·사파리로 열기]: 코드를 만들어 주소 끝(#pair=코드)에 붙여 크롬·사파리를 연다 → 그쪽이 시작 전에 저절로 이어받는다
+ * · 주소 끝의 #pair=코드 는 이 탭에 잠깐 맡겨 두고 주소창에서 바로 지운다(코드는 10분 동안 목장의 열쇠와 같다)
+ * 진행하는 곳 확인 · 넘겨받기 · 어느 진행으로 할지 고르기 · 코드를 넣어 이어받는 일(시작 전)은 08_main.js 가 한다. */
+(function () {
+  'use strict';
+  const U = SR.U, S = SR.S, UI = SR.UI, bus = SR.bus, N = SR.Net, M = SR.Move;
+  const el = U.el, btn = UI.btn, ico = UI.ico;
+  const sfx = (n, o) => bus.emit('sfx', { name: n, opts: o });
+  const Cl = SR.Cloud = {};
+  const PEND = 'shinhwa_ranch_pair', PEND_MS = 15 * 60000;
+  const CODE_RE = /^[2-9A-HJ-NP-Z]{6}$/;
+
+  /** 넣은 글자 → 코드 모양(띄어쓰기·- 빼고 대문자) */
+  Cl.clean = v => String(v || '').replace(/[\s-]/g, '').toUpperCase();
+  Cl.valid = v => CODE_RE.test(Cl.clean(v));
+  /** 코드를 보기 좋게: K7P 2QX */
+  Cl.pretty = code => { const c = Cl.clean(code); return c.slice(0, 3) + ' ' + c.slice(3); };
+
+  /* ---------- 이어받을 코드를 이 탭에 잠깐 맡겨 두기 (새로 연 뒤 08_main.js 가 꺼내 쓴다) ----------
+   * ok = 게임 안에서 「이 기기의 목장은 바뀌어요」를 이미 보고 넣은 코드(새로 연 뒤 다시 묻지 않음) */
+  let pendMem = null;
+  Cl.setPending = function (code, ok) {
+    const v = JSON.stringify({ c: Cl.clean(code), at: Date.now(), ok: ok ? 1 : 0 });
+    pendMem = v;
+    try { window.sessionStorage.setItem(PEND, v); return; } catch (e) { /* 아래로 */ }
+    U.store.set(PEND, v);
+  };
+  /** 맡겨 둔 코드 → {c: 코드, ok} (없거나 15분이 지났으면 null) */
+  Cl.pending = function () {
+    let v = null;
+    try { v = window.sessionStorage.getItem(PEND); } catch (e) { v = null; }
+    if (!v) v = U.store.get(PEND) || pendMem;
+    if (!v) return null;
+    try {
+      const o = JSON.parse(v);
+      if (o && CODE_RE.test(o.c) && Math.abs(Date.now() - (+o.at || 0)) < PEND_MS) return { c: o.c, ok: o.ok === 1 };
+    } catch (e) { /* 아래에서 지움 */ }
+    Cl.clearPending();
+    return null;
+  };
+  Cl.clearPending = function () {
+    pendMem = null;
+    try { window.sessionStorage.removeItem(PEND); } catch (e) { /* 무시 */ }
+    U.store.remove(PEND);
+  };
+  /** 주소 끝의 #pair=코드 를 꺼내 맡겨 두고 주소창에서 바로 지운다 → 있었으면 true */
+  Cl.takeHash = function () {
+    const m = /(?:^#|&)pair=([A-Za-z0-9-]{6,9})(?:&|$)/.exec(location.hash || '');
+    if (!m) return false;
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* 무시 */ }
+    if (Cl.valid(m[1])) Cl.setPending(m[1]);
+    return true;
+  };
+
+  /** 코드 상자: 큰 글씨 코드 · 남은 시간 · [코드 복사] */
+  Cl.codeBox = function (code, until) {
+    const big = el('p', { class: 'pair-code', id: 'pairCodeText', 'aria-label': '연결 코드 ' + code.split('').join(' '), text: Cl.pretty(code) });
+    const left = el('p', { class: 'muted pair-left', id: 'pairLeft', role: 'status' });
+    let shown = false;
+    const tick = () => {
+      if (left.isConnected) shown = true;
+      else if (shown) { clearInterval(tm); return; }                // 창이 닫혔다(붙기 전의 첫 계산은 그대로 한다)
+      const sec = Math.max(0, Math.round(((+until || 0) - (Date.now() + (N.skew || 0))) / 1000));
+      left.textContent = sec > 0 ? U.fmtClock(sec) + ' 동안 쓸 수 있어요 · 한 번만' : '시간이 지났어요. 코드를 다시 만들어 주세요';
+      left.classList.toggle('bad', sec <= 0);
+    };
+    const tm = setInterval(tick, 1000);
+    tick();
+    const copy = btn('코드 복사', 'btn-blue btn-sm', () => {
+      // 첫 화면에서는 알림(토스트)이 가려지므로 단추 글자로도 알려 준다
+      const done = ok => {
+        UI.toast(ok ? '코드를 복사했어요' : '복사하지 못했어요. 코드를 보고 직접 넣어 주세요', ok ? 'good' : 'bad', ok ? 'check' : 'cross');
+        const lab = copy.querySelector('span:last-child');
+        if (!lab) return;
+        lab.textContent = ok ? '복사했어요' : '복사 안 됨';
+        setTimeout(() => { lab.textContent = '코드 복사'; }, 2000);
+      };
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(Cl.clean(code)).then(() => done(true), () => done(false)); return; }
+      } catch (e) { /* 아래로 */ }
+      done(false);
+    }, { icon: 'copy', id: 'pairCopy' });
+    return el('div', { class: 'pair-box' }, [big, el('div', { class: 'row spread nowrap' }, [left, copy])]);
+  };
+  const KEY_NOTE = '코드는 10분 동안 한 번만 쓸 수 있어요. 이 목장의 열쇠와 같으니 다른 사람에게 알려 주지 마세요.';
+  /** 「열리지 않았거나 목장이 보이지 않으면」 안내(크롬·사파리로 연 뒤 — 게임 안 · 첫 화면 같은 글) */
+  Cl.fallbackNote = id => el('div', { class: 'notice blue', id: id || null }, [el('b', { text: '열리지 않았거나 목장이 보이지 않으면' }), el('br'),
+    '크롬·사파리에서 게임을 열고 첫 화면의 [연결 코드로 이어하기]에 아래 코드를 넣어 주세요.']);
+  const NAVER_NOTE = '네이버로 로그인해 두면 휴대폰을 잃어버리거나 기록을 지워도 목장을 되찾을 수 있어요.';
+  Cl.KEY_NOTE = KEY_NOTE;
+
+  /* =========================================================
+   * [설정 → 기본] 다른 기기에서도 하기
+   * ========================================================= */
+  UI.pairCard = function () {
+    if (!N.enabled() || !N.multi() || !U.store.ok) return null;
+    const net = S.g.net;
+    const on = net.linked && !net.moved;
+    const sub = net.moved
+      ? '하던 기기에서 만든 연결 코드를 넣으면 이 기기에서도 다시 이어서 할 수 있어요.'
+      : on ? '연결한 기기끼리는 어디서 열든 가장 최근 진행으로 이어져요(한 번에 한 곳에서만 진행돼요). 다른 기기를 더하려면 코드를 만들어 그 기기에 넣어 주세요.'
+        : '카카오톡 · 크롬 · PC 등 다른 곳에서도 이 목장을 하고 싶으면 코드를 만들어 그 기기에 넣어 주세요. 그 뒤로는 어디서 열든 가장 최근 진행으로 이어져요.' +
+          (N.naverAvailable() ? ' (네이버 로그인을 하면 코드 없이 로그인만으로도 돼요)' : '');
+    return el('div', { class: 'card pair-card', id: 'pairCard', style: 'flex-direction:column;align-items:stretch;gap:8px' }, [
+      el('div', { class: 'row nowrap' }, [ico('link', 32), el('div', { class: 'grow' }, [el('h3', { text: '다른 기기에서도 하기' }), el('p', { class: 'muted', text: sub })])]),
+      el('div', { class: 'row' }, [
+        net.moved ? null : btn('연결 코드 만들기', 'btn-orange btn-sm', () => UI.pairShow(), { icon: 'link', id: 'pairMake' }),
+        btn('코드로 이어받기', 'btn-sm', () => UI.pairIn(), { id: 'pairInBtn' })
+      ])
+    ]);
+  };
+  /** 이 기기의 진행을 올리고 연결 코드를 받아 보여 준다 */
+  let making = false;
+  UI.pairShow = function (opts) {
+    if (making) return;
+    making = true;
+    const done = UI.busy('연결 코드를 만들고 있어요…', { icon: 'link' });
+    N.pairCode().then(r => {
+      making = false; done();
+      if (!r || !r.ok) {
+        if (r && (r.error === 'ELSEWHERE' || r.error === 'CONFLICT')) return;          // 08_main 이 안내창을 띄운다
+        UI.alert('연결 코드를 만들지 못했어요', (r && r.message && r.error !== 'NET' ? r.message : '') || '인터넷 연결을 확인하고 잠시 후 다시 시도해 주세요.', { icon: 'cross', stack: true });
+        return;
+      }
+      UI.refresh();
+      sfx('unlock');
+      UI.pairCodeModal(r, opts && opts.lead);
+    }, e => { making = false; done(); console.error('pair', e); });
+  };
+  /** 받은 연결 코드를 크게 보여 주는 창. r = {code, until, naver} */
+  UI.pairCodeModal = function (r, lead) {
+    UI.modal((box, close) => {
+      box.appendChild(el('div', { class: 'ribbon green', text: '연결 코드' }));
+      box.appendChild(el('h2', { text: '새 기기에 이 코드를 넣어 주세요' }));
+      box.appendChild(el('p', { class: 'lead', text: lead || '새 기기에서 게임을 열고 첫 화면의 [연결 코드로 이어하기]를 누른 뒤 이 코드를 넣으면 이 목장이 그대로 이어져요. 그 뒤로는 두 기기 어디서 열든 이어서 해요.' }));
+      box.appendChild(Cl.codeBox(r.code, r.until));
+      box.appendChild(el('p', { class: 'muted', style: 'margin:0;text-align:center', text: KEY_NOTE }));
+      if (!r.naver && N.naverAvailable()) box.appendChild(el('div', { class: 'notice blue', id: 'pairNaverNote', text: NAVER_NOTE }));
+      box.appendChild(el('div', { class: 'btns' }, [btn('닫기', 'btn-ghost', () => close(), { id: 'pairClose' })]));
+    }, { stack: true });
+  };
+  /** 다른 기기의 코드를 넣어 그 목장을 이어받는다(게임 중) — 코드를 맡겨 두고 새로 열어, 시작 전에 확인하고 이어받는다 */
+  UI.pairIn = function () {
+    UI.modal((box, close) => {
+      box.appendChild(el('h2', { text: '연결 코드로 이어받기' }));
+      box.appendChild(el('p', { class: 'lead', text: '하던 기기의 [설정 → 다른 기기에서도 하기 → 연결 코드 만들기]로 받은 6자리 코드를 넣어 주세요.' }));
+      const inp = el('input', { class: 'text-input pair-input', id: 'pairInGame', maxlength: '9', autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: '예: K7P 2QX', 'aria-label': '연결 코드' });
+      const err = el('p', { class: 'field-err', id: 'pairInErr', role: 'alert' });
+      inp.addEventListener('input', () => { err.textContent = ''; const v = inp.value.toUpperCase(); if (v !== inp.value) inp.value = v; });
+      const go = () => {
+        const c = Cl.clean(inp.value);
+        if (!CODE_RE.test(c)) { err.textContent = '6자리 코드(영문·숫자)를 넣어 주세요'; sfx('error'); return; }
+        close();
+        try { S.save(); } catch (e) { /* 무시 */ }
+        Cl.setPending(c, true);
+        M.reload();
+      };
+      inp.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+      box.appendChild(inp); box.appendChild(err);
+      box.appendChild(el('p', { class: 'muted', style: 'margin:0', text: '이어받으면 이 기기의 목장은 그 목장으로 바뀌어요(7일 안에는 [설정 → 목장 옮기기]에서 되돌릴 수 있어요).' }));
+      box.appendChild(el('div', { class: 'btns' }, [btn('취소', 'btn-ghost', () => close(), { id: 'pairInCancel' }), btn('이어받기', 'btn-orange', go, { id: 'pairInGo' })]));
+      setTimeout(() => { try { inp.focus(); } catch (e) { /* 무시 */ } }, 60);
+    }, { stack: true });
+  };
+  /** 카카오톡 안(게임 중) → 크롬·사파리: 코드를 만들어 주소에 붙여 연다(그쪽이 저절로 이어받음). 서버가 연결 코드를 모르면 v2.5 옮기기 */
+  UI.pairOut = function () {
+    const g = S.g;
+    UI.confirm('크롬·사파리에서도 할까요?', '이 목장(' + g.name + ' · Lv.' + g.level + ')을 크롬(아이폰은 사파리)에서 열어요. 연결해 두면 그 뒤로는 카카오톡으로 열든 크롬으로 열든 같은 목장이 이어져요.', '크롬·사파리로 열기', () => {
+      const done = UI.busy('크롬·사파리로 여는 중…', { icon: 'truck' });
+      N.pairCode().then(r => {
+        done();
+        if (!r || !r.ok) {
+          if (r && (r.error === 'ELSEWHERE' || r.error === 'CONFLICT')) return;
+          UI.moveOutLegacy();                                         // 연결 코드를 만들지 못함 → 옮기기 코드로
+          return;
+        }
+        M.openExternal(M.target() + '#pair=' + r.code);
+        setTimeout(() => { UI.refresh(); UI.pairOutModal(r); }, 700);
+      }, e => { done(); console.error('pair out', e); UI.moveOutLegacy(); });
+    }, { icon: 'truck', okIcon: 'truck' });
+  };
+  /** 크롬·사파리를 연 뒤의 안내(열리지 않았으면 코드를 넣도록) */
+  UI.pairOutModal = function (r) {
+    UI.modal((box, close) => {
+      box.appendChild(el('div', { class: 'ribbon green', text: '크롬·사파리' }));
+      box.appendChild(el('h2', { text: '크롬·사파리에서 이어서 하세요' }));
+      box.appendChild(el('p', { class: 'lead', text: '크롬·사파리가 열리면 이 목장이 저절로 이어져요. 그 뒤로는 어디서 열든 가장 최근 진행으로 이어서 해요.' }));
+      box.appendChild(Cl.fallbackNote('pairFallback'));
+      box.appendChild(Cl.codeBox(r.code, r.until));
+      box.appendChild(el('div', { class: 'btns' }, [btn('확인', 'btn', () => close(), { id: 'pairOutOk' })]));
+    }, { stack: true });
+  };
+
+  // 게임이 열려 있는 탭으로 #pair=코드 주소가 다시 들어오면: 코드를 맡겨 두고 새로 열어 시작 전에 이어받는다
+  window.addEventListener('hashchange', () => {
+    try { if (Cl.takeHash()) { try { if (UI.started) S.save(); } catch (e) { /* 무시 */ } M.reload(); } } catch (e) { console.error('pair hash', e); }
+  });
+})();
+
+
 /* ==== game/08_main.js ==== */
 /* 시작·게임 루프·입력 */
 (function () {
@@ -29074,8 +29795,10 @@ SR.CONFIG = {
   bus.on('upgraded', e => { if (e.what === 'cap' || e.what === 'feed' || e.what === 'ws') UI.toast('확장 완료!', 'good', 'arrow_up'); });
 
   /* ---------- 가림막(제목 화면보다 위에 뜨는 안내창) ---------- */
+  let ownBlk = false;              // v2.6 지금 떠 있는 가림막이 자동 이어하기(cblk)의 것인가 — 첫 화면에서 다른 안내창을 닫지 않게
   /** col = 단추를 세로로 한 줄씩(글자가 긴 단추가 여럿일 때) */
   function blocker(title, lead, buttons, extra, col) {
+    ownBlk = false;
     let wrap = document.getElementById('blocker');
     if (!wrap) {
       wrap = U.el('div', { id: 'blocker', class: 'modal-wrap blocker' });
@@ -29095,7 +29818,9 @@ SR.CONFIG = {
     titleInert(true);
     return wrap;
   }
-  function unblock() { const w = document.getElementById('blocker'); if (w) w.remove(); titleInert(false); }
+  function unblock() { ownBlk = false; const w = document.getElementById('blocker'); if (w) w.remove(); titleInert(false); }
+  /** 자동 이어하기의 가림막(확인 · 넘겨받기 · 고르기 · 다른 곳에서 하는 중) */
+  function cblk(title, lead, buttons, extra, col) { const w = blocker(title, lead, buttons, extra, col); ownBlk = true; return w; }
   /** 가림막이 떠 있는 동안 그 뒤의 제목 화면 단추(시작·네이버 로그인·설치)를 키보드로도 누를 수 없게 한다 */
   function titleInert(on) { const t = document.getElementById('title'); if (t) { try { t.inert = !!on; } catch (e) { /* 무시 */ } } }
 
@@ -29168,7 +29893,12 @@ SR.CONFIG = {
   // 멈춘 창은 저장하지 않는다(가져간 창의 기록을 덮지 않게).
   // S.frozen(v2.5): 저장소의 목장을 방금 다른 목장으로 바꿔 놓았다(옮겨 오기 전 목장으로 되돌리기) — 곧 새로 열 것이므로 이 화면의 옛 목장으로 덮지 않는다
   const rawSave = S.save;
-  S.save = function (opts) { if (S.frozen || !Lock.canSave()) return; rawSave(opts); Lock.saved(); };
+  S.save = function (opts) {
+    if (S.frozen || !Lock.canSave()) return;
+    // v2.6 목장 시간을 멈춰 둔 동안(다른 곳의 진행을 확인 · 다른 곳에서 하는 중)은 마지막 저장 시각을 그대로 둔다(그동안의 진행은 다시 움직일 때 계산)
+    if (N.held && S.g && S.g.last > 0 && !(opts && opts.keepLast)) opts = Object.assign({}, opts, { keepLast: true });
+    rawSave(opts); Lock.saved();
+  };
 
   let started = false, lastSim = Date.now(), saveTimer = 0, uiTimer = 0, booted = false;
   /* v2.0 쿠마는 '사람이 접속해 있을 때'만 온다: 게임을 시작했고, 화면이 보이고, 최근(D.BEAR.idleMaxSec 초 안)에 조작이 있었고, 이웃 목장에 가 있지 않을 때 */
@@ -29190,7 +29920,7 @@ SR.CONFIG = {
     // 네이버 로그인에서 돌아왔으면 토큰이 든 주소부터 지운다(다른 일보다 먼저)
     try { naverRet = N.naverParseReturn(); } catch (e) { console.error('naver return', e); naverRet = null; }
     // v2.5 주소 끝의 #mv=옮기기 코드는 이 탭에 맡겨 두고 주소창에서 바로 지운다 · 새 버전으로 새로 열 때 붙였던 ?v=… 도 지운다
-    try { if (Mv) Mv.takeHash(); if (Up) Up.cleanUrl(); } catch (e) { console.error('move url', e); }
+    try { if (Mv) Mv.takeHash(); if (Up) Up.cleanUrl(); if (SR.Cloud) SR.Cloud.takeHash(); } catch (e) { console.error('move url', e); }
     if (U.store.ok && !Lock.wantsTakeover() && Lock.other()) {
       blocker('다른 창에서 목장이 열려 있어요', '같은 목장을 두 창에서 동시에 하면 진행 기록이 서로 덮일 수 있어요. 이 창에서 할까요? (다른 창은 멈춰요)', [
         { label: '이 창에서 하기', cls: 'btn-orange', fn: () => { Lock.take(); unblock(); setTimeout(safeBoot, 400); } }   // 다른 창이 멈출 틈을 준 뒤 최신 기록을 읽는다
@@ -29242,11 +29972,17 @@ SR.CONFIG = {
       }
     } catch (e) { /* 무시 */ }
     drawTitle();
-    $('#btnStart').addEventListener('click', () => start(bootSummary), { once: true });
+    $('#btnStart').addEventListener('click', onStartClick);
+    $('#btnPairIn').addEventListener('click', () => pairAsk());
     const nvMsg = takeNaverMsg();
+    const au = takeAuto();             // v2.6 다른 곳의 진행을 받아 방금 새로 열었다(au.auto: 게임 중이었음 → 첫 화면 없이 · au.claimed: 이미 진행하는 곳)
+    autoStart = au.auto;
+    if (au.claimed && N.cloudOn()) { N.claim = 'ok'; claimAt = au.at; gateDone = true; }
     if (!U.store.ok) $('#titleNote').textContent = '이 브라우저는 저장이 안 돼요. 진행이 유지되지 않을 수 있어요.';
     else if (nvMsg && nvMsg.kind === 'restored') $('#titleNote').textContent = '네이버 계정의 목장을 불러왔어요 · ' + S.g.name + ' Lv.' + S.g.level;
     else if (nvMsg && nvMsg.kind === 'moved') $('#titleNote').textContent = '옮겨 온 목장을 불러왔어요 · ' + S.g.name + ' Lv.' + S.g.level;
+    else if (nvMsg && nvMsg.kind === 'cloud') $('#titleNote').textContent = cloudFrom(nvMsg.where) + ' 한 진행을 불러왔어요 · ' + S.g.name + ' Lv.' + S.g.level;
+    else if (nvMsg && nvMsg.kind === 'paired') $('#titleNote').textContent = '연결한 목장을 불러왔어요 · ' + S.g.name + ' Lv.' + S.g.level;
     else if (hadSave && (S.g.named || S.g.level > 1 || S.g.tut.done)) $('#titleNote').textContent = S.g.name + ' · Lv.' + S.g.level + ' 이어서 하기';
     titleSave = !!(hadSave && (S.g.named || S.g.level > 1 || S.g.tut.done));
     bindInput();
@@ -29258,15 +29994,24 @@ SR.CONFIG = {
     bus.on('netInfo', titleLogin);       // 서버 안내가 오면(또는 바뀌면) 다시 그림
     bus.on('netLinked', titleLogin);
     // 서버 안내(네이버 로그인 버튼 표시 여부 등)를 시작 전에 받아 둔다. 끝나면(실패해도) 제목 화면의 로그인 자리를 정리한다
-    N.hello().catch(() => null).then(() => { helloTried = true; titleLogin(); });
+    N.hello().catch(() => null).then(() => { helloTried = true; titleLogin(); maybeBootGate(); });
     titleUpdate();                       // v2.5 서버에 더 새 버전이 올라와 있으면 새로 연다(안내창이 떠 있으면 닫힌 뒤에)
-    if (naverRet) { const ret = naverRet; naverRet = null; handleNaverReturn(ret); }
+    if (naverRet) { const ret = naverRet; naverRet = null; flowBusy = true; autoStart = false; handleNaverReturn(ret); }
     else {
       if (nvMsg && nvMsg.kind === 'restored') {
         afterStart.push(() => UI.toast('네이버 계정에 보관된 목장을 불러왔어요!', 'good', 'check'));
         if (nvMsg.back) afterStart.push(() => openBack(nvMsg.back));
       } else if (nvMsg && nvMsg.kind === 'moved') afterStart.push(() => UI.toast('옮겨 온 목장을 불러왔어요! 이제 여기서 이어서 하면 돼요', 'good', 'check'));
-      moveBoot();                        // v2.5 옮겨 온 코드 · 예전 주소 · 이미 옮긴 목장
+      else if (nvMsg && nvMsg.kind === 'cloud') afterStart.push(() => UI.toast(cloudFrom(nvMsg.where) + ' 한 진행으로 이어서 해요', 'good', 'check'));
+      else if (nvMsg && nvMsg.kind === 'paired') afterStart.push(() => UI.toast('연결했어요! 이제 어디서 열든 이 목장이 이어져요', 'good', 'check'));
+      const pend = SR.Cloud ? SR.Cloud.pending() : null;
+      if (pend) { autoStart = false; pairJoinFlow(pend.c, pend.ok); }   // v2.6 연결 코드로 이어받기(카카오톡 → 크롬 · 첫 화면에서 코드를 넣음)
+      else moveBoot();                   // v2.5 옮겨 온 코드 · 예전 주소 · 이미 옮긴 목장
+      if (autoStart && !document.getElementById('blocker')) {
+        // v2.6 게임 중에 다른 곳의 진행을 받아 새로 열었다 → 첫 화면 없이 바로(진행하는 곳을 잡아 두지 못했으면 확인한 뒤)
+        if (needStartCheck()) askStart('이어서 여는 중…');
+        else setTimeout(() => start(bootSummary), 30);
+      } else maybeBootGate();            // v2.6 서버에 보관하는 목장: 첫 화면에서 다른 곳의 진행부터 확인
     }
     checkTester().catch(() => {});
     window.addEventListener('hashchange', () => checkTester().catch(() => {}));
@@ -29303,26 +30048,34 @@ SR.CONFIG = {
     const net = S.g.net;
     const can = U.store.ok && N.naverAvailable();          // 저장소를 못 쓰는 브라우저는 로그인 왕복을 확인할 수 없다
     const known = helloTried || N.naverKnown();
-    const mode = net.linked && !net.moved ? 'linked' : !U.store.ok ? 'plain' : !known ? 'wait' : !can ? 'plain' : net.moved ? 'moved' : 'guest';
+    const pairOnly = net.moved && !net.naver && N.multi();          // v2.6 연결 코드로만 이은 목장의 연결이 풀림 → 코드로 다시
+    const mode = net.linked && !net.moved ? 'linked' : !U.store.ok ? 'plain' : pairOnly ? 'repair' : !known ? 'wait' : !can ? 'plain' : net.moved ? 'moved' : 'guest';
+    const pb = $('#btnPairIn');
+    if (pb) pb.hidden = !(N.enabled() && N.multi() && U.store.ok && mode !== 'linked' && mode !== 'repair');
     if (box.dataset.mode === mode) return;
     box.dataset.mode = mode;
     const ask = mode === 'guest' || mode === 'moved';
     box.textContent = '';
     chip.textContent = '';
-    if (ask || mode === 'wait') {
+    if (mode === 'repair') {
+      box.appendChild(U.el('button', { class: 'btn btn-big btn-blue title-repair', type: 'button', id: 'btnRePair', text: '연결 코드로 다시 연결', onclick: () => pairAsk() }));
+      box.appendChild(U.el('p', { class: 'title-login-note', text: '이 기기는 다른 기기와의 연결이 풀렸어요' }));
+    } else if (ask || mode === 'wait') {
       // 'wait' 는 같은 크기의 자리만 차지한다(단추는 보이지 않고 누를 수도 없음)
       box.appendChild(UI.naverBtn(mode === 'moved' ? '네이버로 다시 로그인' : '네이버 로그인', 'title', 'btn-big title-naver'));
       box.appendChild(U.el('p', { class: 'title-login-note', text: mode === 'moved' ? '이 목장은 다른 기기에서 이어서 하고 있어요' : '로그인하면 목장이 서버에 보관돼요' }));
       if (mode === 'wait') box.appendChild(U.el('p', { class: 'title-login-wait', text: '접속 정보를 확인하고 있어요…' }));
     } else if (mode === 'linked') {
-      chip.appendChild(U.el('span', { class: 'nv-badge' }, [UI.naverMark(12)]));
-      chip.appendChild(U.el('span', { text: '네이버 계정에 연결됨' }));
+      if (net.naver || !N.multi()) {
+        chip.appendChild(U.el('span', { class: 'nv-badge' }, [UI.naverMark(12)]));
+        chip.appendChild(U.el('span', { text: '네이버 계정에 연결됨' }));
+      } else chip.appendChild(U.el('span', { text: '🔗 다른 기기와 연결됨' }));
     }
     box.classList.toggle('wait', mode === 'wait');
-    box.hidden = !(ask || mode === 'wait');
+    box.hidden = !(ask || mode === 'wait' || mode === 'repair');
     chip.hidden = mode !== 'linked';
-    sb.classList.toggle('title-guest', ask);
-    sb.textContent = !ask ? '목장 시작하기' : titleSave ? '로그인 없이 이어서 하기' : '로그인 없이 시작하기';
+    sb.classList.toggle('title-guest', ask || mode === 'repair');
+    sb.textContent = mode === 'repair' ? '이 기기에서 따로 이어서 하기' : !ask ? '목장 시작하기' : titleSave ? '로그인 없이 이어서 하기' : '로그인 없이 시작하기';
   }
 
   /* =========================================================
@@ -29356,7 +30109,7 @@ SR.CONFIG = {
   const freshRanch = () => !S.g.named && S.g.level <= 1 && !S.g.tut.done && !(S.g.stats.deliveries > 0);
   /** 안내창을 닫는다: 제목 화면에서 로그인하러 갔던 것이면 제목 화면으로 돌아가고, 아니면 게임을 시작한다 */
   function leave(back) {
-    if (back === 'title' && !started) { unblock(); titleLogin(); applyUpdate(); return; }
+    if (back === 'title' && !started) { unblock(); flowBusy = false; titleLogin(); applyUpdate(); maybeBootGate(); return; }
     goStart(back);
   }
   function naverError(title, lead, back, retry) {
@@ -29393,6 +30146,7 @@ SR.CONFIG = {
       return;
     }
     nameHint = UI.cleanName(typeof r.naverNick === 'string' ? r.naverNick : '');
+    if (r.multi === true) { onNaverMulti(r, back); return; }        // v2.6 서버 v1.9: 기기마다 따로 로그인(먼저 쓰던 기기는 그대로)
     if (r.mode === 'restore' && typeof r.save === 'string' && r.save) {
       if (freshRanch()) { adoptAndReload(r, back); return; }
       // 보관본이 이 기기가 올린 기록 그대로면(그 뒤 다른 기기가 올린 적 없음) 이 기기 목장이 그 다음 이야기 → 묻지 않고 다시 연결
@@ -29403,15 +30157,51 @@ SR.CONFIG = {
     }
     linkHere(r, back, false);
   }
-  /** 이 기기 목장을 그 계정에 연결(보관본은 다음 저장 때 이 기기 목장으로 바뀜) */
-  function linkHere(r, back, again) {
+  /** v2.6 서버 v1.9 의 네이버 로그인 결과(multi) — 이 기기는 따로 기기 토큰을 받고, 보관본과의 사이(state — 명세 §4.4)로 정한다 */
+  function onNaverMulti(r, back) {
+    const st = r.state;
+    if (r.mode === 'restore' && typeof r.save === 'string' && r.save) {
+      // 막 시작한 새 목장 · 보관본이 이 기기 진행의 다음 이야기(이 기기에서 그 뒤로 진행하지 않음) → 묻지 않고 보관본으로
+      if (freshRanch() || (st === 'ahead' && !N.dirty())) { adoptAndReload(r, back); return; }
+      if (st === 'other' || st === 'ahead') { chooseRanch(r, back); return; }
+      linkHere(r, back, true);                                       // same · behind: 이 기기 목장이 그 계정의 목장 그대로 → 이 기기도 연결
+      return;
+    }
+    linkHere(r, back, false);
+  }
+  /** 이 기기 목장을 그 계정에 연결(보관본은 다음 저장 때 이 기기 목장으로 바뀜).
+   *  v2.6(multi): 연결한 뒤 진행하는 곳을 잡는다(다른 곳이 지금 하고 있으면 넘겨받기) · force = 손님이 「이 기기 목장으로 바꾸기」를 고름 */
+  function linkHere(r, back, again, force) {
+    const wasPair = !!(S.g.net.linked && !S.g.net.naver && !S.g.net.moved);   // 연결 코드로만 이어 두었던 목장 → 이제 네이버로
     N.applyNaver(r);
+    if (r.multi === true && N.multi()) {
+      if (force) { forceHere(r, back); return; }
+      cblk('목장을 확인하고 있어요…', '잠시만 기다려 주세요.', []);
+      cloudCheck('login', 1, () => linkedMsg(r, back, again, wasPair));
+      return;
+    }
     netOpts.uploadNow = true;
-    const same = r.mode === 'same';
-    blocker(same ? '이미 연결된 목장이에요' : again ? '네이버 계정에 다시 연결했어요' : '네이버 계정에 연결했어요',
+    linkedMsg(r, back, again, wasPair);
+  }
+  /** v2.6 「이 기기 목장으로 바꾸기」: 서버 보관본을 이 기기 진행으로 바꾸고 이 화면을 진행하는 곳으로 */
+  function forceHere(r, back) {
+    cblk('이 기기 목장을 보관하는 중…', '잠시만 기다려 주세요.', []);
+    N.uploadSave(null, { force: true, idle: true }).then(u => u, () => null).then(u => {
+      if (Lock.lost) return;
+      if (u && u.ok) { N.claim = 'ok'; N.away = null; claimAt = Date.now(); gateDone = true; linkedMsg(r, back, false, false); return; }
+      naverError('목장을 보관하지 못했어요', u && u.message && u.error !== 'NET' ? String(u.message) : '서버에 연결하지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요.',
+        back, () => forceHere(r, back));
+    });
+  }
+  function linkedMsg(r, back, again, wasPair) {
+    const same = r.mode === 'same', multi = r.multi === true && N.multi();
+    if (multi) gateDone = true;
+    blocker(same ? '이미 연결된 목장이에요' : again ? (multi ? '이 기기도 연결했어요' : '네이버 계정에 다시 연결했어요') : '네이버 계정에 연결했어요',
       same ? '이 목장은 이 네이버 계정에 연결돼 있어요. 진행 기록은 서버에 계속 보관돼요.'
-        : again ? '이 기기의 목장으로 이어서 해요. 진행 기록은 다시 서버에 보관돼요.'
-          : '이제 진행 기록이 서버에 보관돼요. 휴대폰을 바꾸거나 브라우저 기록을 지워도 같은 네이버 계정으로 로그인하면 이어서 할 수 있어요.',
+        : again ? (multi ? '이 기기의 목장이 네이버 계정의 목장과 같아요. 이제 어디서 열든 가장 최근 진행으로 이어서 해요.' : '이 기기의 목장으로 이어서 해요. 진행 기록은 다시 서버에 보관돼요.')
+          : wasPair ? '연결한 기기들은 그대로 이어져요. 이제 휴대폰을 바꾸거나 브라우저 기록을 지워도 같은 네이버 계정으로 로그인하면 이어서 할 수 있어요.'
+            : multi ? '이제 진행 기록이 서버에 보관돼요. 카카오톡·크롬·PC 등 다른 곳에서도 이 네이버 계정으로 한 번만 로그인하면, 그 뒤로는 어디서 열든 가장 최근 진행으로 이어서 해요.'
+              : '이제 진행 기록이 서버에 보관돼요. 휴대폰을 바꾸거나 브라우저 기록을 지워도 같은 네이버 계정으로 로그인하면 이어서 할 수 있어요.',
       [{ label: '계속하기', cls: 'btn-orange', fn: () => goStart(back) }]);
   }
   function adoptAndReload(r, back) {
@@ -29435,16 +30225,18 @@ SR.CONFIG = {
   }
   function chooseRanch(r, back) {
     const m = r.saveMeta || {};
+    const split = r.multi === true && r.state === 'ahead';            // v2.6 같은 목장을 다른 곳과 이 기기에서 따로 진행함
     const extra = U.el('div', { class: 'nv-choices' }, [
-      ranchCard('네이버 계정에 보관된 목장', m.name, m.level, m.coins, m.savedAt, 'cloud'),
-      ranchCard('이 기기의 목장', S.g.name, S.g.level, S.g.coins, (S.g.last || 0) + (N.skew || 0), 'local')
+      ranchCard(split ? '다른 곳에서 한 진행' : '네이버 계정에 보관된 목장', m.name, m.level, m.coins, m.savedAt, 'cloud'),
+      ranchCard(split ? '이 기기에서 한 진행' : '이 기기의 목장', S.g.name, S.g.level, S.g.coins, (S.g.last || 0) + (N.skew || 0), 'local')
     ]);
-    blocker('어느 목장으로 할까요?', '이 네이버 계정에는 목장이 하나 보관돼 있어요. 네이버 계정 하나에 목장 하나만 보관할 수 있어요.', [
-      { label: '보관된 목장으로 이어하기', cls: 'btn-orange', fn: () => adoptAndReload(r, back) },
+    blocker(split ? '어느 진행으로 할까요?' : '어느 목장으로 할까요?', split ? '이 목장을 다른 곳과 이 기기에서 따로 진행했어요. 한쪽만 이어서 할 수 있어요.'
+      : '이 네이버 계정에는 목장이 하나 보관돼 있어요. 네이버 계정 하나에 목장 하나만 보관할 수 있어요.', [
+      { label: '보관된 목장으로 이어하기', cls: 'btn-orange', fn: () => { try { S.keepPremove(); } catch (e) { /* 무시 */ } adoptAndReload(r, back); } },   // v2.6 이 기기 목장은 7일 맡아 둠
       { label: '이 기기 목장으로 바꾸기', cls: 'btn-red', fn: () => blocker('이 기기 목장으로 바꿀까요?',
         '네이버 계정에 보관된 목장(' + (m.name || '목장') + ' Lv.' + (m.level || 1) + ')은 지워지고, 이 기기의 목장이 대신 보관돼요. 되돌릴 수 없어요.', [
           { label: '돌아가기', cls: 'btn-ghost', fn: () => chooseRanch(r, back) },
-          { label: '바꾸기', cls: 'btn-red', fn: () => linkHere(r, back, false) }
+          { label: '바꾸기', cls: 'btn-red', fn: () => linkHere(r, back, false, true) }
         ]) },
       { label: '나중에 하기', cls: 'btn-ghost', fn: () => leave(back) }
     ], extra);
@@ -29459,7 +30251,7 @@ SR.CONFIG = {
    * ========================================================= */
   const gateStop = () => { clearTimeout(gateTimer); gateTimer = 0; };
   /** 안내창을 닫고 제목 화면으로 — 미뤄 둔 새 버전이 있으면 이제 받는다 */
-  function backToTitle() { gateStop(); unblock(); titleLogin(); applyUpdate(); }
+  function backToTitle() { gateStop(); unblock(); flowBusy = false; titleLogin(); applyUpdate(); maybeBootGate(); }
   const okBtn = () => [{ label: '확인', cls: 'btn-orange', fn: backToTitle }];
   function applyUpdate() {
     if (started || !updReady || !Up || Lock.lost || document.getElementById('blocker')) return;
@@ -29496,7 +30288,12 @@ SR.CONFIG = {
     if (!b || !Mv) return;
     b.hidden = !(Mv.kakao() && U.store.ok && !(SR.App && SR.App.standalone()));
     b.addEventListener('click', () => {
-      if (!freshRanch()) { moveOutAsk(); return; }
+      if (!freshRanch()) {
+        // v2.6 서버가 연결 코드를 쓸 수 있으면 옮기지 않고 연결한다(그 뒤로 카카오톡 · 크롬 어디서 열든 같은 목장) — 아니면 v2.5 옮기기
+        if (N.enabled() && N.multi() && SR.Cloud) whenGate(pairOutGo);
+        else moveOutAsk();
+        return;
+      }
       Mv.openExternal(Mv.target());                              // 아직 목장이 없으면 그냥 바깥 브라우저로 연다
       const n = $('#titleNote');
       if (n) n.textContent = '열리지 않으면 화면의 메뉴(⋮ 또는 ···)에서 「다른 브라우저로 열기」를 눌러 주세요';
@@ -29530,7 +30327,11 @@ SR.CONFIG = {
     const pend = Mv.pending();
     if (pend) { importPending(pend); return; }
     if (Mv.atOld()) { oldGate(); return; }
-    if (S.g.flags.mvOut) movedGate();
+    if (S.g.flags.mvOut) {
+      // v2.6 서버에 보관하는 목장은 어디서 열든 가장 최근 진행으로 이어지므로 「옮겼어요」를 묻지 않는다
+      if (N.cloudOn()) { delete S.g.flags.mvOut; S.save(); }
+      else movedGate();
+    }
   }
   /* ① 옮겨 온 코드 */
   function importPending(pend) {
@@ -29647,6 +30448,437 @@ SR.CONFIG = {
     ], null, true);
   }
 
+  /* =========================================================
+   * v2.6 자동 이어하기 — 서버에 보관하는 목장(네이버 로그인 · 기기 연결 코드)은 어디서 열든 가장 최근 진행으로 (명세 v1.9 §5)
+   *  · 첫 화면: 보관본이 이 기기 진행과 어떤 사이인지 묻고(savePeek), 다른 곳이 지금 하고 있지 않으면 이 화면을 '진행하는 곳'으로 잡아 둔다
+   *    (claim 'soft' + idle — 잡아 두기만 하고 '지금 하고 있음'으로는 보지 않는다 → 손님이 곧 다른 곳을 열어도 그곳이 기다리지 않음)
+   *      same · behind · none → 이 기기 진행 그대로 / ahead → 다른 곳이 이어 간 진행을 받아 새로 연다 / 두 곳이 따로 진행 → 고르기
+   *  · [목장 시작하기]: 잡아 둔 지 30초 안이면 바로 · 아니면(다른 곳에서 하고 있었음 · 첫 화면을 오래 켜 둠) 한 번 더 확인(넘겨받기 포함)
+   *  · 게임 중 다른 앱에 갔다가 돌아옴(5초 넘게): 목장 시간을 멈춘 채 같은 확인(다른 곳이 지금 하고 있으면 넘겨 달라고 하고 기다림)
+   *  · 다른 곳이 진행하는 곳이 됨(07_net 의 netAway): 이 화면은 멈추고 「다른 곳에서 하는 중 [여기서 이어서 하기]」
+   *  · 연결 코드로 이어받기(주소 끝 #pair= · 첫 화면 [연결 코드로 이어하기]) — 시작 전에
+   * ========================================================= */
+  const AUTO_KEY = 'shinhwa_ranch_autostart';   // 다른 곳의 진행을 받아 새로 열 때(이 탭): {at, auto: 첫 화면 없이 바로 시작, claimed: 이미 진행하는 곳}
+  const CLAIM_FRESH = 30000;                    // 첫 화면에서 진행하는 곳을 잡아 둔 지 이만큼 안이면 [시작]을 바로
+  let autoStart = false, flowBusy = false, startAsked = false;
+  let phase = '';             // '' | 'check' 묻는 중 | 'wait' 넘겨받기를 기다림 | 'choose' 고르는 중 | 'away' 다른 곳에서 하는 중 | 'adopt' 받아 쓰고 새로 여는 중
+  let gateDone = false;       // 첫 화면의 확인이 끝났다(또는 할 것이 없다)
+  let gateFail = false;       // 첫 화면의 확인을 못 했다(인터넷 등) → [시작]은 바로, 게임 중에 다시 확인
+  let claimAt = 0, goNext = null, peekSeq = 0, lastRetry = 0, hiddenAt = 0, resumed = false, bgmCut = false;
+  let waitTimer = 0, askTimer = 0, holdTimer = 0, waitShown = '', titleTries = 0;
+  const gateWaiters = [];     // 첫 화면의 확인이 끝나면 할 일(카카오톡 → [크롬·사파리로 열기])
+
+  /** 연 곳 → 「PC 크롬에서」 (모르면 「다른 곳에서」) */
+  const cloudFrom = w => N.whereText(w) + '에서';
+  function takeAuto() {
+    let o = null;
+    try { o = JSON.parse(window.sessionStorage.getItem(AUTO_KEY) || 'null'); window.sessionStorage.removeItem(AUTO_KEY); } catch (e) { o = null; }
+    if (!o || typeof o !== 'object' || Math.abs(Date.now() - (+o.at || 0)) > 60000) return { auto: false, claimed: false, at: 0 };
+    return { auto: o.auto === 1, claimed: o.claimed === 1, at: +o.at || 0 };
+  }
+  function setAuto(auto, claimed) {
+    try { window.sessionStorage.setItem(AUTO_KEY, JSON.stringify({ at: Date.now(), auto: auto ? 1 : 0, claimed: claimed ? 1 : 0 })); } catch (e) { /* 첫 화면에서 다시 시작 */ }
+  }
+  function bgmOff() { if (!started || !A || bgmCut) return; bgmCut = true; try { A.stopBgm(); } catch (e) { /* 무시 */ } }
+  function bgmOn() { if (!bgmCut) return; bgmCut = false; try { if (A && S.g.settings.bgm && !document.hidden) A.startBgm(); } catch (e) { /* 무시 */ } }
+  function stopWait() { clearTimeout(waitTimer); waitTimer = 0; waitShown = ''; }
+  /** 돌아와서 확인하는 동안: 화면을 누르지 못하게 덮고(조금 걸리면 작은 안내가 보임) */
+  function holdNote(on) {
+    const old = document.getElementById('cloudHold');
+    if (!on) { if (old) old.remove(); return; }
+    if (old) return;
+    document.getElementById('app').appendChild(U.el('div', { id: 'cloudHold', role: 'status' }, [U.el('span', { class: 'hold-chip', text: '다른 곳의 진행을 확인하고 있어요…' })]));
+  }
+
+  /** [시작]을 누르기 전에 한 번 더 확인해야 하는가 */
+  function needStartCheck() {
+    if (!N.cloudOn() || gateFail) return false;
+    if (!gateDone) return true;
+    return !(N.claim === 'ok' && Date.now() - claimAt < CLAIM_FRESH);
+  }
+  function onStartClick() {
+    if (started || startAsked || phase === 'adopt' || Lock.lost) return;
+    if (needStartCheck()) { askStart('목장을 확인하고 있어요…'); return; }
+    start(bootSummary);
+  }
+  /** 확인한 뒤 시작한다(10초가 지나도 답이 없으면 이 기기 진행으로 — 답이 늦게 오면 그때 맞춘다) */
+  function askStart(title) {
+    startAsked = true;
+    cblk(title, '다른 곳에서 한 진행이 있는지 확인하고 있어요. 잠시만 기다려 주세요.', []);
+    clearTimeout(askTimer);
+    askTimer = setTimeout(() => {
+      if (started || !startAsked || phase === 'wait' || phase === 'choose' || phase === 'away' || phase === 'adopt') return;
+      gateDone = true; gateFail = true; startAsked = false; autoStart = false;
+      goStart();
+    }, 10000);
+    if (phase === 'check') return;                       // 첫 화면의 확인이 진행 중 — 끝나면 시작
+    if (!gateDone) { maybeBootGate(); return; }
+    cloudCheck('start', 1);
+  }
+  /** 첫 화면: 서버에 보관하는 목장이면 다른 곳의 진행부터 확인한다(다른 안내창이 떠 있으면 그 창이 닫힌 뒤에) */
+  function maybeBootGate() {
+    if (started || gateDone || phase || flowBusy || Lock.lost || S.frozen) return;
+    if (!N.cloudOn()) { if (helloTried || !N.enabled()) gateGo(); return; }
+    if (document.getElementById('blocker') && !ownBlk) return;
+    cloudCheck('boot', 'soft', undefined, true);
+  }
+  /** 첫 화면의 확인이 끝났다 → 기다리던 일(시작 · 크롬으로 열기)을 하거나 첫 화면으로 */
+  function gateGo() {
+    gateDone = true;
+    clearTimeout(askTimer);
+    if (started) return;
+    if (gateWaiters.length) { startAsked = false; runWaiters(); return; }
+    if (startAsked || autoStart) { startAsked = false; autoStart = false; goStart(); return; }
+    if (ownBlk) unblock();
+    titleLogin(); applyUpdate();
+  }
+  function runWaiters() {
+    const w = gateWaiters.splice(0);
+    if (ownBlk) unblock();
+    w.forEach(f => { try { f(); } catch (e) { console.error('gate', e); } });
+  }
+  /** 첫 화면의 확인이 끝난 뒤에 할 일(확인 중이면 기다렸다가 — 10초가 지나면 그냥) */
+  function whenGate(fn) {
+    if (!N.cloudOn() || gateDone || started) { fn(); return; }
+    gateWaiters.push(fn);
+    cblk('목장을 확인하고 있어요…', '잠시만 기다려 주세요.', []);
+    clearTimeout(askTimer);
+    askTimer = setTimeout(() => { if (!started && gateWaiters.length && phase === 'check') { gateDone = true; gateFail = true; runWaiters(); } }, 10000);
+    if (phase !== 'check') maybeBootGate();
+  }
+
+  /** 서버 보관본 확인(savePeek). claim = 1 | 'soft' | 'force' · next = '이 기기 진행으로 계속'일 때 할 일 · idle = 첫 화면(잡되 '하고 있음'으로 보지 않음) */
+  function cloudCheck(why, claim, next, idle) {
+    if (phase === 'adopt' || Lock.lost || S.frozen) return;
+    if (next !== undefined) goNext = next;
+    phase = 'check';
+    const seq = ++peekSeq, dirty = N.dirty();
+    N.peek({ claim: claim || 1, idle: !!idle }).then(r => r, e => { console.error('peek', e); return null; }).then(r => {
+      if (seq === peekSeq) handlePeek(r && typeof r === 'object' ? r : { ok: false, error: 'NET' }, why, dirty);
+    });
+  }
+  function handlePeek(r, why, dirty) {
+    if (Lock.lost || S.frozen || phase === 'adopt') return;
+    phase = '';
+    clearTimeout(holdTimer);
+    if (!r.ok) { peekFail(why); return; }
+    gateFail = false;
+    if (r.claimed) claimAt = Date.now();
+    else if (N.claim === 'ok') N.claim = 'none';                     // 진행하는 곳이 아니다(확인되기 전에는 보내지 않음)
+    if (r.wait) {
+      if (r.wait === 'handover' && r.soft) softWait(r, why);
+      else waitHandover(r, why);
+      return;
+    }
+    const st = r.state, fresh = !started && freshRanch();
+    if (st === 'none' || st === 'same' || st === 'behind') { proceed(!!r.claimed, r); return; }
+    // ahead: 다른 곳이 이 기기 진행의 뒤를 이어 갔다 — 이 기기에서 그 뒤로 진행하지 않았으면 그대로 받는다
+    if ((st === 'ahead' && !dirty) || fresh) { adoptCloud(r, false); return; }
+    chooseCloud(r);
+  }
+  /** 확인하지 못함 — 인터넷 문제면 이 기기 진행으로(게임 중 45초마다 다시) */
+  function peekFail(why) {
+    lastRetry = Date.now();
+    if (!N.cloudOn()) {
+      // 자동 이어하기를 못 쓰게 됨(초기 설정 전 서버 · 연결이 풀림 · 다른 기기에서 이어하는 중 — 07_net 이 정리함) → v2.5 처럼
+      if (N.claim === 'away') { N.claim = 'none'; N.away = null; }
+      if (!started) gateFail = true;
+      proceed(false, null);
+      return;
+    }
+    if (why === 'here' || why === 'awayback') { showAway(N.away, why === 'here'); return; }
+    if (!started) gateFail = true;
+    proceed(false, null);
+  }
+  /** 이 기기 진행으로 계속(ok = 진행하는 곳으로 확인됨) */
+  function proceed(ok, r) {
+    phase = '';
+    stopWait(); holdNote(false); clearTimeout(holdTimer);
+    N.held = false;
+    if (!started) { gateDone = true; titleTries = 0; }
+    if (ok && r && (r.state === 'behind' || r.state === 'none' || N.dirty())) {
+      // 서버 보관본이 이 기기 진행보다 뒤처졌거나 없다 · 이 기기에서 그 뒤로 진행했다 → 바로 올린다(다른 곳이 열면 이 진행을 받게)
+      if (started) setTimeout(() => { try { N.uploadSave(); } catch (e) { /* 무시 */ } }, 800);
+      else { try { N.uploadSave(null, { idle: true }); } catch (e) { /* 무시 */ } }
+    }
+    const next = goNext;
+    goNext = null;
+    if (next) { next(ok); return; }
+    if (!started) { gateGo(); return; }
+    resumeHere();
+  }
+  /** 게임 중: 멈춰 둔 목장을 다시 움직인다(멈춰 있던 동안은 다음 그림에서 한꺼번에 계산) */
+  function resumeHere() {
+    if (ownBlk) unblock();
+    N.held = false;
+    resumed = true;
+    bgmOn();
+    // 확인하는 사이에 다시 떠났다 → 진행하는 곳이 됐다는 것을 서버가 '지금 하는 중'으로 보지 않게 떠났다고 알린다(다른 곳이 넘겨받기를 기다리지 않게)
+    if (document.hidden) { try { N.leave(true); } catch (e) { /* 무시 */ } return; }
+    setTimeout(() => { try { if (!document.hidden) N.sync(); } catch (e) { /* 무시 */ } }, 300);   // (그새 다시 떠났으면 보내지 않는다 — 떠날 때 보낸 bye 를 덮지 않게)
+  }
+  /** 다른 곳이 지금 하고 있다(넘겨 달라고 하지 않은 확인) */
+  function softWait(r, why) {
+    const a = r.active || {};
+    if (!started) {
+      gateDone = true; claimAt = 0;
+      if (gateWaiters.length) { runWaiters(); return; }                         // 카카오톡 → 크롬: 서버 보관본(가장 최근 진행)을 그대로 넘긴다
+      if (startAsked || autoStart) { startAsked = true; cloudCheck('start', 1); return; }   // 시작을 눌렀다 → 넘겨받기
+      const n = $('#titleNote');
+      if (n) n.textContent = '지금 ' + cloudFrom(a.where) + ' 하고 있어요 · 시작하면 여기로 이어받아요';
+      if (ownBlk) unblock();
+      titleLogin(); applyUpdate();
+      return;
+    }
+    if (N.claim === 'away') { showAway(a, false); return; }        // 돌아와 보니 그곳에서 아직 하는 중
+    N.markAway(a);                                                  // 인터넷이 다시 이어졌는데 그곳에서 하는 중 → 멈춤(이 화면의 진행은 남겨 둠 — 이어 할 때 고르기)
+  }
+  /** 다른 곳이 넘겨주기를(또는 방금 닫은 곳의 마지막 저장을) 기다린다 — 3초마다 다시 묻는다 */
+  function waitHandover(r, why) {
+    phase = 'wait';
+    holdNote(false);
+    const a = r.active || {}, up = r.wait === 'up';
+    if (!started && !startAsked && !autoStart && !gateWaiters.length) {
+      // 첫 화면(아직 시작하지 않음): 방금 닫은 곳의 저장이 곧 온다 — 가리지 않고 조용히 다시 묻는다(18초까지)
+      clearTimeout(waitTimer);
+      if (++titleTries > 6) { phase = ''; gateDone = true; claimAt = 0; return; }
+      waitTimer = setTimeout(() => { if (phase === 'wait') cloudCheck(why, 'soft', undefined, true); }, 3000);
+      return;
+    }
+    if (started) { N.held = true; bgmOff(); }
+    const where = N.whereText(a.where), key = (up ? 'up' : 'ho') + where;
+    if (waitShown !== key) {
+      waitShown = key;
+      cblk(up ? '방금 닫은 곳의 진행을 받아 오고 있어요…' : cloudFrom(a.where) + ' 하던 목장을 받아 오고 있어요…',
+        up ? '방금 닫은 화면의 마지막 진행이 도착하는 대로 이어서 열어요. 10초쯤 걸려요.'
+          : '그곳에서 한 진행을 넘겨받는 대로 이어서 열어요. 1분쯤 걸릴 수 있어요. 기다리지 않으면 그곳에서 아직 넘겨주지 못한 몇 분의 진행은 빠질 수 있어요.',
+        [{ label: '기다리지 않고 시작하기', cls: 'btn-ghost', fn: () => { stopWait(); cblk('이어서 여는 중…', '잠시만 기다려 주세요.', []); cloudCheck(why, 'force'); } }],
+        U.el('div', { class: 'cloud-dots', 'aria-hidden': 'true' }, [U.el('i'), U.el('i'), U.el('i')]));
+    }
+    clearTimeout(waitTimer);
+    waitTimer = setTimeout(() => { if (phase === 'wait') cloudCheck(why, 1); }, 3000);
+  }
+  /** 서버 보관본(다른 곳의 진행)으로 바꾸고 새로 연다. backup = 이 기기 진행을 7일 동안 맡아 둔다(고르기에서 다른 곳을 고름) */
+  function adoptCloud(r, backup) {
+    if (Lock.lost) return;
+    stopWait(); holdNote(false); clearTimeout(holdTimer);
+    const fail = () => {
+      phase = 'choose';
+      cblk('다른 곳의 진행을 불러오지 못했어요', '진행 기록을 읽다가 문제가 생겼어요. 이 기기의 진행으로 계속할 수 있어요.', [
+        { label: '이 기기 진행으로 계속하기', cls: 'btn-orange', fn: () => pickLocal(r) }
+      ]);
+    };
+    if (!U.store.ok || typeof r.save !== 'string' || !r.save) { fail(); return; }
+    phase = 'adopt';
+    try {
+      if (backup) S.keepPremove();
+      N.adoptNaver(r);
+    } catch (e) { console.error('adopt cloud', e); phase = ''; fail(); return; }
+    S.frozen = true;                                                // 이 화면은 더 저장하지 않는다(곧 새로 연다)
+    bgmOff();
+    U.store.set(NV_MSG, JSON.stringify({ kind: 'cloud', where: r.active && r.active.where ? r.active.where : '' }));
+    setAuto(started || startAsked || autoStart, !!r.claimed);
+    cblk('다른 곳에서 한 진행을 불러오는 중…', '잠시만 기다려 주세요.', []);
+    if (Mv) Mv.reload(); else location.reload();
+  }
+  /** 두 곳에서 따로 진행했다 → 어느 진행으로 할지 고르게 한다 */
+  function chooseCloud(r) {
+    phase = 'choose';
+    stopWait(); holdNote(false); clearTimeout(holdTimer);
+    if (started) { N.held = true; bgmOff(); }
+    const m = r.meta || {};
+    const extra = U.el('div', { class: 'nv-choices' }, [
+      ranchCard('다른 곳에서 한 진행', m.name, m.level, m.coins, m.savedAt, 'cloud'),
+      ranchCard('이 기기에서 한 진행', S.g.name, S.g.level, S.g.coins, (S.g.last || 0) + (N.skew || 0), 'local')
+    ]);
+    cblk('어느 진행으로 할까요?', '이 목장을 다른 곳과 이 기기에서 따로 진행했어요. 한쪽만 이어서 할 수 있어요. 다른 곳의 진행을 고르면 이 기기의 진행은 7일 동안 [설정 → 목장 옮기기]에 맡아 둬요.', [
+      { label: '다른 곳의 진행으로 이어하기', cls: 'btn-orange', fn: () => pickCloud(r) },
+      { label: '이 기기 진행으로 계속하기', cls: 'btn-blue', fn: () => cblk('이 기기 진행으로 계속할까요?',
+        '다른 곳에서 한 진행(' + (m.name || '목장') + ' Lv.' + (m.level || 1) + ')은 지워지고, 이 기기의 진행이 대신 보관돼요. 되돌릴 수 없어요.', [
+          { label: '돌아가기', cls: 'btn-ghost', fn: () => chooseCloud(r) },
+          { label: '이 기기 진행으로', cls: 'btn-red', fn: () => pickLocal(r) }
+        ]) }
+    ], extra);
+  }
+  function pickCloud(r) {
+    if (typeof r.save === 'string' && r.save) { adoptCloud(r, true); return; }
+    phase = 'check';
+    cblk('다른 곳의 진행을 받아 오고 있어요…', '잠시만 기다려 주세요.', []);
+    N.peek({ want: 'save' }).then(x => x, () => null).then(x => {
+      if (Lock.lost || S.frozen) return;
+      if (x && x.ok && typeof x.save === 'string' && x.save) { x.claimed = false; adoptCloud(x, true); return; }
+      phase = 'choose';
+      const none = !!(x && x.ok && !x.meta);
+      cblk(none ? '보관된 진행이 없어요' : '받아 오지 못했어요', none ? '서버에 보관된 진행이 없어요. 이 기기의 진행으로 계속해요.' : '인터넷 연결을 확인하고 다시 시도해 주세요.',
+        none ? [{ label: '이 기기 진행으로 계속하기', cls: 'btn-orange', fn: () => pickLocal(r) }]
+          : [{ label: '다시 시도', cls: 'btn-orange', fn: () => pickCloud(r) }, { label: '돌아가기', cls: 'btn-ghost', fn: () => chooseCloud(r) }]);
+    });
+  }
+  /** 이 기기 진행으로: 서버 보관본을 이 진행으로 바꾸고(force) 이 화면이 진행하는 곳이 된다 */
+  function pickLocal(r) {
+    phase = 'check';
+    cblk('이 기기 진행을 보관하는 중…', '잠시만 기다려 주세요.', []);
+    N.uploadSave(null, { force: true, idle: !started }).then(u => u, () => null).then(u => {
+      if (Lock.lost || S.frozen) return;
+      if (u && u.ok) {
+        N.claim = 'ok'; N.away = null; S.g.net.yielded = 0; claimAt = Date.now();
+        try { S.save(); } catch (e) { /* 무시 */ }
+        proceed(true, null);
+        return;
+      }
+      phase = 'choose';
+      cblk('보관하지 못했어요', u && u.message && u.error !== 'NET' ? String(u.message) : '인터넷 연결을 확인하고 다시 시도해 주세요.', [
+        { label: '다시 시도', cls: 'btn-orange', fn: () => pickLocal(r) },
+        { label: '돌아가기', cls: 'btn-ghost', fn: () => chooseCloud(r) }
+      ]);
+    });
+  }
+  /** 다른 곳에서 하는 중 — 목장 시간을 멈추고 안내창(그 화면으로 돌아오거나 단추를 누르면 다시 확인) */
+  function showAway(a, failed) {
+    if (Lock.lost || S.frozen || phase === 'adopt') return;
+    stopWait(); holdNote(false); clearTimeout(holdTimer);
+    phase = 'away';
+    N.held = true;
+    bgmOff();
+    a = a || N.away || {};
+    const where = N.whereText(a.where), handed = !!a.handed;
+    cblk(handed ? U.josa(where, '으로/로') + ' 넘겨줬어요' : '다른 곳에서 이어서 하고 있어요',
+      (handed ? where + '에서 이어서 할 수 있게 여기서 한 진행을 넘겨줬어요.' : cloudFrom(a.where) + ' 이 목장을 이어서 하고 있어요. 진행이 섞이지 않게 여기는 멈춰 두었어요.') +
+      ' 여기서 다시 하려면 아래 단추를 눌러 주세요.',
+      [{ label: '여기서 이어서 하기', cls: 'btn-orange', fn: continueHere }],
+      failed ? U.el('p', { class: 'field-err', role: 'alert', style: 'color:#B03A2E;text-align:center', text: '서버에 연결하지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요.' }) : null);
+  }
+  function continueHere() {
+    if (phase === 'adopt' || Lock.lost) return;
+    cblk('이어서 여는 중…', '잠시만 기다려 주세요.', []);
+    cloudCheck('here', 1);
+  }
+  /** 게임 중 화면으로 돌아옴(how: 'show' 다른 앱·탭에서 · 'gap' 화면이 한참 멈췄다 움직임) → 확인을 시작해 목장 시간을 멈췄으면 true */
+  function onReturn(how) {
+    if (!started || Lock.lost || S.frozen || phase === 'adopt') return false;
+    if (N.claim === 'away') {
+      // 다른 곳에서 하는 중이던 화면으로 돌아옴 → 그곳이 지금 하고 있지 않으면 바로 이어받는다(하고 있으면 안내창 그대로)
+      if (!phase || phase === 'away') cloudCheck('awayback', 'soft');
+      return false;
+    }
+    if (phase || !N.cloudOn()) return false;                         // (확인되지 않은 화면 — claim 'none' — 도 돌아오면 확인한다)
+    if (how === 'show' && hiddenAt && Date.now() - hiddenAt < 5000) { setTimeout(() => { try { if (!document.hidden) N.sync(); } catch (e) { /* 무시 */ } }, 300); return false; }
+    N.held = true;
+    N.claim = 'none';                                               // 확인될 때까지는 보내지 않는다
+    holdNote(true);
+    cloudCheck('return', 1);
+    // 답이 늦으면(8초) 멈춰 둔 목장을 먼저 움직인다 — 답이 오면 그때 맞춘다
+    clearTimeout(holdTimer);
+    holdTimer = setTimeout(() => { if (phase === 'check' && N.held) { holdNote(false); N.held = false; resumed = true; } }, 8000);
+    return true;
+  }
+  bus.on('netReturn', () => { onReturn('show'); });
+  bus.on('netAway', a => { showAway(a, false); });
+  bus.on('netConflict', meta => {
+    if (Lock.lost || S.frozen || phase === 'adopt' || phase === 'choose') return;
+    chooseCloud({ ok: true, state: 'other', meta: meta || null });
+  });
+  // 진행하는 곳으로 확인되지 않은 채(인터넷이 안 됐음) 하는 중 → 40초에 한 번 다시 확인(다른 곳이 하고 있으면 넘겨 달라고 하지 않고 여기를 멈춤)
+  bus.on('netClaimNeeded', () => {
+    if (!started || phase || N.claim !== 'none' || !N.cloudOn() || S.frozen || Lock.lost) return;
+    if (Date.now() - lastRetry < 40000) return;
+    lastRetry = Date.now();
+    cloudCheck('retry', 'soft');
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { hiddenAt = Date.now(); return; }
+    // 첫 화면을 켜 둔 채 다른 곳에 다녀왔다(5초 넘게) → 서버 보관본을 다시 확인한다
+    if (!started && booted && gateDone && !phase && !flowBusy && !startAsked && N.cloudOn() && hiddenAt && Date.now() - hiddenAt > 5000 && !document.getElementById('blocker')) {
+      gateDone = false; gateFail = false; titleTries = 0;
+      maybeBootGate();
+    }
+  });
+
+  /* ---------- v2.6 기기 연결 코드 (첫 화면) ---------- */
+  /** 연결 코드로 이어받기: 이 기기에 하던 목장이 있으면 바뀐다고 먼저 묻는다(ok = 게임 안에서 이미 확인함) */
+  function pairJoinFlow(code, ok) {
+    flowBusy = true;
+    const go = () => {
+      cblk('연결하고 있어요…', '잠시만 기다려 주세요.', []);
+      N.pairJoin(code).then(r => r, e => { console.error('pair join', e); return null; })
+        .then(r => onPairJoin(r && typeof r === 'object' ? r : { ok: false, error: 'NET' }, code));
+    };
+    if (ok || freshRanch()) { go(); return; }
+    const g = S.g;
+    cblk('연결한 목장으로 바꿀까요?', '연결 코드의 목장을 이 기기에서 이어서 해요. 지금 이 기기의 목장(' + g.name + ' · Lv.' + g.level + ')은 그 목장으로 바뀌어요. 7일 안에는 [설정 → 목장 옮기기]에서 되돌릴 수 있어요.', [
+      { label: '바꾸기', cls: 'btn-red', fn: go },
+      { label: '취소', cls: 'btn-ghost', fn: pairCancel }
+    ]);
+  }
+  function pairCancel() { if (SR.Cloud) SR.Cloud.clearPending(); backToTitle(); }
+  function onPairJoin(r, code) {
+    if (Lock.lost) return;
+    if (!r.ok) {
+      const temp = r.error === 'NET' || r.error === 'SERVER' || r.error === 'BUSY';
+      if (!temp && SR.Cloud) SR.Cloud.clearPending();
+      const title = { BAD_CODE: '코드가 맞지 않아요', RATE: '잠시 후 다시 시도해 주세요', NO_MULTI: '지금은 다른 기기와 연결할 수 없어요', OFF: '서버에 연결되지 않았어요' }[r.error] || '연결하지 못했어요';
+      const lead = r.error === 'BAD_CODE' ? '코드가 틀렸거나, 10분이 지났거나, 이미 쓴 코드예요. 하던 기기에서 코드를 다시 만들어 넣어 주세요.'
+        : r.message && r.error !== 'NET' ? String(r.message) : temp ? '서버에 연결하지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요.' : '잠시 후 다시 시도해 주세요.';
+      cblk(title, lead, [
+        temp ? { label: '다시 시도', cls: 'btn-orange', fn: () => pairJoinFlow(code, true) } : null,
+        r.error === 'BAD_CODE' ? { label: '코드 다시 넣기', cls: 'btn-orange', fn: () => pairAsk() } : null,
+        { label: '돌아가기', cls: 'btn-ghost', fn: pairCancel }
+      ]);
+      return;
+    }
+    const broken = msg => { if (SR.Cloud) SR.Cloud.clearPending(); cblk('연결한 목장을 불러오지 못했어요', msg + ' 이 기기의 목장은 그대로예요.', [{ label: '확인', cls: 'btn-orange', fn: pairCancel }]); };
+    if (!U.store.ok) { broken('이 브라우저는 저장소를 쓸 수 없어요. 다른 브라우저에서 열어 주세요.'); return; }
+    if (typeof r.save !== 'string' || !r.save) { broken('서버에 보관된 진행을 받지 못했어요. 하던 기기에서 게임을 연 채로 코드를 다시 만들어 주세요.'); return; }
+    try { S.keepPremove(); N.adoptNaver(r); }
+    catch (e) { console.error('pair adopt', e); broken('진행 기록을 읽다가 문제가 생겼어요.'); return; }
+    if (SR.Cloud) SR.Cloud.clearPending();
+    S.frozen = true;
+    U.store.set(NV_MSG, JSON.stringify({ kind: 'paired' }));
+    setAuto(false, true);                                           // 연결 코드를 넣은 이 화면이 진행하는 곳(서버가 정함)
+    cblk('목장을 불러오는 중…', '잠시만 기다려 주세요.', []);
+    if (Mv) Mv.reload(); else location.reload();
+  }
+  /** 첫 화면 [연결 코드로 이어하기] — 코드를 넣는 창 */
+  function pairAsk() {
+    if (started || Lock.lost || !SR.Cloud) return;
+    flowBusy = true;
+    const Cl = SR.Cloud;
+    const inp = U.el('input', { class: 'text-input pair-input', id: 'pairInput', maxlength: '9', autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', placeholder: '예: K7P 2QX', 'aria-label': '연결 코드' });
+    const err = U.el('p', { class: 'field-err', id: 'pairErr', role: 'alert', style: 'text-align:center' });
+    inp.addEventListener('input', () => { err.textContent = ''; const v = inp.value.toUpperCase(); if (v !== inp.value) inp.value = v; });
+    const go = () => {
+      const c = Cl.clean(inp.value);
+      if (!Cl.valid(c)) { err.textContent = '6자리 코드(영문·숫자)를 넣어 주세요'; return; }
+      pairJoinFlow(c, false);
+    };
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+    cblk('연결 코드로 이어하기', '하던 기기에서 [설정 → 다른 기기에서도 하기 → 연결 코드 만들기]를 누르면 6자리 코드가 나와요. 그 코드를 넣으면 그 목장을 여기서 이어서 해요.', [
+      { label: '이어하기', cls: 'btn-orange', fn: go },
+      { label: '취소', cls: 'btn-ghost', fn: backToTitle }
+    ], U.el('div', { class: 'pair-ask' }, [inp, err]));
+    setTimeout(() => { try { inp.focus(); } catch (e) { /* 무시 */ } }, 60);
+  }
+  /** 카카오톡 안의 첫 화면 → 크롬·사파리: 연결 코드를 주소에 붙여 연다(크롬이 시작 전에 저절로 이어받음). 코드를 못 만들면 v2.5 옮기기 */
+  function pairOutGo() {
+    gateStop();
+    cblk('크롬·사파리로 여는 중…', '잠시만 기다려 주세요.', []);
+    N.pairCode({ ref: true }).then(r => r, e => { console.error('pair out', e); return null; }).then(r => {
+      if (Lock.lost || S.frozen) return;
+      if (!r || !r.ok) {
+        if (r && (r.error === 'ELSEWHERE' || r.error === 'CONFLICT')) return;     // 안내창(다른 곳에서 하는 중 · 고르기)이 이미 떴다
+        moveOutGo(true);
+        return;
+      }
+      Mv.openExternal(Mv.target() + '#pair=' + r.code);
+      pairOutInfo(r);
+    });
+  }
+  function pairOutInfo(r) {
+    const extra = U.el('div', { class: 'mv-box' }, [SR.Cloud.fallbackNote(), SR.Cloud.codeBox(r.code, r.until),
+      U.el('p', { class: 'muted', style: 'margin:0;text-align:center', text: SR.Cloud.KEY_NOTE })]);
+    blocker('크롬·사파리에서 이어서 하세요', '크롬·사파리가 열리면 이 목장이 저절로 이어져요. 그 뒤로는 카카오톡으로 열든 크롬·사파리로 열든 가장 최근 진행으로 이어서 해요.', okBtn(), extra);
+  }
+
   /* 운영자 테스트 링크: 주소 끝 #test=비밀값 → SHA-256('shinhwa-ranch-tester:'+비밀값)이 설정의 TESTER_HASH와 같으면
    * 이 브라우저의 목장을 '테스트 목장'으로(코인 100만 + 설정의 테스트 도구). tamper 표시로 서버가 플래그를 달아
    * 이 목장의 구매 적립 신청은 자동 승인되지 않는다(운영자가 시트에서 확인).
@@ -29759,9 +30991,20 @@ SR.CONFIG = {
     S.save();
   }
 
+  let fpEnd = null;                // v2.6 지난 그림을 마칠 때의 목장 숫자(S.fingerprint) — 다음 그림 전까지 바뀌었으면 목장 시간 계산 밖(손님 조작 · 받은 보상)에서 바뀐 것
+  /** 그림과 그림 사이(게임 루프 밖)에서 목장이 바뀌었으면 손님이 진행한 것으로 적는다 — 루프 맨 앞 · 07_net 의 N.dirty() 가 부른다 */
+  N.notePlay = function () {
+    if (!started || fpEnd === null || !S.g) return;
+    const f = S.fingerprint();
+    if (f !== fpEnd) { S.g.net.playAt = Date.now(); fpEnd = f; }
+  };
   function loop() {
     if (Lock.lost || S.frozen) return;   // 다른 창이 가져가면 이 창은 멈춘다(다시 하려면 새로고침) · 목장을 바꿔 놓고 새로 여는 중에도 멈춘다
     const now = Date.now();
+    // v2.6 손님이 이 화면에서 진행함 → playAt(올리기 전에 다른 곳과 따로 진행했는지 가리는 데 씀 · 버튼만 누른 것 · 목장 시간이 흘러 바뀐 것은 넣지 않는다)
+    N.notePlay();
+    // v2.6 목장 시간을 멈춤(돌아와서 다른 곳의 진행을 확인 · 넘겨받기를 기다림 · 다른 곳에서 하는 중) — 그림만 그린다(멈춘 동안은 다시 움직일 때 한꺼번에 계산)
+    if (N.held) { if (phase !== 'away') { try { R.frame(0); } catch (e) { console.error('frame', e); } } requestAnimationFrame(loop); return; }
     if (now < lastSim - 1000) {
       // 실행 중에 기기 시계가 뒤로 돌아감 → 저장된 시각을 같이 당겨 남은 시간을 지킨다
       const d = now - lastSim;
@@ -29770,6 +31013,9 @@ SR.CONFIG = {
       lastSim = now;
     }
     let dt = Math.max(0, (now - lastSim) / 1000);
+    // v2.6 게임 중에 한참 멈췄다 움직임(다른 앱에서 돌아옴) → 서버에 보관하는 목장은 다른 곳의 진행부터 확인한다(그동안 멈춤 — lastSim 은 그대로)
+    if (dt > 5 && !resumed && onReturn('gap')) { requestAnimationFrame(loop); return; }
+    resumed = false;
     lastSim = now;
     // v1.9 이웃 목장에 가 있는 동안에는 내 목장을 멈춰 둔다(돌아올 때 SR.Soc.leave 가 그동안의 진행을 한꺼번에 계산)
     const away = !!(SR.Soc && SR.Soc.visit);
@@ -29789,6 +31035,7 @@ SR.CONFIG = {
     if (started && uiTimer > 0.2) { uiTimer = 0; try { UI.tick(); } catch (e) { console.error('ui', e); } }
     saveTimer += dt;
     if (started && saveTimer > 8) { saveTimer = 0; S.save(); }
+    fpEnd = started ? S.fingerprint() : null;
     requestAnimationFrame(loop);
   }
   document.addEventListener('visibilitychange', () => { if (document.hidden && started) S.save(); });
@@ -29966,6 +31213,20 @@ SR.CONFIG = {
       wildGive(id, n) { const it = D.WILD[id], w = S.g.wild; if (!it || it.bait) return 0; w.bag[id] = (w.bag[id] || 0) + (n || 1); if (it.t >= 0) w.seen[id] = (w.seen[id] || 0) + (n || 1); return w.bag[id]; },
       wildReset() { return Sim.wildDaily(true); },
       starve(pid, sec) { const pen = S.g.pens[pid]; if (pen) { pen.feed = 0; pen.animals.forEach(a => { a.hungryT = sec; }); } },
+      /** v2.6 자동 이어하기 화면 점검: 안내창을 그대로 띄운다(서버에 묻지 않음 — 'clear' 로 닫음) */
+      cloud(kind, d) {
+        const o = d || {};
+        if (kind === 'clear') { stopWait(); holdNote(false); phase = ''; N.held = false; startAsked = false; clearTimeout(askTimer); unblock(); return; }
+        if (kind === 'wait') { if (!started) startAsked = true; waitHandover({ ok: true, wait: o.up ? 'up' : 'handover', active: { where: o.where || 'chrome-desktop', live: true } }, 'start'); stopWait(); return; }
+        if (kind === 'choose') { chooseCloud({ ok: true, state: 'ahead', meta: o.meta || { name: S.g.name, level: S.g.level + 3, coins: S.g.coins + 98765, savedAt: Date.now() - 60000 } }); return; }
+        if (kind === 'chooseSure') { chooseCloud({ ok: true, state: 'ahead', meta: o.meta || { name: S.g.name, level: S.g.level, coins: S.g.coins } }); const b = Array.from(document.querySelectorAll('#blocker .btns button')).find(x => x.textContent === '이 기기 진행으로 계속하기'); if (b) b.click(); return; }
+        if (kind === 'away') { showAway({ where: o.where || 'kakao-android', handed: !!o.handed }, !!o.failed); return; }
+        if (kind === 'hold') { holdNote(true); return; }
+        if (kind === 'pairAsk') { pairAsk(); return; }
+        if (kind === 'pairSure') { const g = S.g; cblk('연결한 목장으로 바꿀까요?', '연결 코드의 목장을 이 기기에서 이어서 해요. 지금 이 기기의 목장(' + g.name + ' · Lv.' + g.level + ')은 그 목장으로 바뀌어요. 7일 안에는 [설정 → 목장 옮기기]에서 되돌릴 수 있어요.', [{ label: '바꾸기', cls: 'btn-red', fn: () => {} }, { label: '취소', cls: 'btn-ghost', fn: unblock }]); return; }
+        if (kind === 'pairOut') { pairOutInfo({ code: o.code || 'K7P2QX', until: Date.now() + 600000 }); return; }
+        if (kind === 'checking') { cblk('목장을 확인하고 있어요…', '다른 곳에서 한 진행이 있는지 확인하고 있어요. 잠시만 기다려 주세요.', []); }
+      },
       sicken(pid, sec) { const pen = S.g.pens[pid]; if (pen && pen.animals[0]) { pen.animals[0].sick = true; pen.animals[0].sickT = sec || 0; return pen.animals[0]; } return null; }
     };
   }
